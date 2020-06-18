@@ -1,24 +1,25 @@
 % 刺激画像を1種呈示する
 
 % Object
-material = 'Sphere';
-SDrate = 'S09_D01';
-alpha = 'alpha0';
-objectSD = 'sphereSD';
-objectD = 'sphereD';
+material = 'bunny';
+light = 'area';
+Drate = 'D01';
+alpha = 'alpha005';
+objectSD = 'bunnySD';
+objectD = 'bunnyD';
 
-load(strcat('./stimuli/',material,'/',SDrate,'/',alpha,'/',objectSD,'.mat'));
-load(strcat('./stimuli/',material,'/',SDrate,'/',alpha,'/',objectD,'.mat'));
+load(strcat('../stimuli/',material,'/',light,'/',Drate,'/',alpha,'/',objectSD,'.mat'));
+load(strcat('../stimuli/',material,'/',light,'/',Drate,'/',alpha,'/',objectD,'.mat'));
 
 figure;
-image(sphereSD(:,:,:,2)/255);
-xticks({});
-yticks({});
-xticklabels({});
-yticklabels({});
+image(bunnySD(:,:,:,2)/255);
+%xticks({});
+%yticks({});
+%xticklabels({});
+%yticklabels({});
 figure;
-image(sphereD(:,:,:,2)/255);
-xticks({});
-yticks({});
-xticklabels({});
-yticklabels({});
+image(bunnyD(:,:,:,2)/255);
+%xticks({});
+%yticks({});
+%xticklabels({});
+%yticklabels({});

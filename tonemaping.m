@@ -1,4 +1,4 @@
-function tonemappedXYZ = wTonemapDiff(xyz,sameXyz,lw,scale,ccmatrix)
+function tonemappedXYZ = tonemaping(xyz,sameXyz,lw,scale,ccmatrix)
 
 [iy,ix,iz] = size(xyz);
 
@@ -16,19 +16,22 @@ sh = 8;
 % Reinhard function
 for i = 1:iy
     for j = 1:ix
-        x = upvpl(i,j,3)/a(3);
+        %x = upvpl(i,j,3)/a(3);
         %upvpl(i,j,3) = monitorMaxLum * x*sh/(1+x*sh)*(1+x*sh/lw^2);
         %upvpl(i,j,3) = monitorMaxLum * x.^(1/lw);
         %upvpl(i,j,3) = monitorMmaxLum * log(1+lw*x);
-        upvpl(i,j,3) = monitorMaxLum * x;
+        %upvpl(i,j,3) = monitorMaxLum * x;
+        
+        x = upvpl(i,j,3);
+        upvpl(i,j,3) = x/(1+x) * monitorMaxLum;
         if upvpl(i,j,3) > monitorMaxLum
             upvpl(i,j,3) = monitorMaxLum;
         elseif upvpl(i,j,3) < 0
             upvpl(i,j,3) = 0;
         end
-        %if upvpl(i,j,3) < 10^(-10)
-        %    upvpl(i,j,:) = upvpl(i,j-1,:);
-        %end
+        if upvpl(i,j,3) < 10^(-10)
+            upvpl(i,j,:) = upvpl(i,j-1,:);
+        end
     end
 end
 

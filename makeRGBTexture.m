@@ -7,7 +7,7 @@ materialSphere = 'sphere'; % Object Sphere
 
 light = 'area'; % light : area or envmap
 Drate = 'D01'; % diffuse rate
-alpha = 'alpha10'; % roughness parameter
+alpha = 'alpha005'; % roughness parameter
 
 %{
 % Dragon
@@ -31,10 +31,10 @@ figure;
 montage(dragonD/255,'size',[3 3]);
 %}
 
-%{
+
 % Bunny
-load(strcat('./mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
-load(strcat('./mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));
+load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
+load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));
 [ix,iy,iz] = size(coloredSD(:,:,:,1));
 bunnySD = zeros(ix,iy,iz,9);
 bunnyD = zeros(ix,iy,iz,9);
@@ -49,8 +49,8 @@ for i = 1:9
     %wtColorCheck(Dsame);
 end
 
-save(strcat('./stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnySD.mat'),'bunnySD');
-save(strcat('./stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnyD.mat'),'bunnyD');
+save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnySD.mat'),'bunnySD');
+save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnyD.mat'),'bunnyD');
 figure;
 montage(bunnySD/255,'size',[3 3]);
 figure;
@@ -83,7 +83,7 @@ figure;
 montage(blobD/255,'size',[3 3]);
 %}
 
-
+%{
 % Sphere
 load(strcat('../mat/',materialSphere,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
 load(strcat('../mat/',materialSphere,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));

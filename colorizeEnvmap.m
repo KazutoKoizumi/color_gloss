@@ -1,5 +1,5 @@
 %% xyz形式のファイルを読み込み彩色するプログラム
-% 照明にenvmapを使用している、背景部分を黒にして彩色する
+% 照明にenvmapを使用している、envmapの色は消さない、背景部分を黒にして彩色する
 clear all;
 
 % Object
@@ -45,8 +45,8 @@ for i = 1:9
     wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
 end
 
-ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSD');
-sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredD');
+ss = strcat('../mat/',material,'/',light,'Color/',Drate,'/',alpha,'/coloredSD');
+sd = strcat('../mat/',material,'/',light,'Color/',Drate,'/',alpha,'/coloredD');
 save(ss,'coloredSD');
 save(sd,'coloredD');
 

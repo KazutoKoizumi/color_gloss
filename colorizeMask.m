@@ -3,10 +3,10 @@
 clear all;
 
 % Object
-material = 'sphere';
+material = 'bunny';
 light = 'area';
 Drate = 'D01';
-alpha = 'alpha10';
+alpha = 'alpha005';
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -19,8 +19,11 @@ load(strcat('../mat/',material,'Mask/mask.mat'));
 scale = 0.4;
 
 tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-tonemapImage(:,:,:,1) = wTonemapDiff(xyzS,xyzSD,1,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = wTonemapDiff(xyzD,xyzSD,1,scale,ccmat); % TonemapD
+%tonemapImage(:,:,:,1) = wTonemapDiff(xyzS,xyzSD,1,scale,ccmat); % TonemapS
+%tonemapImage(:,:,:,2) = wTonemapDiff(xyzD,xyzSD,1,scale,ccmat); % TonemapD
+
+tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,1,scale,ccmat); % TonemapS
+tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,1,scale,ccmat); % TonemapD
 
 maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 for i = 1:size(xyzSD, 1)
@@ -106,8 +109,8 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
                 end
             end
         end
-        disp(upvpl(400,400,:));
-        disp(i);
+        %disp(upvpl(400,400,:));
+        %disp(i);
         coloredXyzData(:,:,:,i) = applycform(upvpl,cu2x);
     end
 end

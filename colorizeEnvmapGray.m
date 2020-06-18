@@ -6,7 +6,7 @@ clear all;
 material = 'bunny';
 light = 'envmap';
 Drate = 'D01';
-alpha = 'alpha1';
+alpha = 'alpha005';
 maskName = 'bunny';
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
@@ -49,8 +49,8 @@ for i = 1:9
     wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
 end
 
-ss = strcat('../mat/',material,'/',light,'Gray/',Drate,'/',alpha,'/coloredSD');
-sd = strcat('../mat/',material,'/',light,'Gray/',Drate,'/',alpha,'/coloredD');
+ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSD');
+sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredD');
 save(ss,'coloredSD');
 save(sd,'coloredD');
 
