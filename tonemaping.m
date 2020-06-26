@@ -5,13 +5,14 @@ function tonemappedXYZ = tonemaping(xyz,sameXyz,lw,scale,ccmatrix)
 cx2u = makecform('xyz2upvpl');
 cu2x = makecform('upvpl2xyz');
 monitorMaxUpvpl = applycform(transpose(TNT_rgb2XYZ([1 1 1]',ccmatrix)),cx2u);
-monitorMaxLum = monitorMaxUpvpl(3)
+monitorMaxLum = monitorMaxUpvpl(3);
 monitorMinUpvpl = applycform(transpose(TNT_rgb2XYZ([0 0 0]',ccmatrix)),cx2u);
 monitorMinLum = monitorMinUpvpl(3);
 upvpl = applycform(xyz,cx2u);
-disp(strcat('max luminance: ',num2str(monitorMaxLum)));
+%disp(strcat('max luminance: ',num2str(monitorMaxLum)));
 a = max(max(applycform(sameXyz,cx2u)));
 sh = 8;
+lw = 3;
 
 % Reinhard function
 for i = 1:iy
@@ -23,7 +24,10 @@ for i = 1:iy
         %upvpl(i,j,3) = monitorMaxLum * x;
         
         x = upvpl(i,j,3);
-        upvpl(i,j,3) = x/(1+x) * monitorMaxLum;
+        %f = (x/(1+x)) * (1+x/lw^2);
+        k = log(1/255) / lw;
+        f = 1 - exp(k*x);
+        upvpl(i,j,3) = f * monitorMaxLum;
         if upvpl(i,j,3) > monitorMaxLum
             upvpl(i,j,3) = monitorMaxLum;
         elseif upvpl(i,j,3) < 0
@@ -41,6 +45,6 @@ upvpl(:,:,3) = upvpl(:,:,3)*(monitorMaxLum-monitorMinLum)/monitorMaxLum;
 upvpl(:,:,3) = upvpl(:,:,3) + monitorMinLum/2;
 
 tonemappedXYZ = applycform(upvpl,cu2x);
-max(max(upvpl))
+max(max(upvpl));
 
 end

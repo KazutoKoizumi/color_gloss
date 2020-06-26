@@ -31,8 +31,11 @@ for i = 1:size(xyzSD, 1)
 end
 
 tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-tonemapImage(:,:,:,1) = wTonemapDiff(maskImage(:,:,:,1),maskImage(:,:,:,3),1,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = wTonemapDiff(maskImage(:,:,:,2),maskImage(:,:,:,3),1,scale,ccmat); % TonemapD
+%tonemapImage(:,:,:,1) = wTonemapDiff(maskImage(:,:,:,1),maskImage(:,:,:,3),1,scale,ccmat); % TonemapS
+%tonemapImage(:,:,:,2) = wTonemapDiff(maskImage(:,:,:,2),maskImage(:,:,:,3),1,scale,ccmat); % TonemapD
+
+tonemapImage(:,:,:,1) = tonemaping(maskImage(:,:,:,1),maskImage(:,:,:,3),1,scale,ccmat); % TonemapS
+tonemapImage(:,:,:,2) = tonemaping(maskImage(:,:,:,2),maskImage(:,:,:,3),1,scale,ccmat); % TonemapD
 
 gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S

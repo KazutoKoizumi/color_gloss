@@ -1,5 +1,6 @@
 %% xyz形式のファイルを読み込み彩色するプログラム
 % 彩色の際にマスク処理を行い、オブジェクト部分のみを彩色する
+% 輝度に応じて彩色時の彩度を変える、thresholdの輝度値以下では一定、以上では線形に彩度を落とす
 clear all;
 
 % Object
@@ -7,6 +8,7 @@ material = 'bunny';
 light = 'area';
 Drate = 'D01';
 alpha = 'alpha02';
+tLum = '3'; %3, 6, 7, 10, 15
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -58,8 +60,8 @@ for i = 1:9
     wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
 end
 
-ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSD');
-sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredD');
+ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSDlum',tLum);
+sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredDlum',tLum);
 save(ss,'coloredSD');
 save(sd,'coloredD');
 
@@ -74,6 +76,12 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
     load('../mat/upvplWhitePoints.mat');
     weight = ones(2,8);
     saturateMax = fixedColorMax;
+    
+    thresholdLum = 3;
+    maxLum = 25;
+    a = 1/(thresholdLum-maxLum);
+    b = -maxLum/(thresholdLum-maxLum);
+    
     % 0.087 ~ 0.34
     m = zeros(2,8);
     for i = 1:2
@@ -84,7 +92,7 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
                 saturateMax(:,i,j) = fixedColorMax(:,i,j)/m*0.2;
             end
         end
-    end
+    end     
     
     %saturateMax
     for i = 1:9
@@ -97,12 +105,21 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
                             upvpl(j,k,1) = upvplWhitePoints(l,1);
                             upvpl(j,k,2) = upvplWhitePoints(l,2);
                         else
+                            f = 1;
+                            if upvpl(j,k,3) > thresholdLum
+                                f = a * upvpl(j,k,3) + b;
+                            end
+                            if f < 0
+                                f = 0;
+                            end
                             if max(abs(fixedColorMax(:,1,i-1))) < max(abs(saturateMax(:,1,i-1)))
-                                upvpl(j,k,1) = fixedColorMax(l,1,i-1)+upvplWhitePoints(l,1);
-                                upvpl(j,k,2) = fixedColorMax(l,2,i-1)+upvplWhitePoints(l,2);
+                                upvpl(j,k,1) = f * fixedColorMax(l,1,i-1)+upvplWhitePoints(l,1);
+                                upvpl(j,k,2) = f * fixedColorMax(l,2,i-1)+upvplWhitePoints(l,2);
+                                %disp(upvpl(j,k,:))
                             else
-                                upvpl(j,k,1) = saturateMax(l,1,i-1)+upvplWhitePoints(l,1);
-                                upvpl(j,k,2) = saturateMax(l,2,i-1)+upvplWhitePoints(l,2);
+                                upvpl(j,k,1) = f * saturateMax(l,1,i-1)+upvplWhitePoints(l,1);
+                                upvpl(j,k,2) = f * saturateMax(l,2,i-1)+upvplWhitePoints(l,2);
+                                %disp(upvpl(j,k,:))
                             end
                         end
                     end

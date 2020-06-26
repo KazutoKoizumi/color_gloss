@@ -1,3 +1,4 @@
+%一色の彩色に対しstimuliファイルを作成(RGB値)
 load('../mat/ccmat.mat');
 
 materialBunny = 'bunny'; % Object Bunny
@@ -8,7 +9,33 @@ materialSphere = 'sphere'; % Object Sphere
 light = 'area'; % light : area or envmap
 Drate = 'D01'; % diffuse rate
 alpha = 'alpha02'; % roughness parameter
+tLum = '6';
+color = 'blue';
 
+% Bunny
+load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredSDlum',tLum,color,'.mat'));
+load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredDlum',tLum,color,'.mat'));
+[ix,iy,iz] = size(coloredSD(:,:,:,1));
+bunnySD = zeros(ix,iy,iz,2);
+bunnyD = zeros(ix,iy,iz,2);
+
+for i = 1:2
+    bunnySD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
+    %wtColorCheck(Dsame);
+end
+
+for i = 1:2
+    bunnyD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
+    %wtColorCheck(Dsame);
+end
+
+save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnySDlum',tLum,color,'.mat'),'bunnySD');
+save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnyDlum',tLum,color,'.mat'),'bunnyD');
+figure;
+montage(bunnySD/255,'size',[1 2]);
+figure;
+montage(bunnyD/255,'size',[1 2]);
+%}
 
 %{
 % Dragon
@@ -30,32 +57,6 @@ figure;
 montage(dragonSD/255,'size',[3 3]);
 figure;
 montage(dragonD/255,'size',[3 3]);
-%}
-
-
-% Bunny
-load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredSDlum3.mat'));
-load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredDlum3.mat'));
-[ix,iy,iz] = size(coloredSD(:,:,:,1));
-bunnySD = zeros(ix,iy,iz,9);
-bunnyD = zeros(ix,iy,iz,9);
-
-for i = 1:9
-    bunnySD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
-    %wtColorCheck(Dsame);
-end
-
-for i = 1:9
-    bunnyD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
-    %wtColorCheck(Dsame);
-end
-
-save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnySDlum3.mat'),'bunnySD');
-save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnyDlum3.mat'),'bunnyD');
-figure;
-montage(bunnySD/255,'size',[3 3]);
-figure;
-montage(bunnyD/255,'size',[3 3]);
 %}
 
 %{
