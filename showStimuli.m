@@ -13,10 +13,10 @@ load(strcat('../stimuli/',material,'/',light,'/',Drate,'/',alpha,'/',objectD,'.m
 
 figure;
 image(bunnySD(:,:,:,2)/255);
-xticks({});
-yticks({});
-xticklabels({});
-yticklabels({});
+%xticks({});
+%yticks({});
+%xticklabels({});
+%yticklabels({});
 figure;
 image(bunnyD(:,:,:,8)/255);
 xticks({});

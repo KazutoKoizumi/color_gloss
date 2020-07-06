@@ -2,6 +2,7 @@
 % 彩色の際にマスク処理を行い、オブジェクト部分のみを彩色する
 % 輝度に応じて彩色時の彩度を変える、thresholdの輝度値以下では一定、以上では線形に彩度を落とす
 % 一色のみの彩色
+% or オブジェクト部分の輝度の
 clear all;
 
 % Object
@@ -42,9 +43,12 @@ for i = 1:size(xyzSD, 1)
 end
 
 backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
-coloredSD = colorizeXYZ(maskImage(:,:,:,1),thresholdLum,colorNum) + colorizeXYZ(maskImage(:,:,:,2),thresholdLum,colorNum);
-coloredD = colorizeXYZ(maskImage(:,:,:,2),thresholdLum,colorNum) + maskImage(:,:,:,1);
+coloredSD = colorizeXYZ(maskImage(:,:,:,1),thresholdLum,colorNum,mask) + colorizeXYZ(maskImage(:,:,:,2),thresholdLum,colorNum,mask);
+coloredD = colorizeXYZ(maskImage(:,:,:,2),thresholdLum,colorNum,mask) + maskImage(:,:,:,1);
 aveBrightness = zeros(1,9);
+
+cS = colorizeXYZ(maskImage(:,:,:,1),thresholdLum,colorNum,mask) ;
+cD = colorizeXYZ(maskImage(:,:,:,2),thresholdLum,colorNum,mask) ;
 
 for i = 1:size(xyzSD, 1)
     for j = 1:size(xyzSD, 2)
@@ -52,6 +56,8 @@ for i = 1:size(xyzSD, 1)
             for k = 1:2
                 coloredSD(i,j,:,k) = backImage(i,j,:);
                 coloredD(i,j,:,k) = backImage(i,j,:);
+                cS(i,j,:,k) = backImage(i,j,:);
+                cD(i,j,:,k) = backImage(i,j,:);
             end
         end
     end
@@ -69,7 +75,7 @@ sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredDlum',tLum
 save(ss,'coloredSD');
 save(sd,'coloredD');
 
-function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum,color)
+function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum, color, mask)
     cx2u = makecform('xyz2upvpl');
     cu2x = makecform('upvpl2xyz');
     upvplMaterial = applycform(xyzMaterial,cx2u);
@@ -77,7 +83,7 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum,color)
     coloredXyzData = zeros(iy,ix,iz,2);
     coloredXyzData(:,:,:,1) = xyzMaterial;
     load('../mat/fixedColorMax.mat');
-    load('../mat/upvplWhitePointsKlab.mat');
+    load('../mat/upvplWhitePoints.mat');
     saturateMax = zeros(size(fixedColorMax,1), size(fixedColorMax,2));
     saturateMax = fixedColorMax(:,:,color);
     
@@ -99,6 +105,24 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum,color)
     end
      %}
     
+    distriLum = zeros(size(fixedColorMax,1), 2);
+    distriLum(:,2) = fixedColorMax(:,3,1);
+    for i = 1:iy
+        for j = 1:ix
+            if mask(i,j) == 1
+                for k = 1:size(distriLum,1)-1
+                    if upvplMaterial(i,j,3) > distriLum(k,2) && upvplMaterial(i,j,3) < distriLum(k+1,2)
+                        distriLum(k,1) = distriLum(k,1) + 1;
+                    end
+                end
+            end
+        end
+    end
+    
+    [modeLum, modeLumIndex] = max(distriLum(:,1));
+    colorizeSaturation = saturateMax(35,:)
+    count = zeros(1,2);
+    
     %saturateMax
     for i = 1:2
         upvpl = upvplMaterial;
@@ -111,7 +135,6 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum,color)
                             upvpl(j,k,2) = upvplWhitePoints(l,2);
                         else
                             f = 1;
-                            
                             if upvpl(j,k,3) > thresholdLum
                                 f = a * upvpl(j,k,3) + b;
                             end
@@ -124,15 +147,28 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, thresholdLum,color)
                             %    upvpl(j,k,2) = f * fixedColorMax(l,2,i-1)+upvplWhitePoints(l,2);
                             %    %disp(upvpl(j,k,:))
                             %else
+                            
                             upvpl(j,k,1) = f * saturateMax(l,1)+upvplWhitePoints(l,1);
                             upvpl(j,k,2) = f * saturateMax(l,2)+upvplWhitePoints(l,2);
-                                %disp(upvpl(j,k,:))
+                            
+                            %{
+                            if abs(colorizeSaturation(2)) < abs(saturateMax(l,2))
+                                upvpl(j,k,1) = f * colorizeSaturation(1)+upvplWhitePoints(l,1);
+                                upvpl(j,k,2) = f * colorizeSaturation(2)+upvplWhitePoints(l,2);
+                                count(1) = count(1) + 1;
+                            else
+                                upvpl(j,k,1) = f * saturateMax(l,1)+upvplWhitePoints(l,1);
+                                upvpl(j,k,2) = f * saturateMax(l,2)+upvplWhitePoints(l,2);
+                                count(2) = count(2) + 1;
+                            end
+                            %}
                             %end
                         end
                     end
                 end
             end
         end
+        disp(count)
         coloredXyzData(:,:,:,i) = applycform(upvpl,cu2x);
     end
 end

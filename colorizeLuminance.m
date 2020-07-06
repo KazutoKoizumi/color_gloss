@@ -6,9 +6,9 @@ clear all;
 % Object
 material = 'bunny';
 light = 'area';
-Drate = 'D01';
-alpha = 'alpha02';
-tLum = '3'; %3, 6, 7, 10, 15
+Drate = 'D05';
+alpha = 'alpha005';
+tLum = '25'; %3, 6, 7, 10, 15
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -77,7 +77,7 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
     weight = ones(2,8);
     saturateMax = fixedColorMax;
     
-    thresholdLum = 3;
+    thresholdLum = 24;
     maxLum = 25;
     a = 1/(thresholdLum-maxLum);
     b = -maxLum/(thresholdLum-maxLum);

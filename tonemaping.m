@@ -12,6 +12,9 @@ upvpl = applycform(xyz,cx2u);
 %disp(strcat('max luminance: ',num2str(monitorMaxLum)));
 a = max(max(applycform(sameXyz,cx2u)));
 sh = 8;
+
+% bunny,area,D01 : 4,  D03 : 6,  D05 : 8
+% bunny,envmap,D01 : 2, D03 : 2, D05 : 3
 lw = 3;
 
 % Reinhard function
@@ -33,7 +36,7 @@ for i = 1:iy
         elseif upvpl(i,j,3) < 0
             upvpl(i,j,3) = 0;
         end
-        if upvpl(i,j,3) < 10^(-10)
+        if upvpl(i,j,3) < 10^(-20)
             upvpl(i,j,:) = upvpl(i,j-1,:);
         end
     end

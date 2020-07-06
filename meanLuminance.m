@@ -4,8 +4,8 @@ clear all;
 % Object
 material = 'bunny';
 light = 'area';
-Drate = 'D01';
-alpha = 'alpha02';
+Drate = 'D05';
+alpha = 'alpha005';
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -36,20 +36,20 @@ for i = 1:size(xyzSD, 1)
             maskImage(i,j,:,1) = tonemapImage(i,j,:,1); % mask S
             maskImage(i,j,:,2) = tonemapImage(i,j,:,2); % mask D
             
-            luminanceSum(1) = luminanceSum(1) + maskImage(i,j,3,1);
-            if maskImage(i,j,3,1) > threshold
+            luminanceSum(1) = luminanceSum(1) + maskImage(i,j,2,1);
+            if maskImage(i,j,2,1) > threshold
                 count(1) = count(1) + 1;
-                maskImage(i,j,3,1)
+                maskImage(i,j,2,1)
             end
-            luminanceSum(2) = luminanceSum(2) + maskImage(i,j,3,2);
-            if maskImage(i,j,3,2) > threshold
+            luminanceSum(2) = luminanceSum(2) + maskImage(i,j,2,2);
+            if maskImage(i,j,2,2) > threshold
                 count(2) = count(2) + 1;
-                maskImage(i,j,3,2)
+                maskImage(i,j,2,2)
             end
             objPixel = objPixel + 1;
         end
     end
 end
 
-luminanceMean = luminanceSum / objPixel
+luminanceMean = luminanceSum / objPixel % S, D
 
