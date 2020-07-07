@@ -1,12 +1,12 @@
-%サーストンの一対比較法で光沢感を測定する実験
+% SD彩色の刺激とD彩色の刺激の光沢感比較を行うプログラム（同色のみの比較）
 clear all
 
 % date, subject, output filename
 %date = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
 subjectName = input('Subject Name?: ', 's');
-dataFilename = sprintf('../data/experiment_gloss/%s.mat', subjectName);
-dataListFilename = sprintf('../data/experiment_gloss/list_%s.mat', subjectName);
-orderFile = sprintf('../data/experiment_gloss/order_%s.mat', subjectName);
+dataFilename = sprintf('../data/experiment_SD_D/%s_SD_D.mat', subjectName);
+dataListFilename = sprintf('../data/experiment_SD_D/list_%s_SD_D.mat', subjectName);
+orderFile = sprintf('../data/experiment_SD_D/order_%s_SD_D.mat', subjectName);
 sessionNum = input('Session Number?: ');
 
 AssertOpenGL;
@@ -17,13 +17,13 @@ screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
 
 % the number of each parameter
-shape = 1; % bunny, dragon, blob
+%shape = 1; % bunny, dragon, blob
 light = 2; % area, envmap
 diffuse = 3; % 0.1, 0.3, 0.5
 roughness = 3; % 0.05, 0.1, 0.2
 colorize = 2; % SD, D
-color = 9;
-colorPair = nchoosek(color,2);
+color = 8;
+%colorPair = nchoosek(color,2);
 
 
 try
@@ -73,41 +73,34 @@ try
     rightPosition = [mx-ix*scale+distance/2, my-iy*scale, mx+ix*scale+distance/2, my+iy*scale];
     
     % the number of trial
-    allTrialNum = shape*light*diffuse*roughness*colorize*colorPair;
-    sessionTrialNum = 144;
+    allTrialNum = light*diffuse*roughness*color;
+    sessionTrialNum = allTrialNum;
     
     % make index table for stimuli (pair table)
-    index = zeros(allTrialNum, 6);
+    index = zeros(allTrialNum, 4);
     a = allTrialNum;
-    paramNum = [a/shape, a/(shape*light), a/(shape*light*diffuse), a/(shape*light*diffuse*roughness), a/(shape*light*diffuse*roughness*colorize)];
-    for i = 1:shape
-        for j = 1:light
-            for k = 1:diffuse
-                for l = 1:roughness
-                    for m = 1:colorize
-                        for n = 1:colorPair
-                            index(sum(paramNum.*[i-1,j-1,k-1,l-1,m-1]) + n,:) = [i,j,k,l,m,n];
-                        end
-                    end
+    paramNum = [a/(light), a/(light*diffuse), a/(light*diffuse*roughness)];
+    for i = 1:light
+        for j = 1:diffuse
+            for k = 1:roughness
+                for l = 1:color
+                    index(sum(paramNum.*[i-1,j-1,k-1]) + l,:) = [i,j,k,l+1];
                 end
             end
         end
     end
-    pair2color = nchoosek(1:color,2); % pair number to color number
     
     % make or load subject data
     if sessionNum == 1
         % make data matrix for result
-            % 1 dim : Bunny or Dragon or Blob
-            % 2 dim : area or envmap
-            % 3 dim : diffuse parameter  0.1, 0.3, 0.5
-            % 4 dim : roughness  0.05, 0.1, 0.2
-            % 5 dim : SD or D
-            % 6 dim : pair number
-            % value : 1:the first of the pair win, 2:the second of the pair win
-        data = zeros(shape,light,diffuse,roughness,colorize,colorPair);
-        dataList = zeros(allTrialNum, 7);
-        dataList(:,1:6) = index;
+            % 1 dim : area or envmap
+            % 2 dim : diffuse parameter  0.1, 0.3, 0.5
+            % 3 dim : roughness  0.05, 0.1, 0.2
+            % 4 dim : color
+            % value : 1:SD win, 2:D win
+        data = zeros(light,diffuse,roughness,color);
+        dataList = zeros(allTrialNum, 5);
+        dataList(:,1:4) = index;
         
         % generate random order
         order = randperm(allTrialNum);
@@ -130,17 +123,10 @@ try
     for i = 1:sessionTrialNum
         n = i + sessionTrialNum*(sessionNum-1); % trial number
         
-        flagShape = index(order(n),1);
         oneOrTwo = randi([1 2]);
-        if flagShape == 1
-            % bunny
-            rgbLeft = stimuliBunny(:,:,:,pair2color(index(order(n),6),oneOrTwo),index(order(n),2),index(order(n),3),index(order(n),4),index(order(n),5));
-            rgbRight = stimuliBunny(:,:,:,pair2color(index(order(n),6),3-oneOrTwo),index(order(n),2),index(order(n),3),index(order(n),4),index(order(n),5)); 
-        elseif flagShape == 2
-            % dragon
-        elseif flagShape == 3
-            % blob
-        end
+        rgbLeft = stimuliBunny(:,:,:,index(order(n),4),index(order(n),1),index(order(n),2),index(order(n),3),oneOrTwo);
+        rgbRight = stimuliBunny(:,:,:,index(order(n),4),index(order(n),1),index(order(n),2),index(order(n),3),3-oneOrTwo); 
+        
         leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
         rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
 
@@ -153,8 +139,8 @@ try
         %imageArray = Screen('GetImage',winPtr);
 
         % after showing stimluli for 1 second
-        Screen('FillRect', winPtr, [0 0 0]);
-        flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
+        %Screen('FillRect', winPtr, [0 0 0]);
+        %flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
         
         % Wait for subject's response
         keyIsDown = 0;
@@ -173,7 +159,10 @@ try
                 flag = 3;
                 break;
             end
-        end       
+        end
+        
+        Screen('FillRect', winPtr, [0 0 0]);
+        Screen('Flip', winPtr);
         
         % if push escape key, experiment is interrupted
         if flag == 3
@@ -184,12 +173,15 @@ try
         end
         
         fprintf('pressed key : %d\n', flag);
-        fprintf('color pair : %d\n', index(order(n),6));
-        fprintf('subject response : %d\n\n', response);
+        if response == 1
+            fprintf('subject response : SD\n\n');
+        elseif response == 2
+            fprintf('subgject response : D\n\n');
+        end
         
         % record data
-        data(index(order(n),1), index(order(n),2), index(order(n),3), index(order(n),4), index(order(n),5), index(order(n),6)) = response;
-        dataList(order(n), 7) = response;
+        data(index(order(n),1), index(order(n),2), index(order(n),3), index(order(n),4)) = response;
+        dataList(order(n), 5) = response;
         
         WaitSecs(intervalTime);
     end
