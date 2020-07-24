@@ -1,19 +1,44 @@
 load('../mat/ccmat.mat');
 
+%{
 materialBunny = 'bunny'; % Object Bunny
 materialDragon = 'dragon'; % Object Dragon
 materialBlob = 'blob'; %Object Blob
 materialSphere = 'sphere'; % Object Sphere
+%}
 
-light = 'envmap'; % light : area or envmap
-Drate = 'D05'; % diffuse rate
-alpha = 'alpha01'; % roughness parameter
+shape = 'bunny'; % shape : bunny, dragon, blob
+light = 'area'; % light : area or envmap
+diffuse = 'D01'; % diffuse rate
+roughnrss = 'alpha01'; % roughness parameter
 
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredSD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredD.mat'));
+[iy,ix,iz] = size(coloredSD(:,:,:,1));
+stimuliSD = zeros(iy,ix,iz,9);
+stimuliD = zeros(iy,ix,iz,9);
+
+for i = 1:9
+    stimuliSD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
+    %wtColorCheck(Dsame);
+end
+
+for i = 1:9
+    stimuliD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
+    %wtColorCheck(Dsame);
+end
+
+save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughnrss,'/stimuliSD.mat'),'stimuliSD');
+save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughnrss,'/stimuliD.mat'),'stimuliD');
+figure;
+montage(stimuliSD/255,'size',[3 3]);
+figure;
+montage(stimuliD/255,'size',[3 3]);
 
 %{
 % Dragon
-load(strcat('./mat/',materialDragon,'/',SDrate,'/',alpha,'/coloredSD.mat'));
-load(strcat('./mat/',materialDragon,'/',SDrate,'/',alpha,'/coloredD.mat'));
+load(strcat('../mat/',materialDragon,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
+load(strcat('../mat/',materialDragon,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));
 [ix,iy,iz] = size(coloredSD(:,:,:,1));
 dragonSD = zeros(ix,iy,iz,9);
 dragonD = zeros(ix,iy,iz,9);
@@ -24,44 +49,18 @@ end
 for i = 1:9
     dragonD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
 end
-save(strcat('./stimuli/',materialDragon,'/',SDrate,'/',alpha,'/dragonSD.mat'),'dragonSD');
-save(strcat('./stimuli/',materialDragon,'/',SDrate,'/',alpha,'/dragonD.mat'),'dragonD');
+save(strcat('../stimuli/',materialDragon,'/',light,'/',Drate,'/',alpha,'/dragonSD.mat'),'dragonSD');
+save(strcat('../stimuli/',materialDragon,'/',light,'/',Drate,'/',alpha,'/dragonD.mat'),'dragonD');
 figure;
 montage(dragonSD/255,'size',[3 3]);
 figure;
 montage(dragonD/255,'size',[3 3]);
 %}
 
-
-% Bunny
-load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
-load(strcat('../mat/',materialBunny,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));
-[ix,iy,iz] = size(coloredSD(:,:,:,1));
-bunnySD = zeros(ix,iy,iz,9);
-bunnyD = zeros(ix,iy,iz,9);
-
-for i = 1:9
-    bunnySD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
-    %wtColorCheck(Dsame);
-end
-
-for i = 1:9
-    bunnyD(:,:,:,i) = wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
-    %wtColorCheck(Dsame);
-end
-
-save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnySD.mat'),'bunnySD');
-save(strcat('../stimuli/',materialBunny,'/',light,'/',Drate,'/',alpha,'/bunnyD.mat'),'bunnyD');
-figure;
-montage(bunnySD/255,'size',[3 3]);
-figure;
-montage(bunnyD/255,'size',[3 3]);
-%}
-
 %{
 % Blob
-load(strcat('./mat/',materialBlob,'/',SDrate,'/',alpha,'/coloredSD.mat'));
-load(strcat('./mat/',materialBlob,'/',SDrate,'/',alpha,'/coloredD.mat'));
+load(strcat('../mat/',materialBlob,'/',light,'/',Drate,'/',alpha,'/coloredSD.mat'));
+load(strcat('../mat/',materialBlob,'/',light,'/',Drate,'/',alpha,'/coloredD.mat'));
 [ix,iy,iz] = size(coloredSD(:,:,:,1));
 blobSD = zeros(ix,iy,iz,9);
 blobD = zeros(ix,iy,iz,9);
@@ -76,8 +75,8 @@ for i = 1:9
     %wtColorCheck(Dsame);
 end
 
-save(strcat('./stimuli/',materialBlob,'/',SDrate,'/',alpha,'/blobSD.mat'),'blobSD');
-save(strcat('./stimuli/',materialBlob,'/',SDrate,'/',alpha,'/blobD.mat'),'blobD');
+save(strcat('../stimuli/',materialBlob,'/',light,'/',Drate,'/',alpha,'/blobSD.mat'),'blobSD');
+save(strcat('../stimuli/',materialBlob,'/',light,'/',Drate,'/',alpha,'/blobD.mat'),'blobD');
 figure;
 montage(blobSD/255,'size',[3 3]);
 figure;

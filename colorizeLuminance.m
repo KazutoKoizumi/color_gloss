@@ -6,9 +6,9 @@ clear all;
 % Object
 material = 'bunny';
 light = 'area';
-Drate = 'D05';
-alpha = 'alpha005';
-tLum = '25'; %3, 6, 7, 10, 15
+Drate = 'D01';
+alpha = 'alpha02';
+tLum = '6'; %3, 6, 7, 10, 15
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -37,9 +37,16 @@ for i = 1:size(xyzSD, 1)
     end
 end
 
-backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
-coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
-coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
+gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
+gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S
+gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
+
+%backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
+backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
+%coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
+%coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
+coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
+coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
 aveBrightness = zeros(1,9);
 
 for i = 1:size(xyzSD, 1)
@@ -65,19 +72,26 @@ sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredDlum',tLum
 save(ss,'coloredSD');
 save(sd,'coloredD');
 
-function coloredXyzData = colorizeXYZ(xyzMaterial)
+function coloredXyzData = colorizeXYZ(xyzMaterial, flag)
     cx2u = makecform('xyz2upvpl');
     cu2x = makecform('upvpl2xyz');
     upvplMaterial = applycform(xyzMaterial,cx2u);
     [iy,ix,iz] = size(xyzMaterial);
-    coloredXyzData = zeros(iy,ix,iz,9);
-    coloredXyzData(:,:,:,1) = xyzMaterial;
+    if flag == 0
+        coloredXyzData = zeros(iy,ix,iz,9);
+        coloredXyzData(:,:,:,1) = xyzMaterial;
+    elseif flag == 1
+        coloredXyzData = zeros(iy,ix,iz);
+        coloredXyzData(:,:,:) = xyzMaterial;
+    end
+    %coloredXyzData = zeros(iy,ix,iz,9);
+    %coloredXyzData(:,:,:,1) = xyzMaterial;
     load('../mat/fixedColorMax.mat');
     load('../mat/upvplWhitePoints.mat');
     weight = ones(2,8);
     saturateMax = fixedColorMax;
     
-    thresholdLum = 24;
+    thresholdLum = 6;
     maxLum = 25;
     a = 1/(thresholdLum-maxLum);
     b = -maxLum/(thresholdLum-maxLum);
@@ -128,7 +142,13 @@ function coloredXyzData = colorizeXYZ(xyzMaterial)
         end
         %disp(upvpl(400,400,:));
         %disp(i);
-        coloredXyzData(:,:,:,i) = applycform(upvpl,cu2x);
+        if flag == 0
+            coloredXyzData(:,:,:,i) = applycform(upvpl,cu2x);
+        elseif flag == 1
+            coloredXyzData(:,:,:) = applycform(upvpl,cu2x);
+            break
+        end
+        %coloredXyzData(:,:,:,i) = applycform(upvpl,cu2x);
     end
 end
 

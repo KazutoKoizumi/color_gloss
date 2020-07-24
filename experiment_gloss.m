@@ -2,12 +2,14 @@
 clear all
 
 % date, subject, output filename
-%date = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
-subjectName = input('Subject Name?: ', 's');
-dataFilename = sprintf('../data/experiment_gloss/%s.mat', subjectName);
-dataListFilename = sprintf('../data/experiment_gloss/list_%s.mat', subjectName);
-orderFile = sprintf('../data/experiment_gloss/order_%s.mat', subjectName);
+date = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
+sn = input('Subject Name?: ', 's');
+dataFilename = sprintf('../data/experiment_gloss/%s/data_%s.mat', sn,sn);
+dataListFilename = sprintf('../data/experiment_gloss/%s/list_%s.mat', sn,sn);
+dataTableName = sprintf('../data/experiment_gloss/%s/table_%s.mat', sn,sn);
+orderFile = sprintf('../data/experiment_gloss/%s/order_%s.mat', sn,sn);
 sessionNum = input('Session Number?: ');
+sessionFile = sprintf('../data/experiment_gloss/%s/session_%s.mat', sn,sn);
 
 AssertOpenGL;
 ListenChar(2);
@@ -16,21 +18,30 @@ KbName('UnifyKeyNames');
 screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
 
+% stimuli parameter
+shape = ["bunny", "dragon", "blob"];
+light = ["area", "envmap"];
+diffuse = ["D01", "D03", "D05"];
+diffuseVar = [0.1,0.3,0.5];
+roughness = ["alpha005", "alpha01", "alpha02"];
+roughVar = [0.05,0.1,0.2];
+colorizeW = ["SD", "D"];
+colorName = ["gray","red","orange","yellow","green","blue-green","cyan","blue","magenta"];
+
 % the number of each parameter
-shape = 1; % bunny, dragon, blob
-light = 2; % area, envmap
-diffuse = 3; % 0.1, 0.3, 0.5
-roughness = 3; % 0.05, 0.1, 0.2
-colorize = 2; % SD, D
+shapeNum = size(shape,2); % bunny, dragon, blob
+lightNum = size(light,2); % area, envmap
+diffuseNum = size(diffuse,2); % 0.1, 0.3, 0.5
+roughnessNum = size(roughness,2); % 0.05, 0.1, 0.2
+colorizeNum = size(colorizeW,2); % SD, D
 color = 9;
 colorPair = nchoosek(color,2);
-
 
 try
     % set window
     PsychImaging('PrepareConfiguration');
     PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
-    [winPtr, winRect] = PsychImaging('Openwindow', screenNumber, 0);
+    [winPtr, winRect] = PsychImaging('Openwindow', screenNumber, [0 0 0]);
     Priority(MaxPriority(winPtr));
     [offwin1,offwinrect]=Screen('OpenOffscreenWindow',winPtr, 0);
     
@@ -45,6 +56,12 @@ try
     %leftKey = KbName('LeftArrow');
     %rightKey = KbName('RightArrow');
     
+    % load data
+    load('../stimuli/bunny/area/D01/alpha01/stimuliSD.mat');
+    %load('../mat/ccmat.mat');
+    
+    
+    % ------- load stimili data ------------------------------------------
     % show display
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, 'Please wait', 'center', 'center',[255 255 255]);
@@ -52,39 +69,48 @@ try
     
     % stimuli matrix
     % low, column, rgb, color, light, diffuse, roughness, SDorD
-    stimuliBunny = zeros(720, 960, 3, color, light, diffuse, roughness, colorize);
-    
-    % load stimulus data : Bunny
-    load('../stimuli/bunny/area/D01/alpha01/bunnySD.mat');
-    %load('../stimuli/bunny/area/D01/alpha01/bunnyD.mat');
-    %stimuliBunny(:,:,:,:,1,1,1,1) = bunnySD;
-    %stimuliBunny(:,:,:,:,1,1,1,2) = bunnyD;
     load('../stimuli/stimuliBunny.mat');
+    load('../stimuli/stimuliDragon.mat');
+    load('../stimuli/stimuliBlob.mat');
+    % ---------------------------------------------------------------------
+    
     
     % parameter setting
     flag = 0;
     [mx,my] = RectCenter(winRect);
-    [iy,ix,iz] = size(bunnySD(:,:,:,1));
-    distance = mx/1.75;
-    scale = 2.5/9;
+    [winWidth, winHeight]=Screen('WindowSize', winPtr);
+    [iy,ix,iz] = size(stimuliSD(:,:,:,1));
     showStimuliTime = 1; % [s]
     intervalTime = 1; % [s]
-    leftPosition = [mx-ix*scale-distance/2, my-iy*scale, mx+ix*scale-distance/2, my+iy*scale]; 
-    rightPosition = [mx-ix*scale+distance/2, my-iy*scale, mx+ix*scale+distance/2, my+iy*scale];
+    
+    % stimuli size
+    viewingDistance = 57; % Viewing distance (cm)
+    screenWidthCM = 49; % screen width （cm）
+    visualAngle = 14; % visual angle（degree）
+    sx = 2 * viewingDistance * tan(visualAngle/360 * pi) * winWidth / screenWidthCM; % stimuli x size (pixel)
+    sy = sx * iy / ix; % stimuli y size (pixel)
+    distance = 14; % stimulus distance  (pixel)
+    
+    %{
+    % stimuli position (center) 
+    leftPosition = [mx-sx-distance/2, my-sy/2, mx-distance/2, my+sy/2];
+    rightPosition = [mx+distance/2, my-sy/2, mx+sx+distance/2, my+sy/2];
+    %}
     
     % the number of trial
-    allTrialNum = shape*light*diffuse*roughness*colorize*colorPair;
-    sessionTrialNum = 144;
+    allTrialNum = shapeNum*lightNum*diffuseNum*roughnessNum*colorizeNum*colorPair;
+    sessionTrialNum = 324;
+    trashTrialNum = 20;
     
     % make index table for stimuli (pair table)
     index = zeros(allTrialNum, 6);
     a = allTrialNum;
-    paramNum = [a/shape, a/(shape*light), a/(shape*light*diffuse), a/(shape*light*diffuse*roughness), a/(shape*light*diffuse*roughness*colorize)];
-    for i = 1:shape
-        for j = 1:light
-            for k = 1:diffuse
-                for l = 1:roughness
-                    for m = 1:colorize
+    paramNum = [a/shapeNum, a/(shapeNum*lightNum), a/(shapeNum*lightNum*diffuseNum), a/(shapeNum*lightNum*diffuseNum*roughnessNum), a/(shapeNum*lightNum*diffuseNum*roughnessNum*colorizeNum)];
+    for i = 1:shapeNum
+        for j = 1:lightNum
+            for k = 1:diffuseNum
+                for l = 1:roughnessNum
+                    for m = 1:colorizeNum
                         for n = 1:colorPair
                             index(sum(paramNum.*[i-1,j-1,k-1,l-1,m-1]) + n,:) = [i,j,k,l,m,n];
                         end
@@ -97,6 +123,7 @@ try
     
     % make or load subject data
     if sessionNum == 1
+        %{
         % make data matrix for result
             % 1 dim : Bunny or Dragon or Blob
             % 2 dim : area or envmap
@@ -105,18 +132,29 @@ try
             % 5 dim : SD or D
             % 6 dim : pair number
             % value : 1:the first of the pair win, 2:the second of the pair win
-        data = zeros(shape,light,diffuse,roughness,colorize,colorPair);
+        %}
+        data = zeros(shapeNum,lightNum,diffuseNum,roughnessNum,colorizeNum,colorPair);
         dataList = zeros(allTrialNum, 7);
         dataList(:,1:6) = index;
         
+        % make data table
+        varTypes = {'string','string','double','double','string','string','string','uint8','datetime'};
+        varNames = {'shape','light','diffuse','roughness','colorize','color1','color2','win','responseTime'};
+        dataTable = table('Size',[allTrialNum,9],'VariableTypes',varTypes,'VariableNames',varNames);
+        
         % generate random order
         order = randperm(allTrialNum);
-        %order = randperm(sessionTrialNum*2);
+        %order = randperm(sessionTrialNum);
     else
+        % load subject data
         load(dataFilename);
         load(dataListFilename);
+        load(dataTableName);
         load(orderFile);
     end
+    
+    % generate random order for trash trial
+    orderTrash = randi([1,allTrialNum], 1,trashTrialNum);
     
     % display initial text
     startText = 'Press any key to start';
@@ -127,20 +165,72 @@ try
     WaitSecs(2);
     
     % Main Experiment
-    for i = 1:sessionTrialNum
-        n = i + sessionTrialNum*(sessionNum-1); % trial number
+    for i = 1:sessionTrialNum + trashTrialNum
+        if i <= trashTrialNum
+            % trash trial
+            stiNum = orderTrash(i);
+        else
+            % main trial
+            n = i + sessionTrialNum*(sessionNum-1) - trashTrialNum; % trial number
+            stiNum = order(n); % stimuli number
+        end
         
-        flagShape = index(order(n),1);
+        % stimuli position (random)
+        rx = randi(fix(winWidth-(2*sx+distance))-1);
+        ry = randi(fix(winHeight-sy)-1);
+        leftPosition = [rx, ry, rx+sx, ry+sy];
+        rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+        
+        % ---------- decide stimuli -------------------------------------
         oneOrTwo = randi([1 2]);
+              
+        % already loaded
+        flagShape = index(stiNum,1);
         if flagShape == 1
             % bunny
-            rgbLeft = stimuliBunny(:,:,:,pair2color(index(order(n),6),oneOrTwo),index(order(n),2),index(order(n),3),index(order(n),4),index(order(n),5));
-            rgbRight = stimuliBunny(:,:,:,pair2color(index(order(n),6),3-oneOrTwo),index(order(n),2),index(order(n),3),index(order(n),4),index(order(n),5)); 
+            rgbLeft = stimuliBunny(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliBunny(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));             
         elseif flagShape == 2
             % dragon
+            rgbLeft = stimuliDragon(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliDragon(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
         elseif flagShape == 3
             % blob
+            rgbLeft = stimuliBlob(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliBlob(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
         end
+        
+        %{ 
+        ------ stimuli data ----------
+        shape : shape(flagShape)
+        light : light(index(stiNum,2)
+        diffuse : diffuseVar(index(stiNum,3))
+        roughness : roughVar(index(stiNum,4))
+        colorize : colorizeW(index(stiNum,5))
+        color1 : colorName(pair2color(index(stiNum,6),1))
+        color2 : colorName(pair2color(index(stiNum,6),2))
+        %}
+        
+        %{
+        % load each time
+        % mat/shape/light/diffuse/roughness/colorize
+        load(strcat('../mat/',shape(index(stiNum,1)),'/',light(index(stiNum,2)),'/',diffuse(index(stiNum,3)),'/',roughness(index(stiNum,4)),'/colored',colorizeW(index(stiNum,5)),'.mat'));
+        if index(stiNum,5) == 1
+            % SD
+            rgbLeft = coloredSD(:,:,:,pair2color(index(stiNum,6),oneOrTwo));
+            rgbRight = coloredSD(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo));
+        elseif index(stiNum,5) == 2
+            % D
+            rgbLeft = coloredD(:,:,:,pair2color(index(stiNum,6),oneOrTwo));
+            rgbRight = coloredD(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo));
+        end
+        
+        rgbLeft = wImageXYZ2rgb_wtm(rgbLeft,ccmat);
+        rgbRight = wImageXYZ2rgb_wtm(rgbRight,ccmat);
+        %}
+        
+        % ---------------------------------------------------------------
+            
         leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
         rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
 
@@ -169,11 +259,12 @@ try
                 response = 3-oneOrTwo;
                 break;
             elseif keyIsDown && keyCode(escapeKey)
-                respones = 0;
+                response = 0;
                 flag = 3;
                 break;
             end
-        end       
+        end
+        resTime = datetime;
         
         % if push escape key, experiment is interrupted
         if flag == 3
@@ -183,23 +274,51 @@ try
             break
         end
         
+        if i <= trashTrialNum
+            fprintf('trash\n');
+        else
+            fprintf('main\n');
+        end
+        fprintf('trial number in this session : %d\n', i);
+        fprintf('stimuli number : %d\n', stiNum);
         fprintf('pressed key : %d\n', flag);
-        fprintf('color pair : %d\n', index(order(n),6));
+        fprintf('color pair : %d\n', index(stiNum,6));
         fprintf('subject response : %d\n\n', response);
         
         % record data
-        data(index(order(n),1), index(order(n),2), index(order(n),3), index(order(n),4), index(order(n),5), index(order(n),6)) = response;
-        dataList(order(n), 7) = response;
+        if i > trashTrialNum
+            data(index(stiNum,1), index(stiNum,2), index(stiNum,3), index(stiNum,4), index(stiNum,5), index(stiNum,6)) = response;
+            dataList(stiNum, 7) = response;
+            
+            %{
+            ------ data table ----------
+            shape : shape(flagShape)
+            light : light(index(stiNum,2))
+            diffuse : diffuseVar(index(stiNum,3))
+            roughness : roughVar(index(stiNum,4))
+            colorize : colorizeW(index(stiNum,5))
+            color1 : colorName(pair2color(index(stiNum,6),1))
+            color2 : colorName(pair2color(index(stiNum,6),2))
+            win : response
+            responseTime : resTime
+            %}
+            % table data
+            dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),response,resTime};
+        end
         
         WaitSecs(intervalTime);
     end
     
-    clear stimuliBunny
+    clear stimuliBunny;
+    clear stimuliDragon;
+    clear stimuliBlob;
     
     % save data
     save(dataFilename, 'data');
     save(dataListFilename, 'dataList');
+    save(dataTableName, 'dataTable');
     save(orderFile, 'order');
+    save(sessionFile, 'sessionNum');
     
     % experiment finish
     finishText = 'The experiment is over. Press any key.';

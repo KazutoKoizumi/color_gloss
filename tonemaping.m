@@ -15,7 +15,11 @@ sh = 8;
 
 % bunny,area,D01 : 4,  D03 : 6,  D05 : 8
 % bunny,envmap,D01 : 2, D03 : 2, D05 : 3
-lw = 3;
+% dragon,area,D01 : 4, D03 : 6, D05 : 8
+% dragon,envmap,D01 : 2, D03 : 2, D05 : 3
+% blob,area,D01 : 4, D03 : 6, D05 : 8
+% blob,envmap,D01 : 2, D03 : 2, D05 : 3
+%lw = 3;
 
 % Reinhard function
 for i = 1:iy

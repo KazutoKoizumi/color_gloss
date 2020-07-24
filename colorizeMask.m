@@ -1,13 +1,13 @@
 %% xyz形式のファイルを読み込み彩色するプログラム
 % 彩色の際にマスク処理を行い、オブジェクト部分のみを彩色する
-% 彩色前に色度を白色点に合わせる
+% 彩色前に色度を白色点に合わせる, 背景の色度も白色点に合わせる
 clear all;
 
 % Object
 material = 'bunny';
-light = 'envmap';
+light = 'area';
 Drate = 'D01';
-alpha = 'alpha005';
+alpha = 'alpha02';
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -40,7 +40,9 @@ gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S
 gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
 
-backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
+%backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
+backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
+%backImage = backNoise(size(xyzSD,1),size(xyzSD,2)); % back : noise image
 %coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
 %coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
 coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
@@ -99,6 +101,7 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, flag)
             end
         end
     end
+    flagLum = 0;
     
     %saturateMax
     for i = 1:9
@@ -106,7 +109,10 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, flag)
         for j = 1:iy
             for k = 1:ix
                 for l = 1:size(fixedColorMax,1)-1
-                    if upvpl(j,k,3) > fixedColorMax(l,3,1) && upvplMaterial(j,k,3) < fixedColorMax(l+1,3,1)
+                    if upvpl(j,k,3) < fixedColorMax(1,3,1)
+                        flagLum = 1;
+                    end
+                    if (upvpl(j,k,3) > fixedColorMax(l,3,1) && upvplMaterial(j,k,3) < fixedColorMax(l+1,3,1)) || (flagLum == 1)
                         if i == 1
                             upvpl(j,k,1) = upvplWhitePoints(l,1);
                             upvpl(j,k,2) = upvplWhitePoints(l,2);
@@ -119,6 +125,10 @@ function coloredXyzData = colorizeXYZ(xyzMaterial, flag)
                                 upvpl(j,k,2) = saturateMax(l,2,i-1)+upvplWhitePoints(l,2);
                             end
                         end
+                    end
+                    if flagLum == 1
+                        flagLum = 0;
+                        break;
                     end
                 end
             end
