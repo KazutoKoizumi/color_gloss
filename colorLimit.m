@@ -12,6 +12,7 @@ colorDistanceDiff = 0.001;
 
 monitorColorMax = zeros(lumDivNumber,3,8);
 logScale = logspace(-3, 0, lumDivNumber);
+load('../mat/ccmat.mat');
 
 for i = 1:lumDivNumber
     xyzLogScale = TNT_rgb2XYZ([logScale(i);logScale(i);logScale(i)],ccmat);
@@ -33,6 +34,6 @@ for i = 1:lumDivNumber
     disp(num2str(i)+"/200"+blanks(4)+num2str(round(i/200*100))+"%...");
 end
 
-save('../mat/logScaleKlab','logScale');
-save('../mat/monitorColorMaxKlab','monitorColorMax');
-save('../mat/upvplWhitePointsKlab','upvplWhitePoints');
+save('../mat/logScale','logScale');
+save('../mat/monitorColorMax','monitorColorMax');
+save('../mat/upvplWhitePoints','upvplWhitePoints');

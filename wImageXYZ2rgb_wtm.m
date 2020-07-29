@@ -27,7 +27,8 @@ function rgb = wImageXYZ2rgb_wtm(XYZ, ccmat)
     rgb = TNT_XYZ2rgb(XYZ,ccmat);
     size(rgb);
     
-    LUT = load('../mat/20191108_w.lut');
+    %LUT = load('../mat/20191108_w.lut');
+    LUT = load('../mat/20200729T122706.lut');
     rgb = uint8(TNT_rgb2RGB_LUT(rgb',LUT)/257);
     
     rgb = reshape(rgb,iy,ix,iz);
