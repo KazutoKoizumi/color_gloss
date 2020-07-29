@@ -2,7 +2,7 @@
 clear all
 
 % date, subject, output filename
-date = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
+date = datetime;
 sn = input('Subject Name?: ', 's');
 dataFilename = sprintf('../data/experiment_gloss/%s/data_%s.mat', sn,sn);
 dataListFilename = sprintf('../data/experiment_gloss/%s/list_%s.mat', sn,sn);
@@ -10,6 +10,7 @@ dataTableName = sprintf('../data/experiment_gloss/%s/table_%s.mat', sn,sn);
 orderFile = sprintf('../data/experiment_gloss/%s/order_%s.mat', sn,sn);
 sessionNum = input('Session Number?: ');
 sessionFile = sprintf('../data/experiment_gloss/%s/session_%s.mat', sn,sn);
+recordFile = sprintf('../data/experiment_gloss/%s/record_%s.txt', sn,sn);
 
 AssertOpenGL;
 ListenChar(2);
@@ -84,14 +85,14 @@ try
     intervalTime = 1; % [s]
     
     % stimuli size
-    viewingDistance = 57; % Viewing distance (cm)
+    viewingDistance = 80; % Viewing distance (cm)
     screenWidthCM = 49; % screen width （cm）
-    visualAngle = 14; % visual angle（degree）
+    visualAngle = 10; % visual angle（degree）
     sx = 2 * viewingDistance * tan(visualAngle/360 * pi) * winWidth / screenWidthCM; % stimuli x size (pixel)
     sy = sx * iy / ix; % stimuli y size (pixel)
     distance = 14; % stimulus distance  (pixel)
     
-    %{
+    
     % stimuli position (center) 
     leftPosition = [mx-sx-distance/2, my-sy/2, mx-distance/2, my+sy/2];
     rightPosition = [mx+distance/2, my-sy/2, mx+sx+distance/2, my+sy/2];
@@ -175,11 +176,13 @@ try
             stiNum = order(n); % stimuli number
         end
         
+        %{
         % stimuli position (random)
         rx = randi(fix(winWidth-(2*sx+distance))-1);
         ry = randi(fix(winHeight-sy)-1);
         leftPosition = [rx, ry, rx+sx, ry+sy];
         rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+        %}
         
         % ---------- decide stimuli -------------------------------------
         oneOrTwo = randi([1 2]);
@@ -240,7 +243,7 @@ try
         flipTime = Screen('Flip', winPtr);
 
         % capture
-        %imageArray = Screen('GetImage',winPtr);
+        imageArray = Screen('GetImage',winPtr);
 
         % after showing stimluli for 1 second
         Screen('FillRect', winPtr, [0 0 0]);
@@ -282,8 +285,10 @@ try
         fprintf('trial number in this session : %d\n', i);
         fprintf('stimuli number : %d\n', stiNum);
         fprintf('pressed key : %d\n', flag);
-        fprintf('color pair : %d\n', index(stiNum,6));
-        fprintf('subject response : %d\n\n', response);
+        %fprintf('color pair : %d\n', index(stiNum,6));
+        %fprintf('subject response : %d\n\n', response);
+        fprintf('color pair : %s vs %s\n', colorName(pair2color(index(stiNum,6),oneOrTwo)), colorName(pair2color(index(stiNum,6),3-oneOrTwo)));
+        fprintf('subject response : %s\n\n', colorName(pair2color(index(stiNum,6),response)));
         
         % record data
         if i > trashTrialNum
@@ -321,11 +326,20 @@ try
     save(sessionFile, 'sessionNum');
     
     % experiment finish
+    finTime = datetime;
     finishText = 'The experiment is over. Press any key.';
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, finishText, 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
     KbWait([], 2);
+    
+    expTime = finTime - date;
+    fp = fopen(recordFile, 'a');
+    fprintf(fp, '%dセッション目\n', sessionNum);
+    fprintf(fp, '実験実施日　%s\n', char(date));
+    fprintf(fp, '試行回数　%d回\n', i);
+    fprintf(fp, '実験時間　%s\n\n', char(expTime));
+    fclose(fp);    
     
     Priority(0);
     Screen('CloseAll');
