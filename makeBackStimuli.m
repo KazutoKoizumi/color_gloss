@@ -1,76 +1,33 @@
-%% xyz形式のファイルを読み込み彩色するプログラム
-% 彩色の際にマスク処理を行い、オブジェクト部分のみを彩色する
-% 彩色前に色度を白色点に合わせる, 背景の色度も白色点に合わせる
+% 刺激画像の背景のみの画像（RGB）をつくる
+% 無彩色にしたあとにRGBに変換、areaとenvmapをまとめる
+
 clear all;
 
-% Object
-material = 'bunny';
-light = 'area';
-Drate = 'D01';
-alpha = 'alpha02';
-
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzS.mat'));
 load('../mat/ccmat.mat');
 load('../mat/monitorColorMax.mat');
 load('../mat/logScale.mat');
-load(strcat('../mat/',material,'Mask/mask.mat'));
+
+load('../mat/back/backArea.mat');
+load('../mat/back/backEnv.mat');
 
 scale = 0.4;
+[iy, ix, iz] = size(backArea);
 
-tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-%tonemapImage(:,:,:,1) = wTonemapDiff(xyzS,xyzSD,1,scale,ccmat); % TonemapS
-%tonemapImage(:,:,:,2) = wTonemapDiff(xyzD,xyzSD,1,scale,ccmat); % TonemapD
+bgStimuli = zeros(iy, ix, iz, 2); % 1:area, 2:envmap
+bgStimuli(:,:,:,1) = colorizeXYZ(tonemaping(backArea,backArea,2,scale,ccmat), 1);
+bgStimuli(:,:,:,2) = colorizeXYZ(tonemaping(backEnv,backEnv,2,scale,ccmat), 1);
 
-tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,4,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,4,scale,ccmat); % TonemapD
-
-maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-for i = 1:size(xyzSD, 1)
-    for j = 1:size(xyzSD, 2)
-        if mask(i,j) == 1
-            maskImage(i,j,:,1) = tonemapImage(i,j,:,1); % mask S
-            maskImage(i,j,:,2) = tonemapImage(i,j,:,2); % mask D
-        end
-    end
+for i= 1:2
+    bgStimuli(:,:,:,i) = wImageXYZ2rgb_wtm(bgStimuli(:,:,:,i),ccmat);
 end
 
-gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S
-gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
+bgStimuli = cast(bgStimuli, 'uint8');
 
-%backImage = tonemapImage(:,:,:,1) + tonemapImage(:,:,:,2);
-backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
-%backImage = backNoise(size(xyzSD,1),size(xyzSD,2)); % back : noise image
-%coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
-%coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
-coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
-coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
-aveBrightness = zeros(1,9);
+save('../stimuli/back/bgStimuli.mat', 'bgStimuli');
 
-for i = 1:size(xyzSD, 1)
-    for j = 1:size(xyzSD, 2)
-        if mask(i,j) == 0
-            for k = 1:9
-                coloredSD(i,j,:,k) = backImage(i,j,:);
-                coloredD(i,j,:,k) = backImage(i,j,:);
-            end
-        end
-    end
-end
+figure;
+montage(bgStimuli, 'size', [1 2]);
 
-for i = 1:9
-    %figure;
-    wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
-    %figure;
-    wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
-end
-
-ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSD');
-sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredD');
-save(ss,'coloredSD');
-save(sd,'coloredD');
 
 function coloredXyzData = colorizeXYZ(xyzMaterial, flag)
     cx2u = makecform('xyz2upvpl');

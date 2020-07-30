@@ -14,8 +14,6 @@ recordFile = sprintf('../data/experiment_gloss/%s/record_%s.txt', sn,sn);
 
 AssertOpenGL;
 ListenChar(2);
-bgColor = [30 30 30];
-stimuliBgColor = [50 50 50];
 KbName('UnifyKeyNames');
 screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
@@ -39,6 +37,13 @@ colorizeNum = size(colorizeW,2); % SD, D
 color = 9;
 colorPair = nchoosek(color,2);
 
+% set background color
+load('../mat/ccmat.mat');
+load('../mat/upvplWhitePoints.mat');
+lum = 1;
+bgUpvpl = upvplWhitePoints(knnsearch(upvplWhitePoints(:,3), lum),:);
+bgColor = conv_upvpl2rgb(bgUpvpl,ccmat);
+
 try
     % set window
     PsychImaging('PrepareConfiguration');
@@ -58,10 +63,6 @@ try
     %leftKey = KbName('LeftArrow');
     %rightKey = KbName('RightArrow');
     
-    % load data
-    load('../stimuli/bunny/area/D01/alpha01/stimuliSD.mat');
-    %load('../mat/ccmat.mat');
-    
     
     % ------- load stimili data ------------------------------------------
     % show display
@@ -74,6 +75,7 @@ try
     load('../stimuli/stimuliBunny.mat');
     load('../stimuli/stimuliDragon.mat');
     load('../stimuli/stimuliBlob.mat');
+    load('../stimuli/back/bgStimuli.mat');
     % ---------------------------------------------------------------------
     
     
@@ -81,9 +83,10 @@ try
     flag = 0;
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
-    [iy,ix,iz] = size(stimuliSD(:,:,:,1));
+    [iy,ix,iz] = size(bgStimuli(:,:,:,1));
     showStimuliTime = 1; % [s]
-    intervalTime = 1; % [s]
+    beforeStimuli = 1; % [s]
+    intervalTime = 0.5; % [s]
     
     % stimuli size
     viewingDistance = 80; % Viewing distance (cm)
@@ -185,10 +188,15 @@ try
         rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
         %}
         
-        % after showing stimluli for 1 second
-        Screen('FillRect', winPtr, stimuliBgColor, leftPosition);
-        Screen('FillRect', winPtr, stimuliBgColor, rightPosition);
+        % before showing stimluli
+        leftStimulus = Screen('MakeTexture', winPtr,bgStimuli(:,:,:,index(stiNum,2)));
+        rightStimulus = Screen('MakeTexture',winPtr,bgStimuli(:,:,:,index(stiNum,2)));
+        Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
+        Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
+        %Screen('FillRect', winPtr, stimuliBgColor, leftPosition);
+        %Screen('FillRect', winPtr, stimuliBgColor, rightPosition);
         flipTime = Screen('Flip', winPtr);
+        
         
         % ---------- decide stimuli -------------------------------------
         oneOrTwo = randi([1 2]);
@@ -246,10 +254,10 @@ try
         % show stimuli
         Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
         Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
-        flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
+        flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
         % capture
-        %imageArray = Screen('GetImage',winPtr);  
+        %imageArray2 = Screen('GetImage',winPtr);  
 
         % after showing stimluli for 1 second
         Screen('FillRect', winPtr, bgColor);
@@ -317,7 +325,7 @@ try
             dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),response,resTime};
         end
         
-        %WaitSecs(intervalTime);
+        WaitSecs(intervalTime);
     end
     
     clear stimuliBunny;
