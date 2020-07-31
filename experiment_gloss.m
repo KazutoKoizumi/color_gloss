@@ -1,16 +1,22 @@
 %サーストンの一対比較法で光沢感を測定する実験
 clear all
 
-% date, subject, output filename
+% input date, subject name, session number
 date = datetime;
 sn = input('Subject Name?: ', 's');
+sessionNum = input('Session Number?: ');
+
+% filename
 dataFilename = sprintf('../data/experiment_gloss/%s/data_%s.mat', sn,sn);
 dataListFilename = sprintf('../data/experiment_gloss/%s/list_%s.mat', sn,sn);
-dataTableName = sprintf('../data/experiment_gloss/%s/table_%s.mat', sn,sn);
+dataTableName = sprintf('../data/experiment_gloss/%s/table_%s', sn,sn);
 orderFile = sprintf('../data/experiment_gloss/%s/order_%s.mat', sn,sn);
-sessionNum = input('Session Number?: ');
-sessionFile = sprintf('../data/experiment_gloss/%s/session_%s.mat', sn,sn);
+sessionFile = sprintf('../data/experiment_gloss/%s/session%s/session%s_table_%s', sn,num2str(sessionNum),num2str(sessionNum),sn);
 recordFile = sprintf('../data/experiment_gloss/%s/record_%s.txt', sn,sn);
+
+% make directory
+mkdir(strcat('../data/experiment_gloss/',sn));
+mkdir(strcat('../data/experiment_gloss/',sn,'/session',num2str(sessionNum)));
 
 AssertOpenGL;
 ListenChar(2);
@@ -40,9 +46,11 @@ colorPair = nchoosek(color,2);
 % set background color
 load('../mat/ccmat.mat');
 load('../mat/upvplWhitePoints.mat');
-lum = 1;
+lum = 2;
 bgUpvpl = upvplWhitePoints(knnsearch(upvplWhitePoints(:,3), lum),:);
 bgColor = conv_upvpl2rgb(bgUpvpl,ccmat);
+clear ccmat;
+clear upvplWhitePoints;
 
 try
     % set window
@@ -85,7 +93,7 @@ try
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
     [iy,ix,iz] = size(bgStimuli(:,:,:,1));
     showStimuliTime = 1; % [s]
-    beforeStimuli = 1; % [s]
+    beforeStimuli = 0.5; % [s]
     intervalTime = 0.5; % [s]
     
     % stimuli size
@@ -107,7 +115,7 @@ try
     sessionTrialNum = 324;
     trashTrialNum = 20;
     
-    % make index table for stimuli (pair table)
+    % make index matrix for stimuli (pair table)
     index = zeros(allTrialNum, 6);
     a = allTrialNum;
     paramNum = [a/shapeNum, a/(shapeNum*lightNum), a/(shapeNum*lightNum*diffuseNum), a/(shapeNum*lightNum*diffuseNum*roughnessNum), a/(shapeNum*lightNum*diffuseNum*roughnessNum*colorizeNum)];
@@ -126,6 +134,11 @@ try
     end
     pair2color = nchoosek(1:color,2); % pair number to color number
     
+    % make session table
+    varTypes = {'string','string','double','double','string','string','string','string','datetime'};
+    varNames = {'shape','light','diffuse','roughness','colorize','color1','color2','win','responseTime'};
+    sessionTable = table('Size',[sessionTrialNum,9],'VariableTypes',varTypes,'VariableNames',varNames);
+    
     % make or load subject data
     if sessionNum == 1
         %{
@@ -143,8 +156,6 @@ try
         dataList(:,1:6) = index;
         
         % make data table
-        varTypes = {'string','string','double','double','string','string','string','uint8','datetime'};
-        varNames = {'shape','light','diffuse','roughness','colorize','color1','color2','win','responseTime'};
         dataTable = table('Size',[allTrialNum,9],'VariableTypes',varTypes,'VariableNames',varNames);
         
         % generate random order
@@ -154,7 +165,7 @@ try
         % load subject data
         load(dataFilename);
         load(dataListFilename);
-        load(dataTableName);
+        load(strcat(dataTableName,'.mat'));
         load(orderFile);
     end
     
@@ -322,7 +333,14 @@ try
             responseTime : resTime
             %}
             % table data
-            dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),response,resTime};
+            sessionTable(i-trashTrialNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
+            dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
+        end
+        
+        if i == 172
+            DrawFormattedText(winPtr, 'Half. Press any key to continue.', 'center', 'center',[255 255 255]);
+            Screen('Flip', winPtr);
+            KbWait([], 2);
         end
         
         WaitSecs(intervalTime);
@@ -335,9 +353,11 @@ try
     % save data
     save(dataFilename, 'data');
     save(dataListFilename, 'dataList');
-    save(dataTableName, 'dataTable');
+    save(strcat(dataTableName,'.mat'), 'dataTable');
     save(orderFile, 'order');
-    save(sessionFile, 'sessionNum');
+    save(strcat(sessionFile,'.mat'), 'sessionTable');
+    writetable(dataTable, strcat(dataTableName,'.txt'));
+    writetable(sessionTable, strcat(sessionFile,'.txt'));
     
     % experiment finish
     finTime = datetime;
@@ -347,6 +367,7 @@ try
     Screen('Flip', winPtr);
     KbWait([], 2);
     
+    % write session data
     expTime = finTime - date;
     fp = fopen(recordFile, 'a');
     fprintf(fp, '%dセッション目\n', sessionNum);
