@@ -6,8 +6,15 @@ clear all;
 % Object
 material = 'bunny';
 light = 'area';
-Drate = 'D01';
+Drate = 'D05';
 alpha = 'alpha02';
+lum = 8;
+% bunny,area,D01 : 4,  D03 : 6,  D05 : 8
+% bunny,envmap,D01 : 2, D03 : 2, D05 : 3
+% dragon,area,D01 : 4, D03 : 6, D05 : 8
+% dragon,envmap,D01 : 2, D03 : 2, D05 : 3
+% blob,area,D01 : 4, D03 : 6, D05 : 8
+% blob,envmap,D01 : 2, D03 : 2, D05 : 3
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
@@ -23,8 +30,8 @@ tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 %tonemapImage(:,:,:,1) = wTonemapDiff(xyzS,xyzSD,1,scale,ccmat); % TonemapS
 %tonemapImage(:,:,:,2) = wTonemapDiff(xyzD,xyzSD,1,scale,ccmat); % TonemapD
 
-tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,4,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,4,scale,ccmat); % TonemapD
+tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,lum,scale,ccmat); % TonemapS
+tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,lum,scale,ccmat); % TonemapD
 
 maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 for i = 1:size(xyzSD, 1)
@@ -45,6 +52,7 @@ backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
 %backImage = backNoise(size(xyzSD,1),size(xyzSD,2)); % back : noise image
 %coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
 %coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
+b = 1
 coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
 coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
 aveBrightness = zeros(1,9);

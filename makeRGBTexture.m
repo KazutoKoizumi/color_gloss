@@ -9,8 +9,8 @@ materialSphere = 'sphere'; % Object Sphere
 
 shape = 'bunny'; % shape : bunny, dragon, blob
 light = 'area'; % light : area or envmap
-diffuse = 'D01'; % diffuse rate
-roughnrss = 'alpha01'; % roughness parameter
+diffuse = 'D03'; % diffuse rate
+roughnrss = 'alpha02'; % roughness parameter
 
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredSD.mat'));
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredD.mat'));
