@@ -65,10 +65,10 @@ try
     
     % Key
     escapeKey = KbName('ESCAPE');
-    firstKey = KbName('1!');
-    secondKey = KbName('2@');
-    %leftKey = KbName('LeftArrow');
-    %rightKey = KbName('RightArrow');    
+    %firstKey = KbName('1!');
+    %secondKey = KbName('2@');
+    leftKey = KbName('4');
+    rightKey = KbName('6');   
     
     % ------- load stimili data ------------------------------------------
     % show display
@@ -245,11 +245,11 @@ try
         keyIsDown = 0;
         while 1
             [keyIsDown, seconds, keyCode] = KbCheck(-1);
-            if keyIsDown && keyCode(firstKey)
+            if keyIsDown && keyCode(leftKey)
                 flag = 1;
                 response = oneOrTwo;
                 break;
-            elseif keyIsDown && keyCode(secondKey)
+            elseif keyIsDown && keyCode(rightKey)
                 flag = 2;
                 response = 3-oneOrTwo;
                 break;
