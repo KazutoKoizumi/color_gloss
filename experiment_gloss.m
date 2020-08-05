@@ -98,9 +98,9 @@ try
     
     % stimuli size
     viewingDistance = 80; % Viewing distance (cm)
-    screenWidthCM = 49; % screen width （cm）
-    visualAngle = 10; % visual angle（degree）
-    sx = 2 * viewingDistance * tan(visualAngle/360 * pi) * winWidth / screenWidthCM; % stimuli x size (pixel)
+    screenWidthCM = 54.3; % screen width （cm）
+    visualAngle = 11; % visual angle（degree）
+    sx = 2 * viewingDistance * tan(deg2rad(visualAngle/2)) * winWidth / screenWidthCM; % stimuli x size (pixel)
     sy = sx * iy / ix; % stimuli y size (pixel)
     distance = 14; % stimulus distance  (pixel)
     
@@ -204,8 +204,6 @@ try
         rightStimulus = Screen('MakeTexture',winPtr,bgStimuli(:,:,:,index(stiNum,2)));
         Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
         Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
-        %Screen('FillRect', winPtr, stimuliBgColor, leftPosition);
-        %Screen('FillRect', winPtr, stimuliBgColor, rightPosition);
         flipTime = Screen('Flip', winPtr);
         
         
@@ -268,7 +266,7 @@ try
         flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
         % capture
-        %imageArray2 = Screen('GetImage',winPtr);  
+        %imageArray = Screen('GetImage',winPtr);  
 
         % after showing stimluli for 1 second
         Screen('FillRect', winPtr, bgColor);
@@ -337,7 +335,7 @@ try
             dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
         end
         
-        if i == 172
+        if i == round((sessionTrialNum+trashTrialNum)/2)
             DrawFormattedText(winPtr, 'Half. Press any key to continue.', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
             KbWait([], 2);

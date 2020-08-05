@@ -2,18 +2,24 @@
 clear all
 
 % date, subject, output filename
-date = char(datetime('now','Format','yyyy-MM-dd''T''HHmmss'));
+date = datetime;
 sn = input('Subject Name?: ', 's');
-dataFilename = sprintf('../data/experiment_SDvsD/%s/%s_SDvsD.mat', sn, sn);
-dataListFilename = sprintf('../data/experiment_SDvsD/%s/list_%s_SDvsD.mat', sn, sn);
-dataTableName = sprintf('../data/experiment_SDvsD/%s/table_%s_SDvsD.mat', sn,sn);
-orderFile = sprintf('../data/experiment_SDvsD/%s/order_%s_SDvsD.mat', sn,sn);
 sessionNum = input('Session Number?: ');
-sessionFile = sprintf('../data/experiment_SDvsD/%s/session_%s_SDvsD.mat', sn,sn);
+
+% filename
+dataFilename = sprintf('../data/experiment_SDvsD/%s/data_%s', sn, sn);
+dataListFilename = sprintf('../data/experiment_SDvsD/%s/list_%s.mat', sn, sn);
+dataTableName = sprintf('../data/experiment_SDvsD/%s/table_%s', sn,sn);
+orderFile = sprintf('../data/experiment_SDvsD/%s/order_%s.mat', sn,sn);
+sessionFile = sprintf('../data/experiment_SDvsD/%s/session%s/session%s_table_%s', sn,num2str(sessionNum),num2str(sessionNum),sn);
+recordFile = sprintf('../data/experiment_SDvsD/%s/record_%s.txt', sn,sn);
+
+% make directory
+mkdir(strcat('../data/experiment_SDvsD/',sn));
+mkdir(strcat('../data/experiment_SDvsD/',sn,'/session',num2str(sessionNum)));
 
 AssertOpenGL;
 ListenChar(2);
-bgColor = [0 0 0];
 KbName('UnifyKeyNames');
 screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
@@ -36,11 +42,20 @@ roughnessNum = size(roughness,2); % 0.05, 0.1, 0.2
 colorizeNum = size(colorizeW,2); % SD, D
 color = size(colorName,2);
 
+% set background color
+load('../mat/ccmat.mat');
+load('../mat/upvplWhitePoints.mat');
+lum = 2;
+bgUpvpl = upvplWhitePoints(knnsearch(upvplWhitePoints(:,3), lum),:);
+bgColor = conv_upvpl2rgb(bgUpvpl,ccmat);
+clear ccmat;
+clear upvplWhitePoints;
+
 try
     % set window
     PsychImaging('PrepareConfiguration');
     PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
-    [winPtr, winRect] = PsychImaging('Openwindow', screenNumber, 0);
+    [winPtr, winRect] = PsychImaging('Openwindow', screenNumber, bgColor);
     Priority(MaxPriority(winPtr));
     [offwin1,offwinrect]=Screen('OpenOffscreenWindow',winPtr, 0);
     
@@ -53,12 +68,7 @@ try
     firstKey = KbName('1!');
     secondKey = KbName('2@');
     %leftKey = KbName('LeftArrow');
-    %rightKey = KbName('RightArrow');
-    
-    % load data
-    load('../stimuli/bunny/area/D01/alpha01/stimuliSD.mat');
-    %load('../mat/ccmat.mat');
-    
+    %rightKey = KbName('RightArrow');    
     
     % ------- load stimili data ------------------------------------------
     % show display
@@ -69,6 +79,7 @@ try
     % stimuli matrix
     % low, column, rgb, color, light, diffuse, roughness, SDorD
     load('../stimuli/stimuliBunny.mat');
+    load('../stimuli/back/bgStimuli.mat');
     % ---------------------------------------------------------------------
     
     
@@ -76,15 +87,16 @@ try
     flag = 0;
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
-    [iy,ix,iz] = size(stimuliSD(:,:,:,1));
+    [iy,ix,iz] = size(bgStimuli(:,:,:,1));
     showStimuliTime = 1; % [s]
-    intervalTime = 1; % [s]
+    beforeStimuli = 0.5; % [s]
+    intervalTime = 0.5; % [s]
     
     % stimuli size
-    viewingDistance = 57; % Viewing distance (cm)
-    screenWidthCM = 49; % screen width （cm）
-    visualAngle = 14; % visual angle（degree）
-    sx = 2 * viewingDistance * tan(visualAngle/360 * pi) * winWidth / screenWidthCM; % stimuli x size (pixel)
+    viewingDistance = 80; % Viewing distance (cm)
+    screenWidthCM = 54.3; % screen width （cm）
+    visualAngle = 11; % visual angle（degree）
+    sx = 2 * viewingDistance * tan(deg2rad(visualAngle/2)) * winWidth / screenWidthCM; % stimuli x size (pixel)
     sy = sx * iy / ix; % stimuli y size (pixel)
     distance = 14; % stimulus distance  (pixel)
     
@@ -96,7 +108,7 @@ try
     
     % the number of trial
     allTrialNum = lightNum*diffuseNum*roughnessNum*color;
-    sessionTrialNum = allTrialNum;
+    sessionTrialNum = 324;
     trashTrialNum = 20;
     
     % make index table for stimuli (pair table)
@@ -112,6 +124,11 @@ try
             end
         end
     end
+
+    % make session table
+    varTypes = {'string','double','double','string','string','datetime'};
+    varNames = {'light','diffuse','roughness','color','win','responseTime'};
+    sessionTable = table('Size',[sessionTrialNum,6],'VariableTypes',varTypes,'VariableNames',varNames);
     
     % make or load subject data
     if sessionNum == 1
@@ -126,8 +143,6 @@ try
         dataList(:,1:4) = index;
         
         % make data table
-        varTypes = {'string','double','double','string','string','datetime'};
-        varNames = {'light','diffuse','roughness','color','win','responseTime'};
         dataTable = table('Size',[allTrialNum,6],'VariableTypes',varTypes,'VariableNames',varNames);
         
         % generate random order
@@ -137,7 +152,7 @@ try
         % load subject data
         load(dataFilename);
         load(dataListFilename);
-        load(dataTableName);
+        load(strcat(dataTableName,'.mat'));
         load(orderFile);
     end
     
@@ -168,6 +183,14 @@ try
         ry = randi(fix(winHeight-sy)-1);
         leftPosition = [rx, ry, rx+sx, ry+sy];
         rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+
+        % before showing stimluli
+        leftStimulus = Screen('MakeTexture', winPtr,bgStimuli(:,:,:,index(stiNum,1)));
+        rightStimulus = Screen('MakeTexture',winPtr,bgStimuli(:,:,:,index(stiNum,1)));
+        Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
+        Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
+        flipTime = Screen('Flip', winPtr);
+
         
         % -------- decide stimuli ----------------------------------------
         oneOrTwo = randi([1 2]);
@@ -209,13 +232,13 @@ try
         % show stimuli
         Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
         Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
-        flipTime = Screen('Flip', winPtr);
+        flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
         % capture
         %imageArray = Screen('GetImage',winPtr);
 
         % after showing stimluli for 1 second
-        Screen('FillRect', winPtr, [0 0 0]);
+        Screen('FillRect', winPtr, bgColor);
         flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
         
         % Wait for subject's response
@@ -272,7 +295,14 @@ try
             responseTime : resTime
             %}
             % table data
+            sessionTable(i-trashTrialNum,:) = {light(index(stiNum,1)),diffuseVar(index(stiNum,2)),roughVar(index(stiNum,3)),colorName(index(stiNum,4)-1),colorizeW(response),resTime};
             dataTable(stiNum,:) = {light(index(stiNum,1)),diffuseVar(index(stiNum,2)),roughVar(index(stiNum,3)),colorName(index(stiNum,4)-1),colorizeW(response),resTime};
+        end
+
+        if i == round((sessionTrialNum+trashTrialNum)/2)
+            DrawFormattedText(winPtr, 'Half. Press any key to continue.', 'center', 'center',[255 255 255]);
+            Screen('Flip', winPtr);
+            KbWait([], 2);
         end
         
         WaitSecs(intervalTime);
@@ -283,16 +313,28 @@ try
     % save data
     save(dataFilename, 'data');
     save(dataListFilename, 'dataList');
-    save(dataTableName, 'dataTable');
+    save(strcat(dataTableName,'.mat'), 'dataTable');
     save(orderFile, 'order');
-    save(sessionFile, 'sessionNum');
+    save(strcat(sessionFile,'.mat'), 'sessionTable');
+    writetable(dataTable, strcat(dataTableName,'.txt'));
+    writetable(sessionTable, strcat(sessionFile,'.txt'));
     
     % experiment finish
+    finTime = datetime;
     finishText = 'The experiment is over. Press any key.';
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, finishText, 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
     KbWait([], 2);
+
+    % write session data
+    expTime = finTime - date;
+    fp = fopen(recordFile, 'a');
+    fprintf(fp, '%dセッション目\n', sessionNum);
+    fprintf(fp, '実験実施日　%s\n', char(date));
+    fprintf(fp, '試行回数　%d回\n', i);
+    fprintf(fp, '実験時間　%s\n\n', char(expTime));
+    fclose(fp);    
     
     Priority(0);
     Screen('CloseAll');
