@@ -6,9 +6,9 @@ clear all;
 % Object
 material = 'bunny';
 light = 'area';
-Drate = 'D05';
+Drate = 'D01';
 alpha = 'alpha02';
-lum = 8;
+lum = 4;
 % bunny,area,D01 : 4,  D03 : 6,  D05 : 8
 % bunny,envmap,D01 : 2, D03 : 2, D05 : 3
 % dragon,area,D01 : 4, D03 : 6, D05 : 8
@@ -52,7 +52,6 @@ backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
 %backImage = backNoise(size(xyzSD,1),size(xyzSD,2)); % back : noise image
 %coloredSD = colorizeXYZ(maskImage(:,:,:,1)) + colorizeXYZ(maskImage(:,:,:,2));
 %coloredD = colorizeXYZ(maskImage(:,:,:,2)) + maskImage(:,:,:,1);
-b = 1
 coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
 coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
 aveBrightness = zeros(1,9);
@@ -68,12 +67,14 @@ for i = 1:size(xyzSD, 1)
     end
 end
 
+%{
 for i = 1:9
     %figure;
     wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
     %figure;
     wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
 end
+%}
 
 ss = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredSD');
 sd = strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/coloredD');

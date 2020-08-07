@@ -108,7 +108,7 @@ try
     
     % the number of trial
     allTrialNum = lightNum*diffuseNum*roughnessNum*color;
-    sessionTrialNum = 324;
+    sessionTrialNum = 144;
     trashTrialNum = 20;
     
     % make index table for stimuli (pair table)
