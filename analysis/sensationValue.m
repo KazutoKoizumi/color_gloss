@@ -76,6 +76,9 @@ sd = 1; % SD of sensation ('1' is the assumption of case V)
 
 %% analysis
 
+trial = 3*2*3*3*2;
+progress = 0;
+
 for i = 1:3 % shape
     for j = 1:2 % light
         for k = 1:3 % diffuse
@@ -171,6 +174,9 @@ for i = 1:3 % shape
                     % record data
                     sv(:,:,i,j,k,l,m) = estimated_sv2;
                     errorRange(:,:,i,j,k,l,m) = ranges68_ml;
+                    
+                    progress = progress + 1;
+                    fprinf('analysis progress : %d / %d\n\n', progress, trial);
 
                     %{
                     %% just to compare the experiment procedures: plot the simulation results
@@ -224,7 +230,6 @@ for i = 1:3 % shape
         end
     end
 end
-
 
 
 %% save data
