@@ -74,9 +74,6 @@ load(strcat('../..//data/',exp,'/',sn,'/winTable/NumGreater'));
 
 sd = 1; % SD of sensation ('1' is the assumption of case V)
 
-
-mtx = 1;
-OutOfNum = 1;
 %% analysis
 
 for i = 1:3 % shape
@@ -84,6 +81,7 @@ for i = 1:3 % shape
         for k = 1:3 % diffuse
             for l = 1:3 % roughness
                 for m = 1:2 % colorize(method)
+                    fprintf('shape:%d, light:%d, diffuse:%d, roughness:%d, colorize:%d \n\n', i,j,k,l,m);
                     
                     %% step1. Analysis to estimate sensation magnitude
                     % Analysis 1: Thurston's case V model based on z-score�itypically the results are slightly distorted�j
@@ -171,8 +169,8 @@ for i = 1:3 % shape
                     end
                     
                     % record data
-                    sv(:,:,i,j,k,l,m) = estimated_v2;
-                    errorRange(:,:,i,j,k,l,m) = range68_ml;
+                    sv(:,:,i,j,k,l,m) = estimated_sv2;
+                    errorRange(:,:,i,j,k,l,m) = ranges68_ml;
 
                     %{
                     %% just to compare the experiment procedures: plot the simulation results
@@ -227,6 +225,8 @@ for i = 1:3 % shape
     end
 end
 
+
+
 %% save data
-save(strcat('../../analysis_result/',exp,'/',sn,'/sv', 'sv'));
-save(strcat('../../analysis_result/',exp,'/',sn,'/errorRange', 'errorRange'));
+save(strcat('../../analysis_result/',exp,'/',sn,'/sv'), 'sv');
+save(strcat('../../analysis_result/',exp,'/',sn,'/errorRange'), 'errorRange');
