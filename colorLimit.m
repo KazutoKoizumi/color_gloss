@@ -6,7 +6,7 @@
 %   fixedColorMax.mat : 各輝度、各色相の白色点から最大彩度までのu,v座標の変位
 %   saturationMax.mat : 各輝度での、彩度一定で彩色できる距離（白色点を中心とした円の半径）
 %   saturateColor.mat : saturationMaxに対応する、各色相の白色点からのuv座標の変位
-%を生成する
+% を生成する
 % 
 
 cx2u = makecform('xyz2upvpl');
@@ -21,6 +21,7 @@ colorDistanceDiff = 0.001;
 monitorColorMax = zeros(lumDivNumber,3,8);
 logScale = logspace(-3, 0, lumDivNumber);
 load('../mat/ccmat.mat');
+upvplWhitePoints = zeros(lumDivNumber,3);
 
 for i = 1:lumDivNumber
     xyzLogScale = TNT_rgb2XYZ([logScale(i);logScale(i);logScale(i)],ccmat);
@@ -63,5 +64,6 @@ end
 save('../mat/logScale','logScale');
 save('../mat/monitorColorMax','monitorColorMax');
 save('../mat/upvplWhitePoints','upvplWhitePoints');
+save('../mat/fixedCOlorMax', 'fixedColorMax');
 save('../mat/saturationMax', 'saturationMax');
 save('../mat/saturateColor', 'saturateColor');

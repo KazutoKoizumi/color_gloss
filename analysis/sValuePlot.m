@@ -55,7 +55,6 @@ for i =1:3  % shape
                 lgd.NumColumns = 3;
                 lgd.Title.String = 'roughness';
                 lgd.Title.FontWeight = 'normal';
-                %lgd.FontSize = 8;
                 
                 hold off;
             end
