@@ -40,9 +40,11 @@ for i = 1:iy
         elseif upvpl(i,j,3) < 0
             upvpl(i,j,3) = 0;
         end
+        %{
         if upvpl(i,j,3) < 10^(-20)
             upvpl(i,j,:) = upvpl(i,j-1,:);
         end
+        %}
     end
 end
 

@@ -4,37 +4,41 @@
 clear all;
 
 %% オブジェクトのパラメータ
-material = 'bunny';
-light = 'area';
+shape = 'dragon';
+light = 'envmap';
 diffuse = 'D01';
 roughness = 'alpha02';
 
 indexD = ["D01", "D03", "D05"];
 if strcmp(light, 'area') == 1
-    lum = 2*find(indexD == diffuse);
+    lum = 2*(find(indexD == diffuse)+1);
 elseif strcmp(light, 'envmap') == 1
-    if find(indexD == diffuse) == 1 || find(indexD == diffuse) == 2
-        lum = 2;
-    elseif find(indexD == diffuse) == 3
-        lum = 3;
+    if strcmp(shape, 'bunny') == 1
+        lumPar = [2, 2.5, 3];
+    elseif strcmp(shape, 'dragon') == 1
+        lumPar = [2.3, 3, 3];
+    elseif strcmp(shape, 'blob') == 1
+        lumPar = [2, 2, 3];
     end
+    lum = lumPar(indexD==diffuse);
 end
 %{ 
  % 拡散成分ごとのトーンマップ時の輝度閾値の設定
  % bunny,area,D01 : 4,  D03 : 6,  D05 : 8
- % bunny,envmap,D01 : 2, D03 : 2, D05 : 3
+ % bunny,envmap,D01 : 2, D03 : 2.5, D05 : 3
  % dragon,area,D01 : 4, D03 : 6, D05 : 8
- % dragon,envmap,D01 : 2, D03 : 2, D05 : 3
+ % dragon,envmap,D01 : 2.3, D03 : 3, D05 : 3
  % blob,area,D01 : 4, D03 : 6, D05 : 8
  % blob,envmap,D01 : 2, D03 : 2, D05 : 3
 %}
+%lum = 8;
 
 %% データ読み込み
-load(strcat('../mat/',material,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
-load(strcat('../mat/',material,'/',light,'/',diffuse,'/',roughness,'/xyzD.mat'));
-load(strcat('../mat/',material,'/',light,'/',diffuse,'/',roughness,'/xyzS.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzS.mat'));
 load('../mat/ccmat.mat');
-load(strcat('../mat/',material,'Mask/mask.mat'));
+load(strcat('../mat/',shape,'Mask/mask.mat'));
 
 scale = 0.4;
 
@@ -42,6 +46,8 @@ scale = 0.4;
 tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
 tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,lum,scale,ccmat); % TonemapS
 tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,lum,scale,ccmat); % TonemapD
+%tonemapImage(:,:,:,1) = multipleXYZ(xyzS);
+%tonemapImage(:,:,:,2) = multipleXYZ(xyzD);
 
 %% マスク処理
 maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
@@ -86,8 +92,8 @@ end
 %}
 
 %% データ保存
-ss = strcat('../mat/',material,'/',light,'/',diffuse,'/',roughness,'/coloredSD');
-sd = strcat('../mat/',material,'/',light,'/',diffuse,'/',roughness,'/coloredD');
+ss = strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD');
+sd = strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredD');
 save(ss,'coloredSD');
 save(sd,'coloredD');
 

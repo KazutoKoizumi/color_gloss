@@ -22,9 +22,15 @@ function rgb = imageXYZ2RGB(XYZ, ccmat)
     rgb = TNT_XYZ2rgb(XYZ,ccmat);
     
     % 色域を超えていないかチェック
-    if (max(max(rgb,[],2)) > 1) || (min(min(rgb,[],2)) < 0)
+    rgbMax = max(max(rgb,[],2));
+    rgbMin = min(min(rgb,[],2));
+    
+    if (rgbMax > 1) || (rgbMin < 0)
+        rgbMax
+        rgbMin
         error('rgb value is outside between 0 and 1');
     end 
+    %}
     
     LUT = load('../mat/20200729T122706.lut');
     rgb = uint8(TNT_rgb2RGB_LUT(rgb',LUT)/257);

@@ -29,11 +29,14 @@ for p = 1:3  % shape
                 if q == 1
                     lum =  2*(r+1);
                 elseif q == 2
-                    if r == 3
-                        lum = 3;
-                    else
-                        lum = 2;
+                    if p == 1
+                        lumPar = [2, 2.5, 3];
+                    elseif p == 2
+                        lumPar = [2.3, 3, 3];
+                    elseif p == 3
+                        lumPar = [2, 2, 3];
                     end
+                    lum = lumPar(r)
                 end
                 
                 %% トーンマップ

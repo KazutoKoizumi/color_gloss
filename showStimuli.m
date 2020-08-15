@@ -2,8 +2,8 @@
 
 % Object
 shape = 'bunny';
-light = 'area';
-diffuse = 'D05';
+light = 'envmap';
+diffuse = 'D03';
 roughness = 'alpha02';
 
 load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'));

@@ -67,7 +67,7 @@ function coloredXYZ = colorizeXYZ(xyzMaterial, flag)
                 end
                 
                 % 彩色                
-                if i == 1 % 無色 または 輝度が低すぎるか高すぎる
+                if i == 1 % 無色
                     upvpl(j,k,1) = upvplWhitePoints(idx,1);
                     upvpl(j,k,2) = upvplWhitePoints(idx,2);
                 else  % 有色
