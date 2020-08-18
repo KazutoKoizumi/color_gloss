@@ -4,10 +4,10 @@
 clear all;
 
 %% オブジェクトのパラメータ
-shape = 'dragon';
-light = 'envmap';
-diffuse = 'D01';
-roughness = 'alpha02';
+shape = 'bunny';
+light = 'area';
+diffuse = 'D05';
+roughness = 'alpha005';
 
 indexD = ["D01", "D03", "D05"];
 if strcmp(light, 'area') == 1
@@ -67,8 +67,10 @@ gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
 backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
 
 %% 彩色
-coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
-coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
+colorS = colorizeXYZ(gray(:,:,:,1), 0);
+colorD = colorizeXYZ(gray(:,:,:,2), 0);
+coloredSD = colorS + colorD;
+coloredD = colorD + gray(:,:,:,1);
 
 %% 彩色画像に背景を合成
 for i = 1:size(xyzSD, 1)

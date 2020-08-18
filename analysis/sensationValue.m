@@ -9,7 +9,7 @@ sn = 'preexp_koizumi';
 
 % result
 sv = zeros(1,9,3,2,3,3,2);
-errorRange = zeros(9,3,3,2,3,3,2);
+selectionScale = zeros(9,3,3,2,3,3,2);
 
 % choose ML method
 % choose ML method
@@ -173,12 +173,12 @@ for i = 1:3 % shape
                     
                     % record data
                     sv(:,:,i,j,k,l,m) = estimated_sv2;
-                    errorRange(:,:,i,j,k,l,m) = ranges68_ml;
+                    selectionScale(:,:,i,j,k,l,m) = ranges68_ml;
                     
                     progress = progress + 1;
-                    fprinf('analysis progress : %d / %d\n\n', progress, trial);
+                    fprintf('analysis progress : %d / %d\n\n', progress, trial);
 
-                    %{
+                    
                     %% just to compare the experiment procedures: plot the simulation results
                     % Comparison of Thurston and ML: estimated sensation values with error bars.
                     str = ['Ground truth vs Estimated: ', algostr{algo}];
@@ -234,4 +234,4 @@ end
 
 %% save data
 save(strcat('../../analysis_result/',exp,'/',sn,'/sv'), 'sv');
-save(strcat('../../analysis_result/',exp,'/',sn,'/errorRange'), 'errorRange');
+save(strcat('../../analysis_result/',exp,'/',sn,'/selectionScale'), 'selectionScale');
