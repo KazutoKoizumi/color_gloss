@@ -1,5 +1,5 @@
 %% xyz形式のファイルを読み込み彩色するプログラム
-% 彩色の際にマスク処理を行い、オブジェクト部分のみを彩色する
+% オブジェクト部分のみを彩色する
 % 彩色前に色度を白色点に合わせる, 背景の色度も白色点に合わせる
 % まとめて彩色
 clear all;
@@ -15,17 +15,17 @@ allObj = 3*2*3*3;
 progress = 0;
 
 %% Main
-for p = 1:3  % shape
-    load(strcat('../mat/',shape(p),'Mask/mask.mat'));
-    for q = 1:2  % light
-        for r = 1:3  % diffuse
-            for s = 1:3  % roughness
+for i = 1:3  % shape
+    load(strcat('../mat/',shape(i),'Mask/mask.mat'));
+    for j = 1:2  % light
+        for k = 1:3  % diffuse
+            for l = 1:3  % roughness
                 %% データ読み込み
-                load(strcat('../mat/',shape(p),'/',light(q),'/',diffuse(r),'/',roughness(s),'/xyzSD.mat'));
-                load(strcat('../mat/',shape(p),'/',light(q),'/',diffuse(r),'/',roughness(s),'/xyzD.mat'));
-                load(strcat('../mat/',shape(p),'/',light(q),'/',diffuse(r),'/',roughness(s),'/xyzS.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzSD.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzD.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzS.mat'));
                 
-                scale = 0.4;
+                %{
                 if q == 1
                     lum =  2*(r+1);
                 elseif q == 2
@@ -38,49 +38,36 @@ for p = 1:3  % shape
                     end
                     lum = lumPar(r)
                 end
+                %}
+                lum = 3.5;
                 
                 %% トーンマップ
                 tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-                tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,lum,scale,ccmat); % TonemapS
-                tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,lum,scale,ccmat); % TonemapD
+                tonemapImage(:,:,:,1) = tonemaping(xyzS,lum); % specular
+                tonemapImage(:,:,:,2) = tonemaping(xyzD,lum); % diffuse
                 
-                %% マスク処理
-                maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-                for i = 1:size(xyzSD, 1)
-                    for j = 1:size(xyzSD, 2)
-                        if mask(i,j) == 1
-                            maskImage(i,j,:,1) = tonemapImage(i,j,:,1); % mask S
-                            maskImage(i,j,:,2) = tonemapImage(i,j,:,2); % mask D
-                        end
-                    end
-                end
+                %% 全体を無色にする
+                backNoMask = ones(size(xyzSD, 1), size(xyzSD, 2));
+                noColorSpecular = colorizeXYZ(tonemapImage(:,:,:,1),tonemapImage(:,:,:,1),backNoMask,1);
+                noColorDiffuse = colorizeXYZ(tonemapImage(:,:,:,2),tonemapImage(:,:,:,2),backNoMask,1);
                 
-                %% 背景用の彩色
-                gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-                gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S
-                gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
-                backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
+                %% SD彩色
+                % specularとdiffuseのXYZを加算
+                noColorSD = noColorSpecular + noColorDiffuse;
                 
-                %% 彩色
-                coloredSD = colorizeXYZ(gray(:,:,:,1), 0) + colorizeXYZ(gray(:,:,:,2), 0);
-                coloredD = colorizeXYZ(gray(:,:,:,2), 0) + gray(:,:,:,1);
-                aveBrightness = zeros(1,9);
+                % 彩色
+                coloredSD = colorizeXYZ(noColorSD,noColorSD,mask,0);
                 
-                %% 彩色画像と背景を合成
-                for i = 1:size(xyzSD, 1)
-                    for j = 1:size(xyzSD, 2)
-                        if mask(i,j) == 0
-                            for k = 1:9
-                                coloredSD(i,j,:,k) = backImage(i,j,:);
-                                coloredD(i,j,:,k) = backImage(i,j,:);
-                            end
-                        end
-                    end
-                end
+                %% D彩色
+                % diffuseに彩色
+                colorDiffuse = colorizeXYZ(noColorDiffuse,noColorSD,mask,0);
+
+                % 無彩色specularと彩色diffuseを加算
+                coloredD = noColorSpecular + colorDiffuse;
                 
                 %% データ保存
-                ss = strcat('../mat/',shape(p),'/',light(q),'/',diffuse(r),'/',roughness(s),'/coloredSD');
-                sd = strcat('../mat/',shape(p),'/',light(q),'/',diffuse(r),'/',roughness(s),'/coloredD');
+                ss = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD');
+                sd = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD');
                 save(ss,'coloredSD');
                 save(sd,'coloredD');
                 

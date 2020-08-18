@@ -4,11 +4,12 @@
 clear all;
 
 %% オブジェクトのパラメータ
-shape = 'bunny';
-light = 'area';
-diffuse = 'D05';
-roughness = 'alpha005';
+shape = 'blob';
+light = 'envmap';
+diffuse = 'D03';
+roughness = 'alpha01';
 
+%{
 indexD = ["D01", "D03", "D05"];
 if strcmp(light, 'area') == 1
     lum = 2*(find(indexD == diffuse)+1);
@@ -22,16 +23,17 @@ elseif strcmp(light, 'envmap') == 1
     end
     lum = lumPar(indexD==diffuse);
 end
+%}
 %{ 
  % 拡散成分ごとのトーンマップ時の輝度閾値の設定
- % bunny,area,D01 : 4,  D03 : 6,  D05 : 8
- % bunny,envmap,D01 : 2, D03 : 2.5, D05 : 3
- % dragon,area,D01 : 4, D03 : 6, D05 : 8
- % dragon,envmap,D01 : 2.3, D03 : 3, D05 : 3
- % blob,area,D01 : 4, D03 : 6, D05 : 8
- % blob,envmap,D01 : 2, D03 : 2, D05 : 3
+ % bunny,area,D01 : 3.5,  D03 : 3.5,  D05 : 3.5
+ % bunny,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
+ % dragon,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
+ % dragon,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
+ % blob,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
+ % blob,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
 %}
-%lum = 8;
+lum = 3.5;
 
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
@@ -40,58 +42,30 @@ load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzS.mat'));
 load('../mat/ccmat.mat');
 load(strcat('../mat/',shape,'Mask/mask.mat'));
 
-scale = 0.4;
 
 %% トーンマップ
 tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,lum,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,lum,scale,ccmat); % TonemapD
-%tonemapImage(:,:,:,1) = multipleXYZ(xyzS);
-%tonemapImage(:,:,:,2) = multipleXYZ(xyzD);
+tonemapImage(:,:,:,1) = tonemaping(xyzS,lum); % specular
+tonemapImage(:,:,:,2) = tonemaping(xyzD,lum); % diffuse
 
-%% マスク処理
-maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-for i = 1:size(xyzSD, 1)
-    for j = 1:size(xyzSD, 2)
-        if mask(i,j) == 1
-            maskImage(i,j,:,1) = tonemapImage(i,j,:,1); % mask S
-            maskImage(i,j,:,2) = tonemapImage(i,j,:,2); % mask D
-        end
-    end
-end
+%% 全体を無色にする
+backNoMask = ones(size(xyzSD, 1), size(xyzSD, 2));
+noColorSpecular = colorizeXYZ(tonemapImage(:,:,:,1),tonemapImage(:,:,:,1),backNoMask,1);
+noColorDiffuse = colorizeXYZ(tonemapImage(:,:,:,2),tonemapImage(:,:,:,2),backNoMask,1);
 
-%% 背景用の彩色
-gray = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-gray(:,:,:,1) = colorizeXYZ(tonemapImage(:,:,:,1), 1); % S
-gray(:,:,:,2) = colorizeXYZ(tonemapImage(:,:,:,2), 1); % D
-backImage = gray(:,:,:,1) + gray(:,:,:,2); % back : gray image
+%% SD彩色
+% specularとdiffuseのXYZを加算
+noColorSD = noColorSpecular + noColorDiffuse;
 
-%% 彩色
-colorS = colorizeXYZ(gray(:,:,:,1), 0);
-colorD = colorizeXYZ(gray(:,:,:,2), 0);
-coloredSD = colorS + colorD;
-coloredD = colorD + gray(:,:,:,1);
+% 彩色
+coloredSD = colorizeXYZ(noColorSD,noColorSD,mask,0);
 
-%% 彩色画像に背景を合成
-for i = 1:size(xyzSD, 1)
-    for j = 1:size(xyzSD, 2)
-        if mask(i,j) == 0
-            for k = 1:9
-                coloredSD(i,j,:,k) = backImage(i,j,:);
-                coloredD(i,j,:,k) = backImage(i,j,:);
-            end
-        end
-    end
-end
+%% D彩色
+% diffuseに彩色
+colorDiffuse = colorizeXYZ(noColorDiffuse,noColorSD,mask,0);
 
-%{
-for i = 1:9
-    %figure;
-    wImageXYZ2rgb_wtm(coloredSD(:,:,:,i),ccmat);
-    %figure;
-    wImageXYZ2rgb_wtm(coloredD(:,:,:,i),ccmat);
-end
-%}
+% 無彩色specularと彩色diffuseを加算
+coloredD = noColorSpecular + colorDiffuse;
 
 %% データ保存
 ss = strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD');

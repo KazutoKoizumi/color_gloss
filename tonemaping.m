@@ -1,34 +1,25 @@
-function tonemappedXYZ = tonemaping(xyz,sameXyz,lw,scale,ccmatrix)
+function tonemappedXYZ = tonemaping(xyz,lw)
 
+load('../mat/upvplWhitePoints.mat');
 [iy,ix,iz] = size(xyz);
 
 cx2u = makecform('xyz2upvpl');
 cu2x = makecform('upvpl2xyz');
-monitorMaxUpvpl = applycform(transpose(TNT_rgb2XYZ([1 1 1]',ccmatrix)),cx2u);
-monitorMaxLum = monitorMaxUpvpl(3);
-monitorMinUpvpl = applycform(transpose(TNT_rgb2XYZ([0 0 0]',ccmatrix)),cx2u);
-monitorMinLum = monitorMinUpvpl(3);
+monitorMaxLum = max(upvplWhitePoints(:,3))/2;
+monitorMinLum = min(upvplWhitePoints(:,3));
 upvpl = applycform(xyz,cx2u);
-%disp(strcat('max luminance: ',num2str(monitorMaxLum)));
-a = max(max(applycform(sameXyz,cx2u)));
-sh = 8;
 
-% bunny,area,D01 : 4,  D03 : 6,  D05 : 8
-% bunny,envmap,D01 : 2, D03 : 2, D05 : 3
-% dragon,area,D01 : 4, D03 : 6, D05 : 8
-% dragon,envmap,D01 : 2, D03 : 2, D05 : 3
-% blob,area,D01 : 4, D03 : 6, D05 : 8
-% blob,envmap,D01 : 2, D03 : 2, D05 : 3
-%lw = 3;
+% bunny,area,D01 : 3.5,  D03 : 3.5,  D05 : 3.5
+% bunny,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
+% dragon,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
+% dragon,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
+% blob,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
+% blob,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
+%lw = 3.5;
 
-% Reinhard function
+%lw = max(max(upvpl(:,:,3)))
 for i = 1:iy
     for j = 1:ix
-        %x = upvpl(i,j,3)/a(3);
-        %upvpl(i,j,3) = monitorMaxLum * x*sh/(1+x*sh)*(1+x*sh/lw^2);
-        %upvpl(i,j,3) = monitorMaxLum * x.^(1/lw);
-        %upvpl(i,j,3) = monitorMmaxLum * log(1+lw*x);
-        %upvpl(i,j,3) = monitorMaxLum * x;
         
         x = upvpl(i,j,3);
         %f = (x/(1+x)) * (1+x/lw^2);
@@ -37,23 +28,12 @@ for i = 1:iy
         upvpl(i,j,3) = f * monitorMaxLum;
         if upvpl(i,j,3) > monitorMaxLum
             upvpl(i,j,3) = monitorMaxLum;
-        elseif upvpl(i,j,3) < 0
-            upvpl(i,j,3) = 0;
+        elseif upvpl(i,j,3) < monitorMinLum
+            upvpl(i,j,3) = monitorMinLum;
         end
-        %{
-        if upvpl(i,j,3) < 10^(-20)
-            upvpl(i,j,:) = upvpl(i,j-1,:);
-        end
-        %}
     end
 end
 
-minUpvpl = min(min(applycform(sameXyz,cx2u)));
-upvpl(:,:,3) = upvpl(:,:,3) * scale;
-upvpl(:,:,3) = upvpl(:,:,3)*(monitorMaxLum-monitorMinLum)/monitorMaxLum;
-upvpl(:,:,3) = upvpl(:,:,3) + monitorMinLum/2;
-
 tonemappedXYZ = applycform(upvpl,cu2x);
-max(max(upvpl));
 
 end

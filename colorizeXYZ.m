@@ -6,6 +6,8 @@
 %
 % Input
 %   xyzMaterial : XYZ data
+%   refLuminanceImage : reference luminance to decide saturation
+%   mask : mask map
 %   flag : if 0 all color, if 1 only gray scale
 %
 % Output
@@ -20,7 +22,7 @@
 % colorLimit.mでこれらの値を求める
 
 
-function coloredXYZ = colorizeXYZ(xyzMaterial, flag)
+function coloredXYZ = colorizeXYZ(xyzMaterial, refLuminanceImage, mask, flag)
     [iy,ix,iz] = size(xyzMaterial);
     load('../mat/fixedColorMax.mat');
     load('../mat/upvplWhitePoints.mat');
@@ -29,6 +31,7 @@ function coloredXYZ = colorizeXYZ(xyzMaterial, flag)
     cx2u = makecform('xyz2upvpl');
     cu2x = makecform('upvpl2xyz');
     upvplMaterial = applycform(xyzMaterial,cx2u);
+    upvplReference = applycform(refLuminanceImage,cx2u);
     
     % グレーのみか全色か
     if flag == 1  % 無色のみ
@@ -50,29 +53,31 @@ function coloredXYZ = colorizeXYZ(xyzMaterial, flag)
         upvpl = upvplMaterial;
         for j = 1:iy
             for k = 1:ix
-                
-                % 彩色するピクセルの輝度チェック
-                if upvpl(j,k,3) <= lumStep(iMax)
-                    idx = find(lumStep<upvpl(j,k,3), 1, 'last');   % ピクセル輝度に対応するインデックス
-                    if isempty(idx) == 1
-                        idx = 1;
-                        upvpl(j,k,3) = lumStep(idx);
+                if mask(j,k) == 1
+
+                    % 彩色するピクセルの輝度チェック
+                    if upvplReference(j,k,3) <= lumStep(iMax)
+                        idx = find(lumStep<upvplReference(j,k,3), 1, 'last');   % ピクセル輝度に対応するインデックス
+                        if isempty(idx) == 1
+                            idx = 1;
+                            %upvpl(j,k,3) = lumStep(idx);
+                        end
+                    else
+                        idx = find(lumStep>upvplReference(j,k,3), 1);
+                        if isempty(idx) == 1
+                            idx = find(lumStep, 1, 'last');
+                            %upvpl(j,k,3) = lumStep(idx);
+                        end
                     end
-                else
-                    idx = find(lumStep>upvpl(j,k,3), 1);
-                    if isempty(idx) == 1
-                        idx = find(lumStep, 1, 'last');
-                        upvpl(j,k,3) = lumStep(idx);
+
+                    % 彩色                
+                    if i == 1 % 無色
+                        upvpl(j,k,1) = upvplWhitePoints(idx,1);
+                        upvpl(j,k,2) = upvplWhitePoints(idx,2);
+                    else  % 有色
+                        upvpl(j,k,1) = saturateColor(idx,1,i-1) + upvplWhitePoints(idx,1);
+                        upvpl(j,k,2) = saturateColor(idx,2,i-1) + upvplWhitePoints(idx,2);
                     end
-                end
-                
-                % 彩色                
-                if i == 1 % 無色
-                    upvpl(j,k,1) = upvplWhitePoints(idx,1);
-                    upvpl(j,k,2) = upvplWhitePoints(idx,2);
-                else  % 有色
-                    upvpl(j,k,1) = saturateColor(idx,1,i-1) + upvplWhitePoints(idx,1);
-                    upvpl(j,k,2) = saturateColor(idx,2,i-1) + upvplWhitePoints(idx,2);
                 end
             end
         end
