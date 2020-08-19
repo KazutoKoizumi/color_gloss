@@ -1,14 +1,14 @@
 %% XYZからRGBに変換するプログラム（rgbの0~1のチェックあり）
 
 %% オブジェクトのパラメータ
-shape = 'dragon'; % shape : bunny, dragon, blob
+shape = 'blob'; % shape : bunny, dragon, blob
 light = 'envmap'; % light : area or envmap
-diffuse = 'D03'; % diffuse rate
-roughnrss = 'alpha01'; % roughness parameter
+diffuse = 'D01'; % diffuse rate
+roughness = 'alpha005'; % roughness parameter
 
 %% データ読み込み
-load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredSD.mat'));
-load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughnrss,'/coloredD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredD.mat'));
 load('../mat/ccmat.mat');
 [iy,ix,iz] = size(coloredSD(:,:,:,1));
 stimuliSD = zeros(iy,ix,iz,9);
@@ -23,8 +23,8 @@ for i = 1:9
 end
 
 %% 保存
-save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughnrss,'/stimuliSD.mat'),'stimuliSD');
-save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughnrss,'/stimuliD.mat'),'stimuliD');
+save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'),'stimuliSD');
+save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliD.mat'),'stimuliD');
 
 %% 画像表示
 figure;

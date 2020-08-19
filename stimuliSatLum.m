@@ -41,7 +41,7 @@ for i = 1:3 % shape
                             if mask(p,q) == 1
                                 count = count + 1;
                                 
-                                %{
+                                
                                 % 輝度チェック
                                 if upvpl(p,q,3,m) <= upvplWhitePoints(iMax,3)
                                     idx = find(upvplWhitePoints(:,3)<upvpl(p,q,3,m), 1, 'last');
@@ -62,8 +62,8 @@ for i = 1:3 % shape
                                 %}
                                 
                                 % 彩度
-                                %sat_lum(count,1,j,k,l,m) = sqrt(sum(displacement.^2));
-                                sat_lum(count,1,j,k,l,m) = upvpl(p,q,1,m);
+                                sat_lum(count,1,j,k,l,m) = sqrt(sum(displacement.^2));
+                                %sat_lum(count,1,j,k,l,m) = upvpl(p,q,1,m);
                                 % 輝度
                                 sat_lum(count,2,j,k,l,m) = upvpl(p,q,3,m);  
                             end

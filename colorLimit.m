@@ -20,6 +20,7 @@ colorDistanceDiff = 0.001;
 
 monitorColorMax = zeros(lumDivNumber,3,8);
 logScale = logspace(-3, 0, lumDivNumber);
+%logScale = 0:1/lumDivNumber:1;
 load('../mat/ccmat.mat');
 upvplWhitePoints = zeros(lumDivNumber,3);
 
