@@ -40,7 +40,7 @@ for i = 1:3 % shape
                     title(strcat(method(m),'  roughness:',roughness(l)));
                     
                     % axis
-                    xlabel('彩度');
+                    xlabel('u');
                     ylabel('輝度');
                     
                     hold off;
