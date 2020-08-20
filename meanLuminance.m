@@ -1,55 +1,88 @@
 %% オブジェクト部分の平均輝度を求めるプログラム
 clear all;
 
-% Object
-material = 'bunny';
-light = 'area';
-Drate = 'D05';
-alpha = 'alpha005';
+%% オブジェクトのパラメータ
+shape = ["bunny", "dragon", "blob"]; % i
+light = ["area", "envmap"]; % j
+diffuse = ["D01", "D03", "D05"]; % k
+roughness = ["alpha005", "alpha01", "alpha02"]; %l
+method = ["SD", "D"];
 
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzD.mat'));
-load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzS.mat'));
-load('../mat/ccmat.mat');
-load('../mat/monitorColorMax.mat');
-load('../mat/logScale.mat');
-load(strcat('../mat/',material,'Mask/mask.mat'));
+Dname = ["0.1", "0.3", "0.5"];
+roughName = ["0.05", "0.1", "0.2"];
+x = [1 2];
 
-scale = 0.4;
+allObj = 3*2*3*3*2;
+progress = 0;
 
-tonemapImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-%tonemapImage(:,:,:,1) = wTonemapDiff(xyzS,xyzSD,1,scale,ccmat); % TonemapS
-%tonemapImage(:,:,:,2) = wTonemapDiff(xyzD,xyzSD,1,scale,ccmat); % TonemapD
+meanLum = zeros(3,2,3,3,2);
 
-tonemapImage(:,:,:,1) = tonemaping(xyzS,xyzSD,1,scale,ccmat); % TonemapS
-tonemapImage(:,:,:,2) = tonemaping(xyzD,xyzSD,1,scale,ccmat); % TonemapD
-
-maskImage = zeros(size(xyzSD, 1), size(xyzSD, 2), size(xyzSD, 3), 2);
-luminanceSum = zeros(1,2);
-luminanceMean = zeros(1,2);
-objPixel = 0;
-count = zeros(1,2);
-threshold = 25;
-for i = 1:size(xyzSD, 1)
-    for j = 1:size(xyzSD, 2)
-        if mask(i,j) == 1
-            maskImage(i,j,:,1) = tonemapImage(i,j,:,1); % mask S
-            maskImage(i,j,:,2) = tonemapImage(i,j,:,2); % mask D
-            
-            luminanceSum(1) = luminanceSum(1) + maskImage(i,j,2,1);
-            if maskImage(i,j,2,1) > threshold
-                count(1) = count(1) + 1;
-                maskImage(i,j,2,1)
+%% Main
+for i = 1:3 % shape
+    load(strcat('../mat/',shape(i),'Mask/mask.mat'));
+    for j = 1:2 % light
+        for k = 1:3 % diffuse
+            for l = 1:3 % roughness
+                for m = 1:2 % method
+                    % データ読み込み
+                    load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
+                    load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+                    [iy,ix,iz] = size(coloredSD(:,:,:,1));
+                    
+                    if m == 1
+                        lumMap = coloredSD(:,:,2,1);
+                    elseif m == 2
+                        lumMap = coloredD(:,:,2,1);
+                    end
+                    
+                    % オブジェクト部分のみにするかどうか
+                    %lumMap = lumMap .* mask;
+                    %pixelNum = nnz(mask);
+                    
+                    pixelNum = nnz(lumMap);
+                    
+                    lumSum = sum(lumMap, 'all');
+                    
+                    meanLum(i,j,k,l,m) = lumSum / pixelNum;
+                    
+                    % 進行度表示
+                    progress = progress + 1;
+                    fprintf('finish : %d/%d\n\n', progress, allObj);
+                end
             end
-            luminanceSum(2) = luminanceSum(2) + maskImage(i,j,2,2);
-            if maskImage(i,j,2,2) > threshold
-                count(2) = count(2) + 1;
-                maskImage(i,j,2,2)
-            end
-            objPixel = objPixel + 1;
         end
     end
 end
 
-luminanceMean = luminanceSum / objPixel % S, D
-
+%% Plot
+for i = 1:3 % shape
+    f = figure;
+    for k = 1:3 % diffuse
+        for l = 1:3 % roughness
+            for m = 1:2 % method
+                    
+                    subplot(3,6,6*(k-1)+2*(l-1)+m);
+                    hold on;
+                    
+                    y = meanLum(i,:,k,l,m); % 1:area, 2:envmap
+                    bar(x,y);
+                    
+                    xticks(x);
+                    xticklabels({'araa', 'envmap'});
+                    xlabel('照明');
+                    ylabel('平均輝度');
+                    
+                    title(strcat(method(m),'  diffuse:',Dname(k),'  roughness:',roughName(l)));
+                    
+                    hold off;
+            end
+        end
+    end
+    sgtitle(strcat('shape:',shape(i)));
+    
+end
+                    
+                    
+                    
+                
+                
