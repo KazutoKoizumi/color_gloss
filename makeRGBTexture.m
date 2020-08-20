@@ -1,7 +1,7 @@
 %% XYZからRGBに変換するプログラム（rgbの0~1のチェックあり）
 
 %% オブジェクトのパラメータ
-shape = 'blob'; % shape : bunny, dragon, blob
+shape = 'bunny'; % shape : bunny, dragon, blob
 light = 'envmap'; % light : area or envmap
 diffuse = 'D01'; % diffuse rate
 roughness = 'alpha005'; % roughness parameter

@@ -18,14 +18,19 @@ uUnitCircle = [1 1/r2 0 -1/r2 -1 -1/r2 0 1/r2];
 vUnitCircle = [0 1/r2 1 1/r2 0 -1/r2 -1 -1/r2];
 colorDistanceDiff = 0.001;
 
-monitorColorMax = zeros(lumDivNumber,3,8);
 logScale = logspace(-3, 0, lumDivNumber);
+rgbDiv = zeros(1,lumDivNumber+10);
+rgbDiv(1:11) = 0:0.0001:0.001;
+rgbDiv(11:lumDivNumber+10) = logScale;
+lumDivNumber = lumDivNumber+10;
+
+monitorColorMax = zeros(lumDivNumber,3,8);
 %logScale = 0:1/lumDivNumber:1;
 load('../mat/ccmat.mat');
 upvplWhitePoints = zeros(lumDivNumber,3);
 
 for i = 1:lumDivNumber
-    xyzLogScale = TNT_rgb2XYZ([logScale(i);logScale(i);logScale(i)],ccmat);
+    xyzLogScale = TNT_rgb2XYZ([rgbDiv(i);rgbDiv(i);rgbDiv(i)],ccmat);
     upvplLogScaledWhitePoint = applycform(xyzLogScale',cx2u);
     upvplWhitePoints(i,:) = upvplLogScaledWhitePoint;
     for j = 1:8

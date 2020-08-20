@@ -4,10 +4,10 @@
 clear all;
 
 %% オブジェクトのパラメータ
-shape = 'blob';
+shape = 'bunny';
 light = 'envmap';
-diffuse = 'D03';
-roughness = 'alpha01';
+diffuse = 'D01';
+roughness = 'alpha005';
 
 %{
 indexD = ["D01", "D03", "D05"];
@@ -33,12 +33,14 @@ end
  % blob,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
  % blob,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
 %}
-lum = 3.5;
+lum = 3;
 
+
+% ---------- 輝度調整していない場合 -------------------------------------------
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
-load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzD.mat'));
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzS.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzD.mat'));
 load('../mat/ccmat.mat');
 load(strcat('../mat/',shape,'Mask/mask.mat'));
 
@@ -52,7 +54,24 @@ tonemapImage(:,:,:,2) = tonemaping(xyzD,lum); % diffuse
 backNoMask = ones(size(xyzSD, 1), size(xyzSD, 2));
 noColorSpecular = colorizeXYZ(tonemapImage(:,:,:,1),tonemapImage(:,:,:,1),backNoMask,1);
 noColorDiffuse = colorizeXYZ(tonemapImage(:,:,:,2),tonemapImage(:,:,:,2),backNoMask,1);
+% ---------------------------------------------------------------------------
+%}
 
+%{
+% ----------- 輝度調整している場合 --------------------------------------------
+%% データ読み込み
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzStonemap.mat'));
+load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzDtonemap.mat'));
+load('../mat/ccmat.mat');
+load(strcat('../mat/',shape,'Mask/mask.mat'));
+
+%% 全体を無色にする
+backNoMask = ones(size(xyzSD, 1), size(xyzSD, 2));
+noColorSpecular = colorizeXYZ(xyzStonemap,xyzStonemap,backNoMask,1);
+noColorDiffuse = colorizeXYZ(xyzDtonemap,xyzDtonemap,backNoMask,1);
+% ----------------------------------------------------------------------
+%}
 %% SD彩色
 % specularとdiffuseのXYZを加算
 noColorSD = noColorSpecular + noColorDiffuse;

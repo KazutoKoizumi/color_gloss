@@ -1,14 +1,14 @@
-% 刺激画像を表示する
-%サーストンの一対比較法で光沢感を測定する実験
+%% 実験画面に刺激画像を表示する
 clear all
 
+%% 初期準備
 AssertOpenGL;
 ListenChar(2);
 KbName('UnifyKeyNames');
 screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
 
-% stimuli parameter
+%% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"];
 light = ["area", "envmap"];
 diffuse = ["D01", "D03", "D05"];
@@ -18,7 +18,7 @@ roughVar = [0.05,0.1,0.2];
 colorizeW = ["SD", "D"];
 colorName = ["gray","red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 
-% the number of each parameter
+% 各パラメータの数
 shapeNum = size(shape,2); % bunny, dragon, blob
 lightNum = size(light,2); % area, envmap
 diffuseNum = size(diffuse,2); % 0.1, 0.3, 0.5
@@ -27,16 +27,17 @@ colorizeNum = size(colorizeW,2); % SD, D
 color = 9;
 colorPair = nchoosek(color,2);
 
-% set background color
+%% 背景色の設定
 load('../mat/ccmat.mat');
 load('../mat/upvplWhitePoints.mat');
-lum = 2;
+lum = 0.1526;
 bgUpvpl = upvplWhitePoints(knnsearch(upvplWhitePoints(:,3), lum),:);
 bgColor = conv_upvpl2rgb(bgUpvpl,ccmat);
-clear ccmat;
-clear upvplWhitePoints;
+clear ccmat upvplWhitePoints;
 
+%% Main
 try
+    %% PTB準備
     % set window
     PsychImaging('PrepareConfiguration');
     PsychImaging('AddTask', 'General', 'FloatingPoint32BitIfPossible');
@@ -56,7 +57,7 @@ try
     rightKey = KbName('6');
     
     
-    % ------- load stimili data ------------------------------------------
+    %% データ読み込み
     % show display
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, 'Please wait', 'center', 'center',[255 255 255]);
@@ -67,11 +68,9 @@ try
     load('../stimuli/stimuliBunny.mat');
     load('../stimuli/stimuliDragon.mat');
     load('../stimuli/stimuliBlob.mat');
-    load('../stimuli/back/bgStimuli.mat');
-    % ---------------------------------------------------------------------
+    load('../stimuli/back/bgStimuli.mat');    
     
-    
-    % parameter setting
+    %% パラメータ設定
     flag = 0;
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
@@ -80,7 +79,7 @@ try
     beforeStimuli = 0.5; % [s]
     intervalTime = 0.5; % [s]
     
-    % stimuli size
+    % 刺激サイズ
     viewingDistance = 80; % Viewing distance (cm)
     screenWidthCM = 54.3; % screen width （cm）
     visualAngle = 11; % visual angle（degree）
@@ -96,7 +95,7 @@ try
     
     % the number of trial
     allTrialNum = shapeNum*lightNum*diffuseNum*roughnessNum*colorizeNum*color;
-    sessionTrialNum = 162;
+    sessionTrialNum = 162*3;
     
     % make index matrix for stimuli (pair table)
     index = zeros(allTrialNum, 6);
@@ -146,16 +145,16 @@ try
         flagShape = index(stiNum,1);
         if flagShape == 1
             % bunny
-            rgbLeft = stimuliBunny(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),1);
-            rgbRight = stimuliBunny(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),2);             
+            rgbLeft = stimuliBunny(:,:,:,index(stiNum,6),1,index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliBunny(:,:,:,index(stiNum,6),2,index(stiNum,3),index(stiNum,4),index(stiNum,5));             
         elseif flagShape == 2
             % dragon
-            rgbLeft = stimuliDragon(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),1);
-            rgbRight = stimuliDragon(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),2); 
+            rgbLeft = stimuliDragon(:,:,:,index(stiNum,6),1,index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliDragon(:,:,:,index(stiNum,6),2,index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
         elseif flagShape == 3
             % blob
-            rgbLeft = stimuliBlob(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),1);
-            rgbRight = stimuliBlob(:,:,:,index(stiNum,6),index(stiNum,2),index(stiNum,3),index(stiNum,4),2); 
+            rgbLeft = stimuliBlob(:,:,:,index(stiNum,6),1,index(stiNum,3),index(stiNum,4),index(stiNum,5));
+            rgbRight = stimuliBlob(:,:,:,index(stiNum,6),2,index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
         end
         
         % ---------------------------------------------------------------

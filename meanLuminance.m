@@ -18,7 +18,7 @@ progress = 0;
 meanLum = zeros(3,2,3,3,2);
 
 %% Main
-for i = 1:3 % shape
+for i = 1:1 % shape
     load(strcat('../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
         for k = 1:3 % diffuse
@@ -35,11 +35,17 @@ for i = 1:3 % shape
                         lumMap = coloredD(:,:,2,1);
                     end
                     
-                    % オブジェクト部分のみにするかどうか
+                    % オブジェクト部分のみ
                     %lumMap = lumMap .* mask;
                     %pixelNum = nnz(mask);
                     
-                    pixelNum = nnz(lumMap);
+                    % 背景部分
+                    backMask = ~mask;
+                    lumMap = lumMap .* backMask;
+                    pixelNum = nnz(backMask);
+                    
+                    % 画像全体
+                    %pixelNum = nnz(lumMap);
                     
                     lumSum = sum(lumMap, 'all');
                     
@@ -55,7 +61,7 @@ for i = 1:3 % shape
 end
 
 %% Plot
-for i = 1:3 % shape
+for i = 1:1 % shape
     f = figure;
     for k = 1:3 % diffuse
         for l = 1:3 % roughness
@@ -68,7 +74,7 @@ for i = 1:3 % shape
                     bar(x,y);
                     
                     xticks(x);
-                    xticklabels({'araa', 'envmap'});
+                    xticklabels({'area', 'envmap'});
                     xlabel('照明');
                     ylabel('平均輝度');
                     
