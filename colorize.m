@@ -72,6 +72,7 @@ noColorSpecular = colorizeXYZ(xyzStonemap,xyzStonemap,backNoMask,1);
 noColorDiffuse = colorizeXYZ(xyzDtonemap,xyzDtonemap,backNoMask,1);
 % ----------------------------------------------------------------------
 %}
+
 %% SD彩色
 % specularとdiffuseのXYZを加算
 noColorSD = noColorSpecular + noColorDiffuse;
