@@ -18,7 +18,7 @@ progress = 0;
 meanLum = zeros(3,2,3,3,2);
 
 %% Main
-for i = 1:1 % shape
+for i = 1:3 % shape
     load(strcat('../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
         for k = 1:3 % diffuse
@@ -40,12 +40,12 @@ for i = 1:1 % shape
                     %pixelNum = nnz(mask);
                     
                     % 背景部分
-                    backMask = ~mask;
-                    lumMap = lumMap .* backMask;
-                    pixelNum = nnz(backMask);
+                    %backMask = ~mask;
+                    %lumMap = lumMap .* backMask;
+                    %pixelNum = nnz(backMask);
                     
                     % 画像全体
-                    %pixelNum = nnz(lumMap);
+                    pixelNum = nnz(lumMap);
                     
                     lumSum = sum(lumMap, 'all');
                     
@@ -61,7 +61,7 @@ for i = 1:1 % shape
 end
 
 %% Plot
-for i = 1:1 % shape
+for i = 1:3 % shape
     f = figure;
     for k = 1:3 % diffuse
         for l = 1:3 % roughness

@@ -35,7 +35,7 @@ end
 %}
 lum = 3;
 
-
+%{
 % ---------- 輝度調整していない場合 -------------------------------------------
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));
@@ -57,7 +57,7 @@ noColorDiffuse = colorizeXYZ(tonemapImage(:,:,:,2),tonemapImage(:,:,:,2),backNoM
 % ---------------------------------------------------------------------------
 %}
 
-%{
+
 % ----------- 輝度調整している場合 --------------------------------------------
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/xyzSD.mat'));

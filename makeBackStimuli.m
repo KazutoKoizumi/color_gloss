@@ -57,7 +57,7 @@ bgStimuli(:,:,:,2) = colorizeXYZ(bgStimuli(:,:,:,2),bgStimuli(:,:,:,2),backNoMas
 
 %% XYZ -> RGB (rgb0~1のチェックあり)
 for i= 1:2
-    i
+    
     bgStimuli(:,:,:,i) = imageXYZ2RGB(bgStimuli(:,:,:,i),ccmat);
 end
 

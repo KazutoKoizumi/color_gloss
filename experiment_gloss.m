@@ -8,8 +8,6 @@ sn = input('Subject Name?: ', 's');
 sessionNum = input('Session Number?: ');
 
 % filename
-%dataFilename = sprintf('../data/experiment_gloss/%s/data_%s.mat', sn,sn);
-%dataListFilename = sprintf('../data/experiment_gloss/%s/list_%s.mat', sn,sn);
 dataTableName = sprintf('../data/experiment_gloss/%s/table_%s', sn,sn);
 orderFile = sprintf('../data/experiment_gloss/%s/order_%s.mat', sn,sn);
 sessionFile = sprintf('../data/experiment_gloss/%s/session%s/session%s_table_%s', sn,num2str(sessionNum),num2str(sessionNum),sn);
@@ -69,10 +67,10 @@ try
     
     % Key
     escapeKey = KbName('ESCAPE');
-    %firstKey = KbName('1!');
-    %secondKey = KbName('2@');
-    leftKey = KbName('4');
-    rightKey = KbName('6');
+    leftKey = KbName('1!');
+    rightKey = KbName('2@');
+    %leftKey = KbName('4');
+    %rightKey = KbName('6');
     
     %% データ読み込み
     % show display
@@ -80,7 +78,7 @@ try
     DrawFormattedText(winPtr, 'Please wait', 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
     
-    % stimuli matrix
+    % 刺激データ
     % low, column, rgb, color, light, diffuse, roughness, SDorD
     load('../stimuli/stimuliBunny.mat');
     load('../stimuli/stimuliDragon.mat');
@@ -140,22 +138,8 @@ try
     varNames = {'shape','light','diffuse','roughness','colorize','color1','color2','win','responseTime'};
     sessionTable = table('Size',[sessionTrialNum,9],'VariableTypes',varTypes,'VariableNames',varNames);
     
-    % 応答データを記録する配列・刺激呈示順を作るまたは読み込む
-    if sessionNum == 1
-        %{
-        % make data matrix for result
-            % 1 dim : Bunny or Dragon or Blob
-            % 2 dim : area or envmap
-            % 3 dim : diffuse parameter  0.1, 0.3, 0.5
-            % 4 dim : roughness  0.05, 0.1, 0.2
-            % 5 dim : SD or D
-            % 6 dim : pair number
-            % value : 1:the first of the pair win, 2:the second of the pair win
-        %}
-        %data = zeros(shapeNum,lightNum,diffuseNum,roughnessNum,colorizeNum,colorPair);
-        %dataList = zeros(allTrialNum, 7);
-        %dataList(:,1:6) = index;
-        
+    % 応答データを記録するテーブル・刺激呈示順を作るまたは読み込む
+    if sessionNum == 1  
         % make data table
         dataTable = table('Size',[allTrialNum,9],'VariableTypes',varTypes,'VariableNames',varNames);
         
@@ -164,16 +148,14 @@ try
         %order = randperm(sessionTrialNum);
     else
         % load subject data
-        %load(dataFilename);
-        %load(dataListFilename);
         load(strcat(dataTableName,'.mat'));
         load(orderFile);
     end
     
-    % generate random order for trash trial
+    % 捨て試行の呈示順
     orderTrash = randi([1,allTrialNum], 1,trashTrialNum);
     
-    %% 実験開始前
+    %% 実験開始直前
     % display initial text
     startText = 'Press any key to start';
     Screen('TextSize', winPtr, 50);
@@ -250,7 +232,7 @@ try
         % capture
         %imageArray = Screen('GetImage',winPtr);  
 
-        % after showing stimluli for 1 second
+        % 1秒後に刺激を消す
         Screen('FillRect', winPtr, bgColor);
         flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
         
@@ -298,8 +280,6 @@ try
         
         %% 応答データを記録
         if i > trashTrialNum
-            %data(index(stiNum,1), index(stiNum,2), index(stiNum,3), index(stiNum,4), index(stiNum,5), index(stiNum,6)) = response;
-            %dataList(stiNum, 7) = response;
             
             %{
             ------ data table ----------
@@ -334,8 +314,6 @@ try
     clear stimuliBlob;
     
     % データを保存
-    %save(dataFilename, 'data');
-    %save(dataListFilename, 'dataList');
     save(strcat(dataTableName,'.mat'), 'dataTable');
     save(orderFile, 'order');
     save(strcat(sessionFile,'.mat'), 'sessionTable');

@@ -54,18 +54,22 @@ for i = 1:3 % shape
             lumMap = zeros(iy,ix,2); %1:area, 2:envmap
             lumMap(:,:,1) = upvplAreaSD(:,:,3);
             lumMap(:,:,2) = upvplEnvSD(:,:,3);
-
-            backMask = ~mask;
-            lumMap = lumMap .* backMask;
-
-            pixelNum = nnz(backMask);
+            
+            % 背景部分
+            %backMask = ~mask;
+            %lumMap = lumMap .* backMask;
+            %pixelNum = nnz(backMask);
+            
+            % オブジェクト部分
+            lumMap = lumMap .* mask;
+            pixelNum = nnz(mask);
 
             lumSum = sum(lumMap, [1 2]);
             meanLum = lumSum / pixelNum;
             meanLum = reshape(meanLum, [1,2]); % 平均輝度
 
             %% それぞれの平均輝度からエリアライトにかける定数を求める
-            weight = 1.2; % envmapの何倍に合わせるか
+            weight = 1; % envmapの何倍に合わせるか
             proportion = meanLum(2)*weight / meanLum(1);
 
             %% エリアライトの輝度調整

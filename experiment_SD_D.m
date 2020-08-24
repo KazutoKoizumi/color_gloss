@@ -133,7 +133,7 @@ try
     varNames = {'light','diffuse','roughness','color','win','responseTime'};
     sessionTable = table('Size',[sessionTrialNum,6],'VariableTypes',varTypes,'VariableNames',varNames);
     
-    % 応答データを記録する配列・刺激呈示順を作るまたは読み込む
+    % 応答データを記録するテーブル・刺激呈示順を作るまたは読み込む
     if sessionNum == 1
         %{
         % make data matrix for result
@@ -161,10 +161,10 @@ try
         load(orderFile);
     end
     
-    % generate random order for trash trial
+    % 捨て試行の呈示順
     orderTrash = randi([1,allTrialNum], 1,trashTrialNum);
     
-    %% 実験開始前
+    %% 実験開始直前
     % display initial text
     startText = 'Press any key to start';
     Screen('TextSize', winPtr, 50);
@@ -305,8 +305,8 @@ try
     clear stimuliBunny
     
     % データを保存
-    save(dataFilename, 'data');
-    save(dataListFilename, 'dataList');
+    %save(dataFilename, 'data');
+    %save(dataListFilename, 'dataList');
     save(strcat(dataTableName,'.mat'), 'dataTable');
     save(orderFile, 'order');
     save(strcat(sessionFile,'.mat'), 'sessionTable');
