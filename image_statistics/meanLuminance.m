@@ -1,4 +1,4 @@
-%% オブジェクト部分の平均輝度を求めるプログラム
+%% 平均輝度を求めるプログラム
 clear all;
 
 %% オブジェクトのパラメータ
@@ -17,16 +17,16 @@ progress = 0;
 
 meanLum = zeros(3,2,3,3,2);
 
-%% Main
+%% 平均輝度を求める
 for i = 1:3 % shape
-    load(strcat('../mat/',shape(i),'Mask/mask.mat'));
+    load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
         for k = 1:3 % diffuse
             for l = 1:3 % roughness
                 for m = 1:2 % method
                     % データ読み込み
-                    load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
-                    load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                     [iy,ix,iz] = size(coloredSD(:,:,:,1));
                     
                     if m == 1

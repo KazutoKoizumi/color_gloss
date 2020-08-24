@@ -1,4 +1,4 @@
-%% 刺激画像の色について、各ピクセルの彩度、輝度を求める（その後散布図としてプロット）
+%% 刺激画像の色について、各ピクセルの彩度、輝度を求める（その後散布図としてプロット->stimuliSatLumPlot.m）
 clear all;
 
 %% オブジェクトのパラメータ
@@ -17,14 +17,14 @@ load('../mat/saturationMax.mat');
 
 %% Main
 for i = 1:3 % shape
-    load(strcat('../mat/',shape(i),'Mask/mask.mat'));
+    load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     sat_lum = zeros(nnz(mask),2,2,3,3,2);
     for j = 1:2 % light
         for k = 1:3 % diffuse
             for l = 1:3 % roughness
                 %% データ読み込み
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+                load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
+                load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                 [iy,ix,iz] = size(coloredSD(:,:,:,1));
                 
                 %% 色空間変換
@@ -100,9 +100,9 @@ for i = 1:3 % shape
 end
 
 %% 保存
-save('../mat/colorSatLum/bunnySatLum.mat', 'bunnySatLum');
-save('../mat/colorSatLum/dragonSatLum.mat', 'dragonSatLum');
-save('../mat/colorSatLum/blobSatLum.mat', 'blobSatLum');
+save('../../mat/colorSatLum/bunnySatLum.mat', 'bunnySatLum');
+save('../../mat/colorSatLum/dragonSatLum.mat', 'dragonSatLum');
+save('../../mat/colorSatLum/blobSatLum.mat', 'blobSatLum');
     
     
                                 

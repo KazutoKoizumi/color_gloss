@@ -11,9 +11,9 @@ method = ["SD", "D"];
 sz = 16;
 
 % 読み込み
-load('../mat/colorSatLum/bunnySatLum.mat');
-load('../mat/colorSatLum/dragonSatLum.mat');
-load('../mat/colorSatLum/blobSatLum.mat');
+load('../../mat/colorSatLum/bunnySatLum.mat');
+load('../../mat/colorSatLum/dragonSatLum.mat');
+load('../../mat/colorSatLum/blobSatLum.mat');
 
 % plot
 for i = 1:3 % shape
@@ -51,7 +51,7 @@ for i = 1:3 % shape
             
             f.WindowState = 'maximized';
             graphName = strcat(shape(i),'_',light(j),'_',diffuse(k),'.png');
-            fileName = strcat('../mat/colorSatLum/graph/',graphName);
+            fileName = strcat('../../mat/colorSatLum/graph/',graphName);
             saveas(gcf, fileName);
         end
     end
