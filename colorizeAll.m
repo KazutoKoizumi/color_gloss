@@ -58,13 +58,14 @@ for i = 1:3  % shape
                 % --------- 輝度調整している場合 -----------------------------
                 %% データ読み込み
                 load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzSD.mat'));
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzStonemap.mat'));
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack.mat'));
                 
                 %% 全体を無色にする
                 backNoMask = ones(size(xyzSD, 1), size(xyzSD, 2));
                 noColorSpecular = colorizeXYZ(xyzStonemap,xyzDtonemap,backNoMask,1);
                 noColorDiffuse = colorizeXYZ(xyzDtonemap,xyzDtonemap,backNoMask,1);
+                % -----------------------------------------------------------
                 
                 %% SD彩色
                 % specularとdiffuseのXYZを加算
@@ -81,8 +82,8 @@ for i = 1:3  % shape
                 coloredD = noColorSpecular + colorDiffuse;
                 
                 %% データ保存
-                ss = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD');
-                sd = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD');
+                ss = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSDBack');
+                sd = strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredDBack');
                 save(ss,'coloredSD');
                 save(sd,'coloredD');
                 

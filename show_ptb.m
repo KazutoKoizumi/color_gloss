@@ -65,9 +65,9 @@ try
     
     % stimuli matrix
     % low, column, rgb, color, light, diffuse, roughness, SDorD
-    load('../stimuli/stimuliBunny.mat');
-    load('../stimuli/stimuliDragon.mat');
-    load('../stimuli/stimuliBlob.mat');
+    load('../stimuli/stimuliBunnyBack.mat');
+    load('../stimuli/stimuliDragonBack.mat');
+    load('../stimuli/stimuliBlobBack.mat');
     load('../stimuli/back/bgStimuli.mat');    
     
     %% パラメータ設定

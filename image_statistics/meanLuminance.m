@@ -25,8 +25,8 @@ for i = 1:3 % shape
             for l = 1:3 % roughness
                 for m = 1:2 % method
                     % データ読み込み
-                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
-                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSDBack.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredDBack.mat'));
                     [iy,ix,iz] = size(coloredSD(:,:,:,1));
                     
                     if m == 1
@@ -36,8 +36,8 @@ for i = 1:3 % shape
                     end
                     
                     % オブジェクト部分のみ
-                    %lumMap = lumMap .* mask;
-                    %pixelNum = nnz(mask);
+                    lumMap = lumMap .* mask;
+                    pixelNum = nnz(mask);
                     
                     % 背景部分
                     %backMask = ~mask;
@@ -45,7 +45,7 @@ for i = 1:3 % shape
                     %pixelNum = nnz(backMask);
                     
                     % 画像全体
-                    pixelNum = nnz(lumMap);
+                    %pixelNum = nnz(lumMap);
                     
                     lumSum = sum(lumMap, 'all');
                     

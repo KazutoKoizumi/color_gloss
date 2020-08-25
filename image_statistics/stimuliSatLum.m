@@ -11,8 +11,8 @@ colorizeM = ["SD", "D"];
 allObj = 3*2*3*3*2;
 progress = 0;
 
-load('../mat/upvplWhitePoints.mat');
-load('../mat/saturationMax.mat');
+load('../../mat/upvplWhitePoints.mat');
+load('../../mat/saturationMax.mat');
 [~,iMax] = max(saturationMax);
 
 %% Main

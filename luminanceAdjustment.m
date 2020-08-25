@@ -1,7 +1,7 @@
 %% レンダリング結果の輝度調整（トーンマップ含む）
 % エリアライトを使用した画像とenvmapを使用した画像の背景部分の平均輝度を比較
 % これが一致するようにエリアライトの画像全体の輝度を定数倍する
-% load:coloredSD,coloredD  save:coloredSD,coloredD
+% load:xyzS,xyzD  save:xyzStonemap, xyzDtonemap
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
@@ -56,13 +56,13 @@ for i = 1:3 % shape
             lumMap(:,:,2) = upvplEnvSD(:,:,3);
             
             % 背景部分
-            %backMask = ~mask;
-            %lumMap = lumMap .* backMask;
-            %pixelNum = nnz(backMask);
+            backMask = ~mask;
+            lumMap = lumMap .* backMask;
+            pixelNum = nnz(backMask);
             
             % オブジェクト部分
-            lumMap = lumMap .* mask;
-            pixelNum = nnz(mask);
+            %lumMap = lumMap .* mask;
+            %pixelNum = nnz(mask);
 
             lumSum = sum(lumMap, [1 2]);
             meanLum = lumSum / pixelNum;
@@ -87,14 +87,14 @@ for i = 1:3 % shape
             % area
             xyzStonemap = applycform(upvplArea(:,:,:,1),cu2x);
             xyzDtonemap = applycform(upvplArea(:,:,:,2),cu2x);
-            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemap'),'xyzStonemap');
-            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap'),'xyzDtonemap');
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack'),'xyzStonemap');
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack'),'xyzDtonemap');
             
             % envmap
             xyzStonemap = xyzEnv(:,:,:,1);
             xyzDtonemap = xyzEnv(:,:,:,2);
-            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzStonemap'),'xyzStonemap');
-            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap'),'xyzDtonemap');
+            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack'),'xyzStonemap');
+            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack'),'xyzDtonemap');
             
             %% 進行度表示
             progress = progress + 1;

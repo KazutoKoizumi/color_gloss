@@ -13,7 +13,7 @@ load('../mat/back/backArea.mat');
 load('../mat/back/backEnv.mat');
 
 [iy, ix, iz] = size(backArea);
-lum = 3.5;
+lum = 2.5;
 
 %% 輝度調整
 bgStimuli = zeros(iy, ix, iz, 2); % 1:area, 2:envmap
@@ -34,7 +34,7 @@ lumSum = reshape(lumSum, [1 2]);
 meanLum = lumSum / pixelNum; % 平均輝度
 
 % エリアライトにかける定数を求める
-weight = 1.2;
+weight = 2;
 proportion = meanLum(2)*weight / meanLum(1);
 
 % エリアライトの輝度調整

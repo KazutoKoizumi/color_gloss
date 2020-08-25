@@ -67,10 +67,10 @@ try
     
     % Key
     escapeKey = KbName('ESCAPE');
-    leftKey = KbName('1!');
-    rightKey = KbName('2@');
-    %leftKey = KbName('4');
-    %rightKey = KbName('6');
+    %leftKey = KbName('1!');
+    %rightKey = KbName('2@');
+    leftKey = KbName('4');
+    rightKey = KbName('6');
     
     %% データ読み込み
     % show display
