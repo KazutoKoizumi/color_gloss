@@ -85,7 +85,7 @@ try
     load('../stimuli/stimuliBlob.mat');
     load('../stimuli/back/bgStimuli.mat');
     
-    %% パラメータ設定
+    %% 実験パラメータ設定
     flag = 0;
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
@@ -220,6 +220,17 @@ try
         color2 : colorName(pair2color(index(stiNum,6),2))
         %}
         
+        % 試行番号と呈示する刺激のパラメータ表示
+        if i <= trashTrialNum
+            fprintf('trash\n');
+        else
+            fprintf('main\n');
+        end
+        fprintf('trial number in this session : %d\n', i);
+        fprintf('stimuli number : %d\n', stiNum);
+        fprintf('%s, %s, diffuse:%f, roughness:%s, %s\n', shape(flagShape), light(index(stiNum,2)), diffuseVar(index(stiNum,3)), roughVar(index(stiNum,4)), colorizeW(index(stiNum,5)));
+        fprintf('color pair : %s vs %s\n', colorName(pair2color(index(stiNum,6),oneOrTwo)), colorName(pair2color(index(stiNum,6),3-oneOrTwo)));
+        
         %% 刺激呈示
         leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
         rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
@@ -266,18 +277,6 @@ try
             break
         end
         
-        %% 進行度表示
-        if i <= trashTrialNum
-            fprintf('trash\n');
-        else
-            fprintf('main\n');
-        end
-        fprintf('trial number in this session : %d\n', i);
-        fprintf('stimuli number : %d\n', stiNum);
-        fprintf('pressed key : %d\n', flag);
-        fprintf('color pair : %s vs %s\n', colorName(pair2color(index(stiNum,6),oneOrTwo)), colorName(pair2color(index(stiNum,6),3-oneOrTwo)));
-        fprintf('subject response : %s\n\n', colorName(pair2color(index(stiNum,6),response)));
-        
         %% 応答データを記録
         if i > trashTrialNum
             
@@ -298,6 +297,10 @@ try
             dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
         end
         
+        % 応答表示
+        fprintf('pressed key : %d\n', flag);
+        fprintf('subject response : %s\n\n', colorName(pair2color(index(stiNum,6),response)));
+        
         %% 実験が半分経過
         if i == round((sessionTrialNum+trashTrialNum)/2)
             DrawFormattedText(winPtr, 'Half. Press any key to continue.', 'center', 'center',[255 255 255]);
@@ -312,6 +315,7 @@ try
     clear stimuliBunny;
     clear stimuliDragon;
     clear stimuliBlob;
+    finTime = datetime;
     
     % データを保存
     save(strcat(dataTableName,'.mat'), 'dataTable');
@@ -320,15 +324,7 @@ try
     writetable(dataTable, strcat(dataTableName,'.txt'));
     writetable(sessionTable, strcat(sessionFile,'.txt'));
     
-    % 終了の表示
-    finTime = datetime;
-    finishText = 'The experiment is over. Press any key.';
-    Screen('TextSize', winPtr, 50);
-    DrawFormattedText(winPtr, finishText, 'center', 'center',[255 255 255]);
-    Screen('Flip', winPtr);
-    KbWait([], 2);
-    
-    % セッションごとのデータの書き出し
+    % セッションごとのログ
     expTime = finTime - date;
     fp = fopen(recordFile, 'a');
     fprintf(fp, '%dセッション目\n', sessionNum);
@@ -336,6 +332,13 @@ try
     fprintf(fp, '試行回数　%d回\n', i);
     fprintf(fp, '実験時間　%s\n\n', char(expTime));
     fclose(fp);    
+    
+    % 終了の表示
+    finishText = 'The experiment is over. Press any key.';
+    Screen('TextSize', winPtr, 50);
+    DrawFormattedText(winPtr, finishText, 'center', 'center',[255 255 255]);
+    Screen('Flip', winPtr);
+    KbWait([], 2);
     
     % 終了処理
     Priority(0);

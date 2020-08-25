@@ -68,8 +68,8 @@ try
     
     % Key
     escapeKey = KbName('ESCAPE');
-    %firstKey = KbName('1!');
-    %secondKey = KbName('2@');
+    %leftKey = KbName('1!');
+    %rightKey = KbName('2@');
     leftKey = KbName('4');
     rightKey = KbName('6');   
     
@@ -211,8 +211,19 @@ try
         light : light(index(stiNum,1)
         diffuse : diffuseVar(index(stiNum,2))
         roughness : roughVar(index(stiNum,3))
-        color : index(stiNum, 4)
+        color : colorName(index(stiNum,4)-1)
         %}
+        
+        % 試行番号と呈示する刺激のパラメータ表示
+        if i <= trashTrialNum
+            fprintf('trash\n');
+        else
+            fprintf('main\n');
+        end
+        fprintf('trial number in this session : %d\n', i);
+        fprintf('stimuli number : %d\n', stiNum);
+        fprintf('%s, diffuse:%f, roughness:%f, %s\n', light(index(stiNum,1)), diffuseVar(index(stiNum,1)), roughVar(index(stiNum,3)), colorName(index(stiNum,4)-1));
+        fprintf('left : %s, right : %s\n', colorizeW(oneOrTwo), colorizeW(3-oneOrTwo));
         
         %% 刺激呈示
         leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
@@ -260,18 +271,6 @@ try
             break
         end
         
-        %% 進行度表示
-        if i <= trashTrialNum
-            fprintf('trash\n');
-        else
-            fprintf('main\n');
-        end
-        fprintf('trial number in this session : %d\n', i);
-        fprintf('stimuli number : %d\n', stiNum);
-        fprintf('left : %s, right : %s\n', colorizeW(oneOrTwo), colorizeW(3-oneOrTwo));
-        fprintf('pressed key : %d\n', flag);
-        fprintf('subject response : %s\n\n', colorizeW(response));
-        
         %% 応答データを記録
         if i > trashTrialNum
             %data(index(stiNum,1), index(stiNum,2), index(stiNum,3), index(stiNum,4)) = response;
@@ -290,6 +289,10 @@ try
             sessionTable(i-trashTrialNum,:) = {light(index(stiNum,1)),diffuseVar(index(stiNum,2)),roughVar(index(stiNum,3)),colorName(index(stiNum,4)-1),colorizeW(response),resTime};
             dataTable(stiNum,:) = {light(index(stiNum,1)),diffuseVar(index(stiNum,2)),roughVar(index(stiNum,3)),colorName(index(stiNum,4)-1),colorizeW(response),resTime};
         end
+        
+        % 応答結果を表示
+        fprintf('pressed key : %d\n', flag);
+        fprintf('subject response : %s\n\n', colorizeW(response));
         
         %% 実験が半分経過
         if i == round((sessionTrialNum+trashTrialNum)/2)
