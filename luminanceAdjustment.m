@@ -1,7 +1,9 @@
 %% レンダリング結果の輝度調整（トーンマップ含む）
-% エリアライトを使用した画像とenvmapを使用した画像の背景部分の平均輝度を比較
+% エリアライトを使用した画像すべてとenvmapを使用した画像すべてのオブジェクト部分の平均輝度を調べる
 % これが一致するようにエリアライトの画像全体の輝度を定数倍する
 % load:xyzS,xyzD  save:xyzStonemap, xyzDtonemap
+
+clear all;
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
@@ -15,11 +17,15 @@ lum = 3.5;
 allObj = 3*3*3;
 progress = 0;
 
+meanLum = zeros(allObj,2);
+
 %% Main
 for i = 1:3 % shape
     load(strcat('../mat/',shape(i),'Mask/mask.mat'));
     for k = 1:3 % diffuse
         for l = 1:3 % roughness
+            progress = progress + 1;
+            
             %% データ読み込み、トーンマップ
             % area
             load(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzS.mat'));
@@ -43,36 +49,71 @@ for i = 1:3 % shape
             %% 色空間変換
             cx2u = makecform('xyz2upvpl');
             cu2x = makecform('upvpl2xyz');
-            upvplArea(:,:,:,1) = applycform(xyzArea(:,:,:,1),cx2u);
-            upvplArea(:,:,:,2) = applycform(xyzArea(:,:,:,2),cx2u);
             upvplAreaSD = applycform(xyzAreaSD,cx2u);
-            upvplEnv(:,:,:,1) = applycform(xyzEnv(:,:,:,1),cx2u);
-            upvplEnv(:,:,:,2) = applycform(xyzEnv(:,:,:,2),cx2u);
             upvplEnvSD = applycform(xyzEnvSD,cx2u);   
 
-            %% エリアライト、envmapそれぞれの背景部分の平均輝度を求める
+            %% エリアライト、envmapそれぞれの平均輝度を求める
             lumMap = zeros(iy,ix,2); %1:area, 2:envmap
             lumMap(:,:,1) = upvplAreaSD(:,:,3);
             lumMap(:,:,2) = upvplEnvSD(:,:,3);
             
             % 背景部分
-            backMask = ~mask;
-            lumMap = lumMap .* backMask;
-            pixelNum = nnz(backMask);
+            %backMask = ~mask;
+            %lumMap = lumMap .* backMask;
+            %pixelNum = nnz(backMask);
             
             % オブジェクト部分
-            %lumMap = lumMap .* mask;
-            %pixelNum = nnz(mask);
+            lumMap = lumMap .* mask;
+            pixelNum = nnz(mask);
 
             lumSum = sum(lumMap, [1 2]);
-            meanLum = lumSum / pixelNum;
-            meanLum = reshape(meanLum, [1,2]); % 平均輝度
+            meanLum(progress,:) = lumSum / pixelNum;
+            meanLum(progress,:) = reshape(meanLum(progress,:), [1,2]); % 平均輝度 1:area, 2:envmap
+            
+            %% トーンマップデータ保存
+            % area
+            xyzStonemap = xyzArea(:,:,:,1);
+            xyzDtonemap = xyzArea(:,:,:,2);
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemap'),'xyzStonemap');
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap'),'xyzDtonemap');
 
-            %% それぞれの平均輝度からエリアライトにかける定数を求める
-            weight = 1; % envmapの何倍に合わせるか
-            proportion = meanLum(2)*weight / meanLum(1);
+            % envmap
+            xyzStonemap = xyzEnv(:,:,:,1);
+            xyzDtonemap = xyzEnv(:,:,:,2);
+            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzStonemap'),'xyzStonemap');
+            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap'),'xyzDtonemap');
+            
+            %% 進行度表示
+            fprintf('finish : %d/%d\n\n', progress, allObj);
+            
+        end
+    end
+end
 
-            %% エリアライトの輝度調整
+%% エリアライトにかける係数を求める
+% パラメータ全体の平均輝度
+meanLum = mean(meanLum);
+
+% 係数
+weight = 1; % envmapの何倍に合わせるか
+proportion = meanLum(2)*weight / meanLum(1);
+
+progress = 0;
+
+%% エリアライトの輝度調整
+for i = 1:3
+    for k = 1:3
+        for l = 1:3
+            % データ読み込み
+            % area
+            load(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemap.mat'));
+            load(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap.mat'));
+            
+            % 色空間変換
+            upvplArea(:,:,:,1) = applycform(xyzStonemap,cx2u);
+            upvplArea(:,:,:,2) = applycform(xyzStonemap,cx2u);
+            
+            % エリアライトの輝度調整
             upvplArea(:,:,3,:) = upvplArea(:,:,3,:) * proportion;
             
             % 最小輝度を下回る部分の調整
@@ -80,28 +121,19 @@ for i = 1:3 % shape
             minMapMask = ~minMap;
             minMap = minMap * monitorMinLum;
             upvplArea(:,:,3,:) = upvplArea(:,:,3,:) .* minMapMask + minMap;
-
-            minArea = min(upvplArea(:,:,3,:),[],'all');
-
-            %% データ保存
+            
+            % データ保存
             % area
             xyzStonemap = applycform(upvplArea(:,:,:,1),cu2x);
             xyzDtonemap = applycform(upvplArea(:,:,:,2),cu2x);
             save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack'),'xyzStonemap');
             save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack'),'xyzDtonemap');
             
-            % envmap
-            xyzStonemap = xyzEnv(:,:,:,1);
-            xyzDtonemap = xyzEnv(:,:,:,2);
-            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack'),'xyzStonemap');
-            save(strcat('../mat/',shape(i),'/',light(2),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack'),'xyzDtonemap');
-            
-            %% 進行度表示
+            % 進行度表示
             progress = progress + 1;
             fprintf('finish : %d/%d\n\n', progress, allObj);
+            
         end
     end
 end
 
-                
-                

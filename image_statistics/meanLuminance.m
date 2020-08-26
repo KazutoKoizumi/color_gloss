@@ -25,8 +25,8 @@ for i = 1:3 % shape
             for l = 1:3 % roughness
                 for m = 1:2 % method
                     % データ読み込み
-                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSDBack.mat'));
-                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredDBack.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
+                    load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                     [iy,ix,iz] = size(coloredSD(:,:,:,1));
                     
                     if m == 1

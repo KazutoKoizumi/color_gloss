@@ -24,8 +24,8 @@ for i = 1:3
         for k = 1:3
             for l = 1:3
                 %% データ読み込み
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSDBack.mat'));
-                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredDBack.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
+                load(strcat('../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                 [ix,iy,iz] = size(coloredSD(:,:,:,1));
                 stimuliSD = zeros(ix,iy,iz,9);
                 stimuliD = zeros(ix,iy,iz,9);
@@ -74,6 +74,6 @@ for i = 1:3
 end
 
 %% まとめたデータを保存
-save('../stimuli/stimuliBunnyBack.mat', 'stimuliBunny');
-save('../stimuli/stimuliDragonBack.mat', 'stimuliDragon');
-save('../stimuli/stimuliBlobBack.mat', 'stimuliBlob');
+save('../stimuli/stimuliBunny.mat', 'stimuliBunny');
+save('../stimuli/stimuliDragon.mat', 'stimuliDragon');
+save('../stimuli/stimuliBlob.mat', 'stimuliBlob');
