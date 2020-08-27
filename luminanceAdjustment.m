@@ -111,7 +111,7 @@ for i = 1:3
             
             % 色空間変換
             upvplArea(:,:,:,1) = applycform(xyzStonemap,cx2u);
-            upvplArea(:,:,:,2) = applycform(xyzStonemap,cx2u);
+            upvplArea(:,:,:,2) = applycform(xyzDtonemap,cx2u);
             
             % エリアライトの輝度調整
             upvplArea(:,:,3,:) = upvplArea(:,:,3,:) * proportion;
@@ -126,8 +126,8 @@ for i = 1:3
             % area
             xyzStonemap = applycform(upvplArea(:,:,:,1),cu2x);
             xyzDtonemap = applycform(upvplArea(:,:,:,2),cu2x);
-            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemapBack'),'xyzStonemap');
-            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemapBack'),'xyzDtonemap');
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzStonemap'),'xyzStonemap');
+            save(strcat('../mat/',shape(i),'/',light(1),'/',diffuse(k),'/',roughness(l),'/xyzDtonemap'),'xyzDtonemap');
             
             % 進行度表示
             progress = progress + 1;
@@ -137,3 +137,4 @@ for i = 1:3
     end
 end
 
+save('proportion.mat', 'proportion');

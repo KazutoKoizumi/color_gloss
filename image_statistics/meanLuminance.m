@@ -61,6 +61,8 @@ for i = 1:3 % shape
 end
 
 %% Plot
+progress = 0;
+luminanceMean = zeros(54,2);
 for i = 1:3 % shape
     f = figure;
     for k = 1:3 % diffuse
@@ -81,14 +83,17 @@ for i = 1:3 % shape
                     title(strcat(method(m),'  diffuse:',Dname(k),'  roughness:',roughName(l)));
                     
                     hold off;
+                    
+                    progress = progress + 1;
+                    luminanceMean(progress,:) = meanLum(i,:,k,l,m);
+                    
             end
         end
     end
     sgtitle(strcat('shape:',shape(i)));
-    
 end
-                    
-                    
-                    
-                
-                
+
+luminanceMean = sum(luminanceMean) / 54;
+
+
+
