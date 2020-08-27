@@ -92,11 +92,12 @@ end
 
 %% エリアライトにかける係数を求める
 % パラメータ全体の平均輝度
-meanLum = mean(meanLum);
+meanAllPar = mean(meanLum);
 
 % 係数
 weight = 1; % envmapの何倍に合わせるか
-proportion = meanLum(2)*weight / meanLum(1);
+proportion = meanAllPar(2)*weight / meanAllPar(1);
+
 
 progress = 0;
 
@@ -137,4 +138,4 @@ for i = 1:3
     end
 end
 
-save('proportion.mat', 'proportion');
+save('../mat/proportion.mat', 'proportion');

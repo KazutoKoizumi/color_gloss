@@ -26,8 +26,11 @@ for i = 1:3 % shape
                 % データ読み込み
                 load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
                 [iy,ix,iz] = size(coloredSD(:,:,:,1));
+                
+                load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzD.mat'));
+                lumMap = xyzD(:,:,2);
 
-                lumMap = coloredSD(:,:,2,1);
+                %lumMap = coloredSD(:,:,2,1);
 
                 % オブジェクト部分のみ
                 lumMap = lumMap .* mask;
@@ -47,10 +50,12 @@ for i = 1:3 % shape
 
                 h = histogram(lumMap);
                 
-                xlim([0 45]);
+                %xlim([0 45]);
                 title(strcat('diffuse:',Dname(k),'  roughness:',roughName(l)));
 
                 hold off;
+                
+                max(lumMap)
 
                 % 進行度表示
                 progress = progress + 1;

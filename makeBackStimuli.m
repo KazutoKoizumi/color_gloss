@@ -1,11 +1,13 @@
 %% 刺激画像の背景のみの画像（RGB）をつくる
 % 輝度調整、無彩色にしたあとにRGBに変換、areaとenvmapをまとめる
+% トーンマップの最大輝度注意！
 
 clear all;
 
 %% データ読み込み
 load('../mat/ccmat.mat');
 load('../mat/upvplWhitePoints.mat');
+load('../mat/proportion.mat');
 monitorMinLum = min(upvplWhitePoints(:,3));
 monitorMinLum = upvplWhitePoints(2,3);
 
@@ -13,19 +15,19 @@ load('../mat/back/backArea.mat');
 load('../mat/back/backEnv.mat');
 
 [iy, ix, iz] = size(backArea);
-lum = 2.5;
+lum = 3.5;
 
 %% 輝度調整
 bgStimuli = zeros(iy, ix, iz, 2); % 1:area, 2:envmap
 bgStimuli(:,:,:,1) = tonemaping(backArea,lum);
 bgStimuli(:,:,:,2) = tonemaping(backEnv,lum);
 
-% 色空間変換
+% XYZ -> u'v'l
 cx2u = makecform('xyz2upvpl');
 cu2x = makecform('upvpl2xyz');
-upvpl(:,:,:,1) = applycform(bgStimuli(:,:,:,1),cx2u);
-upvpl(:,:,:,2) = applycform(bgStimuli(:,:,:,2),cx2u);
+upvpl = applycform(bgStimuli(:,:,:,1),cx2u);
 
+%{
 % それぞれの平均輝度を求める
 lumMap = upvpl(:,:,3,:);
 pixelNum = iy*ix;
@@ -36,19 +38,19 @@ meanLum = lumSum / pixelNum; % 平均輝度
 % エリアライトにかける定数を求める
 weight = 2;
 proportion = meanLum(2)*weight / meanLum(1);
+%}
 
 % エリアライトの輝度調整
-upvpl(:,:,3,1) = upvpl(:,:,3,1) * proportion;
+upvpl(:,:,3) = upvpl(:,:,3) * proportion;
 
 % 最小輝度を下回る部分の調整
-minMap = upvpl(:,:,3,1) < monitorMinLum;
+minMap = upvpl(:,:,3) < monitorMinLum;
 minMapMask = ~minMap;
 minMap = minMap * monitorMinLum;
-upvpl(:,:,3,1) = upvpl(:,:,3,1) .* minMapMask + minMap;
+upvpl(:,:,3) = upvpl(:,:,3) .* minMapMask + minMap;
 
-%% upvpl -> XYZ
-bgStimuli(:,:,:,1) = applycform(upvpl(:,:,:,1),cu2x);
-bgStimuli(:,:,:,2) = applycform(upvpl(:,:,:,2),cu2x);
+% u'v'l -> XYZ
+bgStimuli(:,:,:,1) = applycform(upvpl,cu2x);
 
 %% 無彩色にする
 backNoMask = ones(iy,ix);
@@ -57,7 +59,6 @@ bgStimuli(:,:,:,2) = colorizeXYZ(bgStimuli(:,:,:,2),bgStimuli(:,:,:,2),backNoMas
 
 %% XYZ -> RGB (rgb0~1のチェックあり)
 for i= 1:2
-    
     bgStimuli(:,:,:,i) = imageXYZ2RGB(bgStimuli(:,:,:,i),ccmat);
 end
 
