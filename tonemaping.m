@@ -5,7 +5,7 @@ load('../mat/upvplWhitePoints.mat');
 
 cx2u = makecform('xyz2upvpl');
 cu2x = makecform('upvpl2xyz');
-monitorMaxLum = max(upvplWhitePoints(:,3))/2-1;
+monitorMaxLum = max(upvplWhitePoints(:,3))-2;
 monitorMinLum = min(upvplWhitePoints(:,3));
 upvpl = applycform(xyz,cx2u);
 

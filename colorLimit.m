@@ -70,6 +70,6 @@ end
 save('../mat/logScale','logScale');
 save('../mat/monitorColorMax','monitorColorMax');
 save('../mat/upvplWhitePoints','upvplWhitePoints');
-save('../mat/fixedCOlorMax', 'fixedColorMax');
+save('../mat/fixedColorMax', 'fixedColorMax');
 save('../mat/saturationMax', 'saturationMax');
 save('../mat/saturateColor', 'saturateColor');
