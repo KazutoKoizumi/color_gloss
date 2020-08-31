@@ -12,10 +12,10 @@ load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliD.m
 
 figure;
 image(stimuliSD(:,:,:,2));
-%xticks({});
-%yticks({});
-%xticklabels({});
-%yticklabels({});
+xticks({});
+yticks({});
+xticklabels({});
+yticklabels({});
 
 figure;
 image(stimuliD(:,:,:,2));

@@ -241,7 +241,7 @@ try
         flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
         % capture
-        %imageArray = Screen('GetImage',winPtr);  
+        %imageArray = Screen('GetImage',winPtr);
 
         % 1秒後に刺激を消す
         Screen('FillRect', winPtr, bgColor);
