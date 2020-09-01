@@ -246,6 +246,7 @@ try
         % 1秒後に刺激を消す
         Screen('FillRect', winPtr, bgColor);
         flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
+        Screen('Close', [leftStimulus, rightStimulus]);
         
         %% 被験者応答
         % Wait for subject's response

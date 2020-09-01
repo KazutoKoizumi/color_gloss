@@ -5,7 +5,7 @@ clear all
 
 % name
 exp = 'experiment_SDvsD';
-sn = 'preexp_koizumi';
+sn = 'koizumi';
 
 % result
 % shape : bunny
@@ -73,9 +73,9 @@ mean_se = zeros(1,4);
 algo = 1;
 
 %% load experiment result
-load(strcat('../..//data/',exp,'/',sn,'/winTable/mtx'));
-load(strcat('../..//data/',exp,'/',sn,'/winTable/OutOfNum'));
-load(strcat('../..//data/',exp,'/',sn,'/winTable/NumGreater'));
+load(strcat('../../data/',exp,'/',sn,'/winTable/mtx'));
+load(strcat('../../data/',exp,'/',sn,'/winTable/OutOfNum'));
+load(strcat('../../data/',exp,'/',sn,'/winTable/NumGreater'));
 
 sd = 1; % SD of sensation ('1' is the assumption of case V)
 

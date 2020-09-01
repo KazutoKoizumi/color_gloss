@@ -10,7 +10,7 @@
 % color : 8
 
 exp = 'experiment_SDvsD';
-sn = 'preexp_koizumi';
+sn = 'koizumi';
 methodName = ["SD", "D"];
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 

@@ -240,6 +240,7 @@ try
         % after showing stimluli for 1 second
         Screen('FillRect', winPtr, bgColor);
         flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
+        Screen('Close', [leftStimulus, rightStimulus]);
         
         %% 被験者応答
         % Wait for subject's response

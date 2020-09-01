@@ -36,13 +36,13 @@ for i = 1:3 % shape
                     end
                     
                     % オブジェクト部分のみ
-                    %lumMap = lumMap .* mask;
-                    %pixelNum = nnz(mask);
+                    lumMap = lumMap .* mask;
+                    pixelNum = nnz(mask);
                     
                     % 背景部分
-                    backMask = ~mask;
-                    lumMap = lumMap .* backMask;
-                    pixelNum = nnz(backMask);
+                    %backMask = ~mask;
+                    %lumMap = lumMap .* backMask;
+                    %pixelNum = nnz(backMask);
                     
                     % 画像全体
                     %pixelNum = nnz(lumMap);

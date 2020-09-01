@@ -1,7 +1,7 @@
 %　選考尺度値をプロットする, SDvsD
 
 exp = 'experiment_SDvsD';
-sn = 'preexp_koizumi';
+sn = 'koizumi';
 
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/selectionScale.mat'));
