@@ -5,7 +5,9 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'preexp_koizumi';
+sn = 'koizumi';
+
+mkdir(strcat('../../analysis_result/',exp,'/',sn));
 
 % result
 sv = zeros(1,9,3,2,3,3,2);
@@ -178,7 +180,7 @@ for i = 1:3 % shape
                     progress = progress + 1;
                     fprintf('analysis progress : %d / %d\n\n', progress, trial);
 
-                    
+                    %{
                     %% just to compare the experiment procedures: plot the simulation results
                     % Comparison of Thurston and ML: estimated sensation values with error bars.
                     str = ['Ground truth vs Estimated: ', algostr{algo}];
