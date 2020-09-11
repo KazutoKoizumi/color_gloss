@@ -1,8 +1,9 @@
 %　選考尺度値をプロットする
 
 exp = 'experiment_gloss';
-sn = 'preexp_koizumi';
+sn = 'nohira';
 
+mkdir(strcat('../../analysis_result/',exp,'/',sn,'/graph'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/selectionScale.mat'));
 

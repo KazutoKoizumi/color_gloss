@@ -5,7 +5,7 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'koizumi';
+sn = 'nohira';
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn));
 

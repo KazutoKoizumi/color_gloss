@@ -222,7 +222,7 @@ try
         end
         fprintf('trial number in this session : %d\n', i);
         fprintf('stimuli number : %d\n', stiNum);
-        fprintf('%s, diffuse:%f, roughness:%f, %s\n', light(index(stiNum,1)), diffuseVar(index(stiNum,1)), roughVar(index(stiNum,3)), colorName(index(stiNum,4)-1));
+        fprintf('%s, diffuse:%f, roughness:%f, %s\n', light(index(stiNum,1)), diffuseVar(index(stiNum,2)), roughVar(index(stiNum,3)), colorName(index(stiNum,4)-1));
         fprintf('left : %s, right : %s\n', colorizeW(oneOrTwo), colorizeW(3-oneOrTwo));
         
         %% 刺激呈示
