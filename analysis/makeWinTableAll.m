@@ -1,9 +1,14 @@
 % 被験者全員分のglossの実験データをまとめた勝敗表をつくる
+% mtx : 勝率
+% OutOfNUm : 対戦数
+% NumGreater : 勝数
+
+clear all;
 
 exp = 'experiment_gloss';
-sn = ["koizumi", "nohira"]; 
+sn = ["koizumi", "nohira", "totsuka"]; 
 N = size(sn,2); % 被験者数
-colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
+colorName = ["gray","red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 
 mkdir(strcat('../../data/',exp,'/all/winTable'));
 
@@ -34,6 +39,8 @@ for i = 1:3 % shape
                             elseif winColor == color2
                                 NumGreater(winColor,color1,i,j,k,l,m) = NumGreater(winColor,color1,i,j,k,l,m) + 1;
                             end
+                            
+                            clear dataTable;
                         end
                     end
                 end
