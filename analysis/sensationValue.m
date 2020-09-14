@@ -6,7 +6,12 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'nohira';
+sn = 'totsuka';
+
+% parameters
+B = 10000; % Repetition number in Bootstrap
+tnum = 3; % trial number in each stimulus pair in conventional experiment
+stimnum = 9; % number of stimuli
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn));
 
@@ -21,11 +26,6 @@ fprintf('   [1] Customized fminsearch in MLDS method\n');
 fprintf('   [2] Normal fminsearch\n');
 fprintf('   [3] fmincon for constrained parameter range (MATLAB only)\n');
 method = input('Please enter 1, 2, or 3 (default: 3):   ');
-
-% parameters
-B = 10000; % Repetition number in Bootstrap
-tnum = 1; % trial number in each stimulus pair in conventional experiment
-stimnum = 9; % number of stimuli
 
 % make ground truth: psychological sensation magnitude such as 'glossiness'
 GroundTruth = rand(1,stimnum).*6-3; % range of Ground Truth of sensation magnitude

@@ -1,7 +1,7 @@
 %　選考尺度値をプロットする
 
 exp = 'experiment_gloss';
-sn = 'nohira';
+sn = 'all';
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn,'/graph'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
