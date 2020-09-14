@@ -10,7 +10,7 @@ sn = 'totsuka';
 
 % parameters
 B = 10000; % Repetition number in Bootstrap
-tnum = 3; % trial number in each stimulus pair in conventional experiment
+tnum = 1; % trial number in each stimulus pair in conventional experiment
 stimnum = 9; % number of stimuli
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn));
