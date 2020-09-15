@@ -6,11 +6,11 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'totsuka';
+sn = 'all';
 
 % parameters
 B = 10000; % Repetition number in Bootstrap
-tnum = 1; % trial number in each stimulus pair in conventional experiment
+tnum = 3; % trial number in each stimulus pair in conventional experiment
 stimnum = 9; % number of stimuli
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn));
@@ -181,7 +181,7 @@ for i = 1:3 % shape
                     progress = progress + 1;
                     fprintf('analysis progress : %d / %d\n\n', progress, trial);
 
-                    %{
+                    
                     %% just to compare the experiment procedures: plot the simulation results
                     % Comparison of Thurston and ML: estimated sensation values with error bars.
                     str = ['Ground truth vs Estimated: ', algostr{algo}];
@@ -226,7 +226,17 @@ for i = 1:3 % shape
                     mean_se(algo) = mean(ses_ml);
 
                     fprintf('Mean standard error of each experimental algorithm (analyzed by maximum likelihood method)\n');
-                    fprintf('   conventional method: %f\n', mean_se(1));
+                    % Histograms of bootstrap samples of the minimum sensation value
+                    [dummy, index] = min(GroundTruth);
+                    str = ['Histogram of estimated values', algostr{algo}];
+                    figure('Position',[1 1 800 300], 'Name', str);
+                    subplot(1,2,1); hold on;
+                    hist(sv_th(:,index), 20);
+                    title('Thurston method');
+
+                    subplot(1,2,2); hold on;
+                    hist(sv_ml(:,index), 20);
+                    title('Maximum likelihood');fprintf('   conventional method: %f\n', mean_se(1));
                     %}
                 end
             end
