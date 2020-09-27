@@ -6,11 +6,11 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'all';
+sn = 'koizumi';
 
 % parameters
 B = 10000; % Repetition number in Bootstrap
-tnum = 3; % trial number in each stimulus pair in conventional experiment
+tnum = 1; % trial number in each stimulus pair in conventional experiment
 stimnum = 9; % number of stimuli
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn));
@@ -18,6 +18,7 @@ mkdir(strcat('../../analysis_result/',exp,'/',sn));
 % result
 sv = zeros(1,9,3,2,3,3,2);
 selectionScale = zeros(9,3,3,2,3,3,2);
+BSsample = zeros(B,stimnum,3,2,3,3,2);
 
 % choose ML method
 % choose ML method
@@ -154,34 +155,35 @@ for i = 1:3 % shape
                     ses_ml = std(sv_ml); % by ML
                     fprintf('....Done!!\n\n\n');   if IsOctave, fflush(1); end
 
-                    % 68% confidence interval (~=SE) based on Bootstrap samples
-                    ranges68_th = zeros(stimnum, 3); % 68%CI�@by Thurston
-                    ranges68_ml = zeros(stimnum, 3); % 68%CI�@by ML
-                    ubi = round(B*84/100);
-                    lbi = round(B*16/100);
+                    % 95% confidence interval based on Bootstrap samples
+                    ranges95_th = zeros(stimnum, 3); % 95%CI�@by Thurston
+                    ranges95_ml = zeros(stimnum, 3); % 95%CI�@by ML
+                    ubi = round(B*97.5/100);
+                    lbi = round(B*2.5/100);
                     mi = round(B./2);
                     for s=1:stimnum
                     % for Thurston data
                     sdata = sort(sv_th(:,s));
-                    ranges68_th(s,1) = sdata(lbi)-sdata(mi); % lower bound
-                    ranges68_th(s,2) = sdata(ubi)-sdata(mi); % upper bound
-                    ranges68_th(s,3) = sdata(mi);
+                    ranges95_th(s,1) = sdata(lbi)-estimated_sv(s); % lower bound
+                    ranges95_th(s,2) = sdata(ubi)-estimated_sv(s); % upper bound
+                    ranges95_th(s,3) = estimated_sv(s); % 推定値
 
                     % for ML data
                     sdata = sort(sv_ml(:,s));
-                    ranges68_ml(s,1) = sdata(lbi)-sdata(mi); % lower bound
-                    ranges68_ml(s,2) = sdata(ubi)-sdata(mi); % upper bound
-                    ranges68_ml(s,3) = sdata(mi);
+                    ranges95_ml(s,1) = sdata(lbi)-estimated_sv2(s); % lower bound
+                    ranges95_ml(s,2) = sdata(ubi)-estimated_sv2(s); % upper bound
+                    ranges95_ml(s,3) = estimated_sv2(s); % 推定値
                     end
                     
                     % record data
                     sv(:,:,i,j,k,l,m) = estimated_sv2;
-                    selectionScale(:,:,i,j,k,l,m) = ranges68_ml;
+                    selectionScale(:,:,i,j,k,l,m) = ranges95_ml;
+                    BSsample(:,:,i,j,k,l,m) = sv_ml; % bootstrap sample
                     
                     progress = progress + 1;
                     fprintf('analysis progress : %d / %d\n\n', progress, trial);
 
-                    
+                    %{
                     %% just to compare the experiment procedures: plot the simulation results
                     % Comparison of Thurston and ML: estimated sensation values with error bars.
                     str = ['Ground truth vs Estimated: ', algostr{algo}];
@@ -248,3 +250,4 @@ end
 %% save data
 save(strcat('../../analysis_result/',exp,'/',sn,'/sv'), 'sv');
 save(strcat('../../analysis_result/',exp,'/',sn,'/selectionScale'), 'selectionScale');
+save(strcat('../../analysis_result/',exp,'/',sn,'/BSsample'), 'BSsample');

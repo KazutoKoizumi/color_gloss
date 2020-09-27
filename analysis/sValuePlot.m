@@ -1,7 +1,7 @@
 %　選考尺度値をプロットする
 
 exp = 'experiment_gloss';
-sn = 'all_N3';
+sn = 'koizumi';
 
 mkdir(strcat('../../analysis_result/',exp,'/',sn,'/graph'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
