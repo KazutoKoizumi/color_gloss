@@ -6,7 +6,7 @@
 clear all;
 
 exp = 'experiment_gloss';
-sn = ["koizumi", "nohira", "totsuka"]; 
+sn = ["koizumi", "nohira", "totsuka", "taniguchi", "kosone", "saeki"]; 
 N = size(sn,2); % 被験者数
 colorName = ["gray","red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 
