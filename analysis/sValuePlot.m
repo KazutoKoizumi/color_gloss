@@ -24,7 +24,6 @@ vMax = max(reshape(max(max(selectionScale)), 1, 108));
 vMin = min(reshape(min(min(selectionScale)), 1, 108));
 vAbs = max(abs([vMin, vMax]));
 
-se = 1.96;
 % plot
 for i =1:3  % shape
     for j = 1:2  % light
@@ -36,8 +35,8 @@ for i =1:3  % shape
                 hold on;
                 for l = 1:3  % roughness
                     %plot(colorNum, sv(:,:,i,j,k,l,m), '--o','Color',graphColor(l,:),'MarkerFaceColor','auto');
-                    h(l) = errorbar(colorNum(l,1), selectionScale(1,3,i,j,k,l,m), -se*selectionScale(1,1,i,j,k,l,m), se*selectionScale(1,2,i,j,k,l,m), '-o','Color',graphColor(l,:));
-                    errorbar(colorNum(l,2:9), selectionScale(2:9,3,i,j,k,l,m), -se*selectionScale(2:9,1,i,j,k,l,m), se*selectionScale(2:9,2,i,j,k,l,m), '-o','Color',graphColor(l,:)); % 68%CI
+                    h(l) = errorbar(colorNum(l,1), selectionScale(1,3,i,j,k,l,m), -selectionScale(1,1,i,j,k,l,m), selectionScale(1,2,i,j,k,l,m), '-o','Color',graphColor(l,:));
+                    errorbar(colorNum(l,2:9), selectionScale(2:9,3,i,j,k,l,m), -selectionScale(2:9,1,i,j,k,l,m), selectionScale(2:9,2,i,j,k,l,m), '-o','Color',graphColor(l,:)); % 95%CI
                     hold on;
                 end
                 
