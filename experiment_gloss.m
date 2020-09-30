@@ -248,6 +248,7 @@ try
         flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
         Screen('Close', [leftStimulus, rightStimulus]);
         
+        
         %% 被験者応答
         % Wait for subject's response
         keyIsDown = 0;
