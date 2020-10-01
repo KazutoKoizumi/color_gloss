@@ -49,7 +49,7 @@ for i =1:3  % shape
                 xlabel('色相');
                 xlim([0 10]);
                 ylabel('選考尺度値');
-                ylim([-vAbs-1, vAbs+1]);
+                ylim([-vAbs, vAbs]);
                 
                 % legend
                 lgd = legend(h, {'0.1', '0.3', '0.5'});

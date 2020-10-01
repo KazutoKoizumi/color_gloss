@@ -2,7 +2,7 @@
 clear all;
 
 exp = 'experiment_gloss';
-sn = 'koizumi';
+sn = 'all';
 
 B = 10000; %ブートストラップサンプル数
 ubi = round(B*97.5/100);
