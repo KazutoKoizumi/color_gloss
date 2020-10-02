@@ -31,7 +31,7 @@ vMax = max(reshape(max(max(selectionScale)), 1, 108));
 vMin = min(reshape(min(min(selectionScale)), 1, 108));
 vAbs = max(abs([vMin, vMax]));
 
-count = 1;
+noSigDiffNum = zeros(1,8);
 
 % plot
 for i =1:3  % shape
@@ -48,17 +48,18 @@ for i =1:3  % shape
                     errorbar(colorNum(l,2:9), selectionScale(2:9,3,i,j,k,l,m), -selectionScale(2:9,1,i,j,k,l,m), selectionScale(2:9,2,i,j,k,l,m), '-o','Color',graphColor(l,:)); % 95%CI
                     hold on;
                     
-                    rows = (T.shape==shape(i) & T.light==light(j) & T.diffuse==diffuseVar(k) & T.roughness==roughVar(l) & T.colorize==colorizeW(m));
+                    % 有意差のない部分を塗りつぶす
+                    rows = (T.shape==shape(i) & T.light==light(j) & T.diffuse==diffuseVar(k) & T.roughness==roughVar(l) & T.colorize==method(m));
                     grayT = T(rows,:);
                     for p = 1:8
                         if grayT.significantDifference(p) == 0 % 有意差なし
                             x = find(colorName==grayT.color2(p));
-                            plot(x+sa(l),selectionScale(x,3,i,j,k,l,m), 'x', 'Color',graphColor(l,:));
+                            plot(x+sa(l),selectionScale(x,3,i,j,k,l,m), 'o', 'Color',graphColor(l,:), 'MarkerFaceColor',graphColor(l,:));
+                            
+                            noSigDiffNum(p) = noSigDiffNum(p)+1;
                         end
                     end
-                end
-                
-                
+                end               
                         
                 % title
                 title(strcat(method(m),'  diffuse:',diffuse(k)));
@@ -85,9 +86,11 @@ for i =1:3  % shape
         
         f.WindowState = 'maximized';
         graphName = strcat(shape(i),'_',light(j),'_sig_diff.png');
-        fileName = strcat('../../analysis_result/',exp,'/','/',sn,'/graph_sig_diff/',graphName);
+        fileName = strcat('../../analysis_result/',exp,'/',sn,'/graph_sig_diff/',graphName);
         saveas(gcf, fileName);
         %}
     end
 end
 
+% 色ごとにgrayとの有意差がない個数
+noSigDiffNum = array2table(noSigDiffNum, 'VariableNames',colorName(2:9));
