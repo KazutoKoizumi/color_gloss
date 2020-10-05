@@ -52,7 +52,7 @@ for i =1:3  % shape
                     rows = (T.shape==shape(i) & T.light==light(j) & T.diffuse==diffuseVar(k) & T.roughness==roughVar(l) & T.colorize==method(m));
                     grayT = T(rows,:);
                     for p = 1:8
-                        if grayT.significantDifference(p) == 0 % 有意差なし
+                        if grayT.significantDifference(p) == 1 % 有意差あり
                             x = find(colorName==grayT.color2(p));
                             plot(x+sa(l),selectionScale(x,3,i,j,k,l,m), 'o', 'Color',graphColor(l,:), 'MarkerFaceColor',graphColor(l,:));
                             
