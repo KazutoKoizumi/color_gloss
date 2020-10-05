@@ -6,7 +6,7 @@ clear all
 
 % name
 exp = 'experiment_gloss';
-sn = 'totsuka';
+sn = 'saeki';
 
 % parameters
 B = 10000; % Repetition number in Bootstrap

@@ -4,7 +4,7 @@
 % NumGreater : 勝数
 
 exp = 'experiment_gloss';
-sn = 'koizumi';
+sn = 'saeki';
 colorName = ["gray","red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 
 mkdir(strcat('../../data/',exp,'/',sn,'/winTable'));
