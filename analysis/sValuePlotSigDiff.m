@@ -48,7 +48,7 @@ for i =1:3  % shape
                     errorbar(colorNum(l,2:9), selectionScale(2:9,3,i,j,k,l,m), -selectionScale(2:9,1,i,j,k,l,m), selectionScale(2:9,2,i,j,k,l,m), '-o','Color',graphColor(l,:)); % 95%CI
                     hold on;
                     
-                    % 有意差のない部分を塗りつぶす
+                    % 有意差のある部分を塗りつぶす
                     rows = (T.shape==shape(i) & T.light==light(j) & T.diffuse==diffuseVar(k) & T.roughness==roughVar(l) & T.colorize==method(m));
                     grayT = T(rows,:);
                     for p = 1:8
@@ -69,7 +69,7 @@ for i =1:3  % shape
                 xticklabels({'gray', 'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
                 xlabel('色相');
                 xlim([0 10]);
-                ylabel('選考尺度値');
+                ylabel('選好尺度値');
                 ylim([-vAbs, vAbs]);
                 
                 % legend
