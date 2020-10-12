@@ -36,6 +36,9 @@ for i = 1:diffuseN
     %idx_shape(:,i) = find(idx(:,1)==i);
     idx_diffuse(:,i) = find(idx(:,3)==i);
     idx_rough(:,i) = find(idx(:,4)==i);
+    for j = 1:2
+        idx_rough_method(:,roughN*(j-1)+i) = find(idx(:,4)==i & idx(:,5)==j);
+    end
 end
 for i = 1:2
     %idx_light(:,i) = find(idx(:,2)==i);
@@ -69,24 +72,24 @@ SDnoGray = std(svNoGray);
 x_label = 'diffuse';
 y_label = '標準偏差';
 t = 'diffuseごとの選好尺度値の標準偏差';
-f = scatterPlot(diffuseN,SDnoGray_diffuse,SDnoGray_diffuse_mean,diffuse,x_label,y_label,t);
+f = scatterPlot(paramnum,diffuseN,SDnoGray_diffuse,SDnoGray_diffuse_mean,diffuse,x_label,y_label,t);
 
 % roughness
 x_label = 'roughness';
 t = 'roughnessごとの選好尺度値の標準偏差';
-f = scatterPlot(roughN,SDnoGray_rough,SDnoGray_rough_mean,roughness,x_label,y_label,t);
+f = scatterPlot(paramnum,roughN,SDnoGray_rough,SDnoGray_rough_mean,roughness,x_label,y_label,t);
 
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの選好尺度値の標準偏差';
-f = scatterPlot(methodN,SDnoGray_method,SDnoGray_method_mean,method,x_label,y_label,t);
+f = scatterPlot(paramnum,methodN,SDnoGray_method,SDnoGray_method_mean,method,x_label,y_label,t);
 
 %% 有意差の有無の検定（標準偏差）
 BS_SDnoGray = arrangeBS(B,BSsample,1);
 
-sigDiff_SD_diffuse = BStest(B,BS_SDnoGray,diffuse,diffuseN,idx_diffuse); 
-sigDiff_SD_rough = BStest(B,BS_SDnoGray,roughness,roughN,idx_rough);
-sigDiff_SD_method = BStest(B,BS_SDnoGray,method,methodN,idx_method);
+sigDiff_SD_diffuse = BStest(B,BS_SDnoGray,paramnum,diffuse,diffuseN,idx_diffuse); 
+sigDiff_SD_rough = BStest(B,BS_SDnoGray,paramnum,roughness,roughN,idx_rough);
+sigDiff_SD_method = BStest(B,BS_SDnoGray,paramnum,method,methodN,idx_method);
 
 
 
@@ -101,35 +104,49 @@ glossEffect = svNoGray_mean - svGray;
 [glossEffect_diffuse,glossEffect_diffuse_mean] = getMean(diffuseN,idx_diffuse,glossEffect);
 % roughnessで平均
 [glossEffect_rough,glossEffect_rough_mean] = getMean(roughN,idx_rough,glossEffect);
-
 % methodで平均
 [glossEffect_method,glossEffect_method_mean] = getMean(methodN,idx_method,glossEffect);
+
+% roughnessとmethodで平均
+[glossEffect_rough_method,glossEffect_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,glossEffect);
 
 %% grayからの差のプロット
 % diffuse
 x_label = 'diffuse';
 y_label = '効果量';
 t = 'diffuseごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
+f = scatterPlot(paramnum,diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
 
 %roughness
 x_label = 'roughness';
 t = 'roughnessごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
+f = scatterPlot(paramnum,roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
 
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+
+% SD彩色の場合のroughenss
+x_label = 'roughness';
+t = 'SD彩色でのroughnessごとの彩色による光沢感上昇の効果量';
+f = scatterPlot(paramnum/methodN,roughN,glossEffect_rough_method(:,1:3),glossEffect_rough_method_mean(:,1:3),roughness,x_label,y_label,t);
+
+% D彩色の場合のroughness
+x_label = 'roughness';
+t = 'D彩色でのroughnessごとの彩色による光沢感上昇の効果量';
+f = scatterPlot(paramnum/methodN,roughN,glossEffect_rough_method(:,4:6),glossEffect_rough_method_mean(:,4:6),roughness,x_label,y_label,t);
+
 
 %% 有意差の有無の検定
 BSglossEffect = arrangeBS(B,BSsample,2);
 
-sigDiff_diffuse = BStest(B,BSglossEffect,diffuse,diffuseN,idx_diffuse);
-sigDiff_rough = BStest(B,BSglossEffect,roughness,roughN,idx_rough);
-sigDiff_method = BStest(B,BSglossEffect,method,methodN,idx_method);
+sigDiff_diffuse = BStest(B,BSglossEffect,paramnum,diffuse,diffuseN,idx_diffuse);
+sigDiff_rough = BStest(B,BSglossEffect,paramnum,roughness,roughN,idx_rough);
+sigDiff_method = BStest(B,BSglossEffect,paramnum,method,methodN,idx_method);
 
-
+sigDiff_rough_methodSD = BStest(B,BSglossEffect,paramnum/methodN,roughness,roughN,idx_rough_method(:,1:3));
+sigDiff_rough_methodD = BStest(B,BSglossEffect,paramnum/methodN,roughness,roughN,idx_rough_method(:,4:6));
 
 
 %% 平均を取る関数
@@ -161,6 +178,7 @@ end
 % roughness,diffuse,method
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input
+%  paramAll : 全パラメータの組み合わせの数（条件数）
 %  paramNum : パラメータの個数
 %  value : 値全て
 %  value_mean : 平均値
@@ -170,12 +188,12 @@ end
 %  t : タイトル
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function f = scatterPlot(paramNum,value,value_mean,x_tick,x_label,y_label,t)
+function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_label,t)
     
     figure;
     x_mean = 1:paramNum;
-    x = reshape(repmat(x_mean,108/paramNum,1),1,108);
-    y = reshape(value, 1, 108);
+    x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
+    y = reshape(value, 1, paramAll);
     scatter(x,y);
     hold on;
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
@@ -233,15 +251,16 @@ end
 % Input
 %  B : リサンプリング数
 %  arrangeSample : 整理後のブートストラップ標本
+%  paramAll : 全パラメータの組み合わせの数（条件数）
 %  param : パラメータ
 %  paramNum : パラメータ数
 %  idx : パラメータのインデックス
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function sigDiffTable = BStest(B,arrangeSample,param,paramNum,idx)
+function sigDiffTable = BStest(B,arrangeSample,paramAll,param,paramNum,idx)
     
-    BSvalue_param = zeros(B,paramNum,108/paramNum);
-    for i = 1:108/paramNum
+    BSvalue_param = zeros(B,paramNum,paramAll/paramNum);
+    for i = 1:paramAll/paramNum
         for j = 1:paramNum
            BSvalue_param(:,j,i) = arrangeSample(:,idx(i,j));
         end
