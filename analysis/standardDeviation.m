@@ -1,4 +1,5 @@
 %% 標準偏差を求める
+clear all;
 
 exp = 'experiment_gloss';
 sn = 'all';
@@ -6,14 +7,22 @@ sn = 'all';
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
 load(strcat('../../analysis_result/',exp,'/',sn,'/BSsample.mat'));
 
-paramnum = 3*2*3*3*2;
+% パラメータ
+diffuse = ["0.1", "0.3", "0.5"];
+roughness = ["0.05", "0.1", "0.2"];
+method = ["SD", "D"];
+diffuseN = size(diffuse,2);
+roughN = size(roughness,2);
+methodN = size(method,2);
+
+paramnum = 3*2*diffuseN*roughN*2;
 idx = zeros(paramnum, 5);
 B = 10000; % ブートストラップのリサンプリング回数
 count = 1;
 for i = 1:3 % shape
     for j = 1:2 % light
-        for k = 1:3 % diffuse
-            for l = 1:3 % roughness
+        for k = 1:diffuseN % diffuse
+            for l = 1:roughN % roughness
                 for m = 1:2 % SD or D
                     idx(count,:) = [i, j, k, l, m];
                     count = count + 1;
@@ -23,13 +32,13 @@ for i = 1:3 % shape
     end
 end
 
-for i = 1:3
-    idx_shape(:,i) = find(idx(:,1)==i);
+for i = 1:diffuseN
+    %idx_shape(:,i) = find(idx(:,1)==i);
     idx_diffuse(:,i) = find(idx(:,3)==i);
     idx_rough(:,i) = find(idx(:,4)==i);
 end
 for i = 1:2
-    idx_light(:,i) = find(idx(:,2)==i);
+    %idx_light(:,i) = find(idx(:,2)==i);
     idx_method(:,i) = find(idx(:,5)==i);
 end
 
@@ -45,21 +54,39 @@ end
 
 SDnoGray = std(svNoGray);
 
-% パラメータごとに平均を取る
-% shape, diffuse, roughness
-SDnoGray_shape = zeros(36,3);
-SDnoGray_diffuse = zeros(36,3);
-SDnoGray_rough = zeros(36,3);
-for i = 1:36
-    for j = 1:3
-        SDnoGray_shape(i,j) = SDnoGray(idx_shape(i,j));
-        SDnoGray_diffuse(i,j) = SDnoGray(idx_diffuse(i,j));
-        SDnoGray_rough(i,j) = SDnoGray(idx_rough(i,j));
-    end
-end
-SDnoGray_shape_mean = mean(SDnoGray_shape);
-SDnoGray_diffuse_mean = mean(SDnoGray_diffuse);
-SDnoGray_rough_mean = mean(SDnoGray_rough);
+% diffuse,roughness,methodパラメータごとに平均を取る
+% diffuseで平均
+[SDnoGray_diffuse,SDnoGray_diffuse_mean] = getMean(diffuseN,idx_diffuse,SDnoGray);
+% roughnessで平均
+[SDnoGray_rough,SDnoGray_rough_mean] = getMean(roughN,idx_rough,SDnoGray);
+
+% methodで平均
+[SDnoGray_method,SDnoGray_method_mean] = getMean(methodN,idx_method,SDnoGray);
+
+
+%% 標準偏差のプロット
+% diffuse
+x_label = 'diffuse';
+y_label = '標準偏差';
+t = 'diffuseごとの選好尺度値の標準偏差';
+f = scatterPlot(diffuseN,SDnoGray_diffuse,SDnoGray_diffuse_mean,diffuse,x_label,y_label,t);
+
+% roughness
+x_label = 'roughness';
+t = 'roughnessごとの選好尺度値の標準偏差';
+f = scatterPlot(roughN,SDnoGray_rough,SDnoGray_rough_mean,roughness,x_label,y_label,t);
+
+% method
+x_label = '彩色方法';
+t = '彩色方法ごとの選好尺度値の標準偏差';
+f = scatterPlot(methodN,SDnoGray_method,SDnoGray_method_mean,method,x_label,y_label,t);
+
+%% 有意差の有無の検定（標準偏差）
+BS_SDnoGray = arrangeBS(B,BSsample,1);
+
+sigDiff_SD_diffuse = BStest(B,BS_SDnoGray,diffuse,diffuseN,idx_diffuse); 
+sigDiff_SD_rough = BStest(B,BS_SDnoGray,roughness,roughN,idx_rough);
+sigDiff_SD_method = BStest(B,BS_SDnoGray,method,methodN,idx_method);
 
 
 
@@ -69,55 +96,176 @@ svNoGray_mean = mean(svNoGray);
 
 glossEffect = svNoGray_mean - svGray;
 
-% roughness
-glossEffect_rough = zeros(36,3);
-for i = 1:36
-    for j = 1:3
-        glossEffect_rough(i,j) = glossEffect(idx_rough(i,j));
+% diffuse,roughnessパラメータごとに平均を取る
+% diffuseで平均
+[glossEffect_diffuse,glossEffect_diffuse_mean] = getMean(diffuseN,idx_diffuse,glossEffect);
+% roughnessで平均
+[glossEffect_rough,glossEffect_rough_mean] = getMean(roughN,idx_rough,glossEffect);
+
+% methodで平均
+[glossEffect_method,glossEffect_method_mean] = getMean(methodN,idx_method,glossEffect);
+
+%% grayからの差のプロット
+% diffuse
+x_label = 'diffuse';
+y_label = '効果量';
+t = 'diffuseごとの彩色による光沢感上昇の効果量';
+f = scatterPlot(diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
+
+%roughness
+x_label = 'roughness';
+t = 'roughnessごとの彩色による光沢感上昇の効果量';
+f = scatterPlot(roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
+
+% method
+x_label = '彩色方法';
+t = '彩色方法ごとの彩色による光沢感上昇の効果量';
+f = scatterPlot(methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+
+%% 有意差の有無の検定
+BSglossEffect = arrangeBS(B,BSsample,2);
+
+sigDiff_diffuse = BStest(B,BSglossEffect,diffuse,diffuseN,idx_diffuse);
+sigDiff_rough = BStest(B,BSglossEffect,roughness,roughN,idx_rough);
+sigDiff_method = BStest(B,BSglossEffect,method,methodN,idx_method);
+
+
+
+
+%% 平均を取る関数
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数
+%  idx : パラメータのインデックス
+%  value : 値
+
+% Output
+%  param : パラメータごとに値をわける（列がパラメータ）
+%  param_mean : パラメータごとの平均
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [param, param_mean] = getMean(paramNum,idx,value)
+    
+    param = zeros(108/paramNum, paramNum);
+    for i = 1:108/paramNum
+        for j = 1:paramNum
+            param(i,j) = value(idx(i,j));
+        end
     end
+    
+    param_mean = mean(param);
+    
 end
-glossEffect_rough_mean = mean(glossEffect_rough);
 
+%% 散布図プロット用の関数
+% roughness,diffuse,method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数
+%  value : 値全て
+%  value_mean : 平均値
+%  x_tick : x軸の軸ラベル
+%  x_label : x軸のラベル
+%  y_label : y軸のラベル
+%  t : タイトル
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 有意差の有無の検証
+function f = scatterPlot(paramNum,value,value_mean,x_tick,x_label,y_label,t)
+    
+    figure;
+    x_mean = 1:paramNum;
+    x = reshape(repmat(x_mean,108/paramNum,1),1,108);
+    y = reshape(value, 1, 108);
+    scatter(x,y);
+    hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    
+    % グラフの設定
+    xlim([0 paramNum+1]);
+    xticks(x_mean);
+    xticklabels(x_tick);
+    xlabel(x_label);
+    ylabel(y_label);
+    title(t, 'FontSize',13);
+    hold off;
+    
+    f = 1;
+end
 
-% ブートストラップサンプルの整理
-BS_mean = mean(BSsample(:,2:9,:,:,:,:,:),2); % 有彩色の選好尺度値の平均
-sa = BS_mean - BSsample(:,1,:,:,:,:,:);
-BSglossEffect = zeros(B,108);
-count = 1;
-for i = 1:3
-    for j = 1:2
-        for k = 1:3
-            for l = 1:3
-                for m = 1:2
-                    BSglossEffect(:,count) = sa(:,1,i,j,k,l,m);
-                    count = count + 1;
+%% ブートストラップサンプルの整理
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  B : リサンプリング回数
+%  sample : ブートストラップ標本
+%  flag : 1=標準偏差, 2=grayからの差
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function arrangeSample = arrangeBS(B,sample,flag)
+    
+    if flag == 1
+        value = std(sample(:,2:9,:,:,:,:,:),0,2);
+    elseif flag == 2
+        BS_mean = mean(sample(:,2:9,:,:,:,:,:),2);
+        value = BS_mean - sample(:,1,:,:,:,:,:);
+    end       
+        
+    arrangeSample = zeros(B,108);
+    count = 1;
+    for i = 1:3
+        for j = 1:2
+            for k = 1:3
+                for l = 1:3
+                    for m = 1:2
+                        arrangeSample(:,count) = value(:,1,i,j,k,l,m);
+                        count = count + 1;
+                    end
                 end
             end
         end
     end
+    
+    a = 1;
+    
 end
 
-BSglossEffect_rough = zeros(B,3,36);
-for i = 1:36
-    for j = 1:3
-        BSglossEffect_rough(:,j,i) = BSglossEffect(:,idx_rough(i,j));
+%% ブートストラップ検定
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  B : リサンプリング数
+%  arrangeSample : 整理後のブートストラップ標本
+%  param : パラメータ
+%  paramNum : パラメータ数
+%  idx : パラメータのインデックス
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function sigDiffTable = BStest(B,arrangeSample,param,paramNum,idx)
+    
+    BSvalue_param = zeros(B,paramNum,108/paramNum);
+    for i = 1:108/paramNum
+        for j = 1:paramNum
+           BSvalue_param(:,j,i) = arrangeSample(:,idx(i,j));
+        end
     end
-end
-BSglossEffect_rough_mean = mean(BSglossEffect_rough,3);
+    BSvalue_param_mean = mean(BSvalue_param,3);
+    
+    ubi = round(B*97.5/100);
+    lbi = round(B*2.5/100);
+    
+    comb = nchoosek(1:paramNum,2);
+    combination = param(comb);
+    sigDiff = zeros(1,size(comb,1));
+    for i = 1:size(comb,1)
+        sampleDiff = BSvalue_param_mean(:,comb(i,1)) - BSvalue_param_mean(:,comb(i,2));
+        sdata = sort(sampleDiff);
+        upLim = sdata(ubi);
+        lowLim = sdata(lbi);
+        if upLim*lowLim > 0 % 有意差あり
+            sigDiff(i) = 1;
+        else
+            sigDiff(i) = 0;
+        end
+    end
+    
+    sigDiffTable = table(combination,sigDiff');
 
-
-% ブートストラップサンプルから求めた10000個の差から有意差の有無をチェック
-ubi = round(B*97.5/100);
-lbi = round(B*2.5/100);
-
-sampleDiff = BSglossEffect_rough_mean(:,1) - BSglossEffect_rough_mean(:,2);
-sdata = sort(sampleDiff);
-upLim = sdata(ubi);
-lowLim = sdata(lbi);
-if upLim*lowLim > 0 % 有意差あり
-    sigDiff = 1;
-else
-    sigDiff = 0;
 end

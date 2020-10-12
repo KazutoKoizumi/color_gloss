@@ -7,8 +7,8 @@ snFile = "individuals";
 
 mkdir(strcat('../../analysis_result/',exp,'/',snFile,'/graph'));
 
-rows = sigDiffTable.color1 == 'gray';
-T = sigDiffTable(rows,:);
+%rows = sigDiffTable.color1 == 'gray';
+%T = sigDiffTable(rows,:);
 sa = [-0.1, 0, 0.1];
 N = size(sn,2);
 
@@ -65,6 +65,9 @@ for i =1:3  % shape
                             h(s) = errorbar(colorNum(2:9), selectionScale(2:9,3,i,j,k,l,m), -selectionScale(2:9,1,i,j,k,l,m), selectionScale(2:9,2,i,j,k,l,m), '-o','Color',graphColor(s,:)); % 95%CI
                             h(N+1).LineWidth = 1.5;
                         end
+                        
+                        rows = sigDiffTable.color1 == 'gray';
+                        T = sigDiffTable(rows,:);
                         
                         % plot
                         %errorbar(colorNum(1), selectionScale(1,3,i,j,k,l,m), -selectionScale(1,1,i,j,k,l,m), selectionScale(1,2,i,j,k,l,m), '-o','Color',graphColor(s,:));

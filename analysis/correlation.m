@@ -20,6 +20,17 @@ for i = 1:3 % shape
     end
 end
 
+for i = 1:3
+    idx_shape(:,i) = find(idx(:,1)==i);
+    idx_diffuse(:,i) = find(idx(:,3)==i);
+    idx_rough(:,i) = find(idx(:,4)==i);
+end
+
+for i = 1:2
+    idx_light(:,i) = find(idx(:,2)==i);
+    idx_method(:,i) = find(idx(:,5)==i);
+end
+
 %% 推定値から求める
 load(strcat('../../analysis_result/',exp,'/',sn,'/sv.mat'));
 
@@ -39,11 +50,6 @@ end
 
 % 各パラメータごとに相関係数の平均を求める
 % shape, diffuse, roughness
-for i = 1:3
-    idx_shape(:,i) = find(idx(:,1)==i);
-    idx_diffuse(:,i) = find(idx(:,3)==i);
-    idx_rough(:,i) = find(idx(:,4)==i);
-end
 R_shape = zeros(36,3);
 R_diffuse = zeros(36,3);
 R_rough = zeros(36,3);
@@ -63,10 +69,6 @@ R_diffuse_mean = mean(R_diffuse);
 R_rough_mean = mean(R_rough);
 
 % light, method
-for i = 1:2
-    idx_light(:,i) = find(idx(:,2)==i);
-    idx_method(:,i) = find(idx(:,5)==i);
-end
 R_light = zeros(54,1);
 R_method = zeros(54,1);
 for i = 1:54
@@ -75,6 +77,11 @@ for i = 1:54
 end
 R_light_mean = mean(R_light);
 R_method_mean = mean(R_method);
+
+%% プロット
+% diffuse
+x_label = 'diffuse';
+t = 'diffuseごとの相関係数';
 
 
 %% ブートストラップサンプルから相関係数のばらつき（標準偏差と95％信頼区間）求める
@@ -98,4 +105,36 @@ R_range(:,:,2) = sdata(:,:,ubi) - R(:,:); % 上限
 R_range(:,:,3) = R(:,:); % 推定値
 
  
+%% 散布図プロット用の関数
+% roughness,diffuse,method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数
+%  value : 値全て
+%  value_mean : 平均値
+%  x_tick : x軸の軸ラベル
+%  x_label : x軸のラベル
+%  t : タイトル
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+function f = scatterPlot(paramNum,value,value_mean,x_tick,x_label,t)
+    
+    figure;
+    x_mean = 1:paramNum;
+    x = reshape(repmat(x_mean,108/paramNum,1),1,108);
+    y = reshape(value, 1, 108);
+    scatter(x,y);
+    hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    
+    % グラフの設定
+    xlim([0 paramNum+1]);
+    xticks(x_mean);
+    xticklabels(x_tick);
+    xlabel(x_label);
+    ylabel('相関係数');
+    title(t, 'FontSize',13);
+    hold off;
+    
+    f = 1;
+end
