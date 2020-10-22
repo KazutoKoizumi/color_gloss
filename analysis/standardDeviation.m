@@ -1,5 +1,5 @@
 %% 標準偏差を求める
-clear all;
+%clear all;
 
 exp = 'experiment_gloss';
 sn = 'all';

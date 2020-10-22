@@ -1,4 +1,5 @@
 %% 相関係数を求める
+clear all;
 
 exp = 'experiment_gloss';
 sn = 'all';
@@ -24,6 +25,10 @@ for i = 1:3
     idx_shape(:,i) = find(idx(:,1)==i);
     idx_diffuse(:,i) = find(idx(:,3)==i);
     idx_rough(:,i) = find(idx(:,4)==i);
+    for j = 1:2
+        idx_diffuse_method(:,3*(j-1)+i) = find(idx(:,3)==i & idx(:,5)==j);
+        idx_rough_method(:,3*(j-1)+i) = find(idx(:,4)==i & idx(:,5)==j);
+    end
 end
 
 for i = 1:2
@@ -42,41 +47,32 @@ end
 % 相関係数
 R = corrcoef(sValue);
 
-% パラメータでわける、形状・照明
-R_shape_light = zeros(18,18,6);
-for i = 1:6
-    R_shape_light(:,:,i) = R((i-1)*18+1:i*18,(i-1)*18+1:i*18);
-end
-
-% 各パラメータごとに相関係数の平均を求める
-% shape, diffuse, roughness
-R_shape = zeros(36,3);
-R_diffuse = zeros(36,3);
-R_rough = zeros(36,3);
-for i = 1:36
-    for j = 1:3
-        l = j+1;
-        if l>3
-            l=rem(l,3);
-        end
-        R_shape(i,j) = R(idx_shape(i,j),idx_shape(i,l));
-        R_diffuse(i,j) = R(idx_diffuse(i,j),idx_diffuse(i,l));
-        R_rough(i,j) = R(idx_rough(i,j),idx_rough(i,l));
+% SD条件同士、D条件同士、SDとD条件間の相関係数の3種にわける
+n = 1:108;
+comb = nchoosek(n,2);
+count = ones(1,3);
+for i = 1:size(comb,1)
+    flag = evenOdd(comb(i,1),comb(i,2));  % 1:SD, 2:D, 3:SDvsD
+    if flag == 1
+        R_method_SD(count(flag)) = R(comb(i,1),comb(i,2));
+    elseif flag == 2
+        R_method_D(count(flag)) = R(comb(i,1),comb(i,2));
+    elseif flag == 3
+        R_method_SDvsD(count(flag)) = R(comb(i,1),comb(i,2));
     end
+    count(flag) = count(flag)+1;
 end
-R_shape_mean = mean(R_shape);
-R_diffuse_mean = mean(R_diffuse);
-R_rough_mean = mean(R_rough);
+R_method_mean = [mean(R_method_SD),mean(R_method_D),mean(R_method_SDvsD)];
+    
 
-% light, method
-R_light = zeros(54,1);
-R_method = zeros(54,1);
-for i = 1:54
-    R_light(i) = R(idx_light(i,1),idx_light(i,2));
-    R_method(i) = R(idx_method(i,1),idx_method(i,2));
-end
-R_light_mean = mean(R_light);
-R_method_mean = mean(R_method);
+% 各パラメータにわける
+% diffuseが変化したときのSD条件とD条件間の相関係数
+idxSort_diffuse_method = sort(idx_diffuse_method,2);
+[R_diffuse_SDvsD, R_diffuse_SDvsD_maen] = getMean(3,idxSort_diffuse_method,R);
+
+% roughnessが変化したときのSD条件とD条件間の相関係数
+idxSort_rough_method = sort(idx_rough_method,2);
+[R_rough_SDvsD, R_rough_SDvsD_maen] = getMean(3,idxSort_rough_method,R);
 
 %% プロット
 % diffuse
@@ -104,6 +100,31 @@ R_range(:,:,1) = sdata(:,:,lbi) - R(:,:); % 下限
 R_range(:,:,2) = sdata(:,:,ubi) - R(:,:); % 上限
 R_range(:,:,3) = R(:,:); % 推定値
 
+
+%% パラメータが変化したときの、SD・D彩色条件間の相関係数とその平均
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数(SD・Dについては除く)
+%  idx : パラメータのインデックス
+%  value : 値
+
+% Output
+%  v : パラメータごとに値をわける（列がパラメータ）
+%  v_mean : パラメータごとの平均
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [v, v_mean] = getMean(paramNum,idx,value)
+
+    v = zeros(54/paramNum,paramNum);
+    for i = 1:54/paramNum
+        for j = 1:paramNum
+            v(i,j) = value(idx(i,2*j-1),idx(i,2*j));
+        end
+    end
+    
+    v_mean = mean(v);
+    
+end
  
 %% 散布図プロット用の関数
 % roughness,diffuse,method
@@ -137,4 +158,18 @@ function f = scatterPlot(paramNum,value,value_mean,x_tick,x_label,t)
     hold off;
     
     f = 1;
+end
+
+%% 偶奇の一致を調べる
+
+function flag = evenOdd(n1,n2)
+
+    if rem(n1,2)==1 && rem(n2,2)==1  % 両方奇数
+        flag = 1;
+    elseif rem(n1,2)==0 && rem(n2,2)==0  % 両方奇数
+        flag = 2;
+    elseif rem(n1,2)+rem(n2,2) == 1  % 一方が偶数、一方が奇数
+        flag = 3;
+    end
+    
 end

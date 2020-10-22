@@ -1,5 +1,5 @@
 %% 刺激画像の色について、各ピクセルの彩度、輝度を求める（その後散布図としてプロット->stimuliSatLumPlot.m）
-clear all;
+%clear all;
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
