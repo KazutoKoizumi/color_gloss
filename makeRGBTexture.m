@@ -2,7 +2,7 @@
 
 %% オブジェクトのパラメータ
 shape = 'bunny'; % shape : bunny, dragon, blob
-light = 'area'; % light : area or envmap
+light = 'envmap'; % light : area or envmap
 diffuse = 'D01'; % diffuse rate
 roughness = 'alpha01'; % roughness parameter
 
