@@ -2,7 +2,7 @@
 clear all;
 
 load('../../mat/patch/patch.mat');
-load('../..mat/patch/patchMask.mat');
+load('../../mat/patch/patchMask.mat');
 load('../../mat/patch/patchSaturation.mat');
 load('../../mat/patch/patchLuminance.mat');
 

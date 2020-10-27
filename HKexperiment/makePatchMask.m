@@ -15,4 +15,4 @@ yMax = find(patch(:,x,2)==0, 1, 'last' );
 
 patchMask(y:yMax,x:xMax) = 1;
 
-save('../../mat/patch/patchMask.mat',patchMask);
+save('../../mat/patch/patchMask.mat','patchMask');
