@@ -42,12 +42,19 @@ load('../../mat/colorSatLum/bunnySatLum.mat');
 load('../../mat/colorSatLum/dragonSatLum.mat');
 load('../../mat/colorSatLum/blobSatLum.mat');
 
+load('../../mat/saturationMax.mat');
+
+%{
 %% 全刺激の最大彩度を求める
 shapeSatMax = zeros(1,3);
 shapeSatMax(1) = max(reshape(max(bunnySatLum(:,1,:,:,:,:)),36,1));
 shapeSatMax(2) = max(reshape(max(dragonSatLum(:,1,:,:,:,:)),36,1));
 shapeSatMax(3) = max(reshape(max(blobSatLum(:,1,:,:,:,:)),36,1));
-satMax = max(shapeSatMax);
+%}
+%% 全刺激のほぼ最大彩度
+srt = sort(saturationMax);
+idx = find(srt < max(saturationMax), 1, 'last');
+satMax = srt(idx);
 
 %% %D彩色、diffuse=0.1の刺激の平均彩度を求める
 meanSat = zeros(1,1,3,2,3,3,2);

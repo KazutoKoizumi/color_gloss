@@ -7,12 +7,14 @@ load('../../mat/patch/patchSaturation.mat');
 load('../../mat/patch/patchLuminance.mat');
 
 load('../../mat/upvplWhitePoints.mat');
-load('../../mat/proportion.mat');
 load('../../mat/ccmat.mat');
-monitorMinLum = upvplWhitePoints(2,3);
 
 [iy,ix,iz] = size(patch);
+
+flag_light = 2;
 lum = 3.5;
+
+cu2x = makecform('upvpl2xyz');
 
 % 各輝度の白色点座標
 uvWhite = zeros(3,2);
@@ -20,28 +22,15 @@ for i = 1:3
     uvWhite(i,:) = upvplWhitePoints(find(upvplWhitePoints(:,3)>patchLuminance(i),1,'first'),1:2);
 end
     
-
-
 %% 背景の輝度調整
-% トーンマップ
-bgStimuli = tonemaping(patch,lum);
-
-% XYZ -> u'v'l
-cx2u = makecform('xyz2upvpl');
-cu2x = makecform('upvpl2xyz');
-upvplBack = applycform(bgStimuli(:,:,:,1),cx2u);
-
-% エリアライトなので輝度調整
-upvplBack(:,:,3) = upvplBack(:,:,3) * proportion;
-
-% 最小輝度を下回る部分の調整
-minMap = upvplBack(:,:,3) < monitorMinLum;
-minMapMask = ~minMap;
-minMap = minMap * monitorMinLum;
-upvplBack(:,:,3) = upvplBack(:,:,3) .* minMapMask + minMap;
-
-% u'v'l -> XYZ
-bgStimuli = applycform(upvplBack,cu2x);
+if flag_light == 1
+    load('../../mat/patch/patch_area.mat');
+    backPatch = patch_area;
+elseif flag_light == 2
+    load('../../mat/patch/patch_env.mat');
+    backPatch = patch_env;
+end
+bgStimuli = luminanceAdj(backPatch,flag_light,lum);
 
 
 %% パッチの設定
@@ -85,6 +74,8 @@ for i = 1:3 % 輝度
     end
 end
 
-%% パッチの輝度を設定する関数
+%% 保存・出力
+save('../../stimuli/patch/stimuliPatch.mat', 'stimuliPatch');
 
-%% パッチの彩度・色相を設定する関数
+figure
+montage(stimuliPatch(:,:,:,:,1,2)/255,'size',[2 4]);
