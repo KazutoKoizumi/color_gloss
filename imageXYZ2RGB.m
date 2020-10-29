@@ -32,7 +32,7 @@ function rgb = imageXYZ2RGB(XYZ, ccmat)
     end 
     %}
     
-    LUT = load('../mat/20200827T143338.lut');
+    LUT = load('../mat/gamma_lut.lut');
     rgb = uint8(TNT_rgb2RGB_LUT(rgb',LUT)/257);
     
     rgb = reshape(rgb,iy,ix,iz);
