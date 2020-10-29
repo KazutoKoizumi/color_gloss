@@ -19,4 +19,7 @@ patchMask(y:yMax,x:xMax) = 1;
 
 %patchMask = patch(:,:,2)<threshold;
 
+patchPosition = [x,y,xMax,yMax];
+
 save('../../mat/patch/patchMask.mat','patchMask');
+save('../../mat/patch/patchPosition.mat', 'patchPosition');

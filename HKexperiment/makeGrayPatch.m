@@ -4,6 +4,7 @@ clear all;
 load('../../mat/patch/patch.mat');
 load('../../mat/patch/patchMask.mat');
 load('../../mat/patch/patchLuminance.mat');
+load('../../mat/patch/patchSaturation.mat');
 
 load('../../mat/upvplWhitePoints.mat');
 load('../../mat/ccmat.mat');
@@ -63,8 +64,16 @@ for i = 1:lumNum % 輝度
     stimuliGrayPatch(:,:,:,i) = imageXYZ2RGB(grayPatch(:,:,:,i), ccmat);
 end
 
+%% 有彩色の3種の輝度に対応するrgb値の算出
+uvl = reshape(cat(2,uvWhite,patchLuminance'), [3,1,3]);
+rgb = conv_upvpl2rgb(uvl,ccmat);
+rgbGrayPatch = reshape(rgb,[3,3]);
+
 %% 保存・出力
 save('../../stimuli/patch/stimuliGrayPatch.mat', 'stimuliGrayPatch');
+save('../../mat/patch/rgbGrayPatch.mat', 'rgbGrayPatch');
 
 figure
 montage(stimuliGrayPatch/255,'size',[1 lumNum]);
+
+

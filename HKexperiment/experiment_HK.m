@@ -23,11 +23,13 @@ KbName('UnifyKeyNames');
 screenNumber = max(Screen('Screens'));
 %InitializeMatlabOpenGL;
 
-%% 刺激のパラメータ数
+%% 刺激のパラメータ
+colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
+
 lumNum = 3;
 satNum = 3;
 colorNum = 8;
-stiNum = lumNum * satNum * colorNum;
+stimuliN = lumNum * satNum * colorNum;
 
 
 %% 実験画面の背景色設定
@@ -68,8 +70,10 @@ try
     
     % 刺激データ
     % low, column, rgb, color, luminance, saturation
-    load('../stimuli/stimuliPatch.mat');
-    load('../stimuli/back/bgStimuli.mat');
+    load('../../stimuli/stimuliPatch.mat');
+    load('../../mat/patch/rgbGrayPatch.mat');
+    load('../../mat/patch/patchPosition.mat');
+    load('../../stimuli/back/bgStimuli.mat');
     
     %% 実験パラメータ設定
     flag = 0;
@@ -97,14 +101,14 @@ try
     % 全セッション数
     allSessionNum = 5;
     % 試行数
-    sessionTrialNum = stiNum;
+    sessionTrialNum = stimuliN;
     trashTrialNum = 20;
     
     
     %% 刺激のインデックス・呈示順・結果保存用の配列
     % make index matrix for stimuli (pair table)
     index = zeros(allSessionNum, 3);
-    a = stiNum;
+    a = stimuliN;
     paramNum = [a/lumNum, a/(lumNum*satNum), a/(lumNum*satNum*colorNum)];
     for i = 1:lumNum
         for j = 1:satNum
@@ -124,7 +128,7 @@ try
     varNames = {'luminance','saturation','color','gray_lum1','gray_lum2','gray_lum3','gray_lum4','gray_lum5'};
     if sessionNum == 1  
         % make data table
-        dataTable = table('Size',[stiNum,8],'VariableTypes',varTypes,'VariableNames',varNames);
+        dataTable = table('Size',[stimuliN,8],'VariableTypes',varTypes,'VariableNames',varNames);
     else
         % load subject data
         load(strcat(dataTableName,'.mat'));
@@ -132,10 +136,10 @@ try
     end
     
     % セッションごとに刺激の呈示順をランダムに決定
-    order = randperm(stiNum);
+    order = randperm(stimuliN);
     
     % 捨て試行の呈示順
-    orderTrash = randi([1,stiNum], 1,trashTrialNum);
+    orderTrash = randi([1,stimuliN], 1,trashTrialNum);
     
     %% 実験開始直前
     % display initial text
@@ -147,18 +151,6 @@ try
     WaitSecs(2);
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     %% 実験のメインループ
     for i = 1:sessionTrialNum + trashTrialNum
         %% 呈示する刺激・位置を決定
@@ -168,7 +160,7 @@ try
             stiNum = orderTrash(i);
         else
             % main trial
-            n = i + sessionTrialNum*(sessionNum-1) - trashTrialNum; % trial number
+            n = i - trashTrialNum; % trial number
             stiNum = order(n); % stimuli number
         end
               
@@ -180,40 +172,33 @@ try
         %}
         
         %% 刺激呈示前に背景のみ表示
-        leftStimulus = Screen('MakeTexture', winPtr,bgStimuli(:,:,:,index(stiNum,2)));
-        rightStimulus = Screen('MakeTexture',winPtr,bgStimuli(:,:,:,index(stiNum,2)));
+        leftStimulus = Screen('MakeTexture', winPtr,bgStimuli(:,:,:,2));
+        rightStimulus = Screen('MakeTexture',winPtr,bgStimuli(:,:,:,2));
         Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
         Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
         flipTime = Screen('Flip', winPtr);
         
         %% 呈示する刺激を決定
+        % 左右のどちらに呈示するか決定
         oneOrTwo = randi([1 2]);
-              
-        flagShape = index(stiNum,1);
-        if flagShape == 1
-            % bunny
-            rgbLeft = stimuliBunny(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
-            rgbRight = stimuliBunny(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));             
-        elseif flagShape == 2
-            % dragon
-            rgbLeft = stimuliDragon(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
-            rgbRight = stimuliDragon(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
-        elseif flagShape == 3
-            % blob
-            rgbLeft = stimuliBlob(:,:,:,pair2color(index(stiNum,6),oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5));
-            rgbRight = stimuliBlob(:,:,:,pair2color(index(stiNum,6),3-oneOrTwo),index(stiNum,2),index(stiNum,3),index(stiNum,4),index(stiNum,5)); 
-        end
         
-        %{ 
-        ------ stimuli data ----------
-        shape : shape(flagShape)
-        light : light(index(stiNum,2)
-        diffuse : diffuseVar(index(stiNum,3))
-        roughness : roughVar(index(stiNum,4))
-        colorize : colorizeW(index(stiNum,5))
-        color1 : colorName(pair2color(index(stiNum,6),1))
-        color2 : colorName(pair2color(index(stiNum,6),2))
-        %}
+        % 無彩色パッチの最初に呈示する色を決定
+        rgbGray = rgbGrayPatch(index(stiNum,1),:);
+        
+        % 刺激の決定
+        if oneOrTwo == 1 % 有色パッチが左
+            rgbLeft = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
+            rgbRight = bgStimuli(:,:,:,2);
+            % 無色パッチの位置
+            posGray = [leftPosition(1)+patchPosition(1),leftPosition(2)+patchPosition(2),leftPosition(1)+patchPosition(3),leftPosition(2)+patchPosition(4)];
+        else % 有色パッチが右
+            rgbLeft = bgStimuli(:,:,:,2);
+            rgbRight = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
+            % 無色パッチの位置
+            posGray = [rightPosition(1)+patchPosition(1),rightPosition(2)+patchPosition(2),rightPosition(1)+patchPosition(3),rightPosition(2)+patchPosition(4)];
+        end
+        leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
+        rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
         
         % 試行番号と呈示する刺激のパラメータ表示
         if i <= trashTrialNum
@@ -223,25 +208,25 @@ try
         end
         fprintf('trial number in this session : %d\n', i);
         fprintf('stimuli number : %d\n', stiNum);
-        fprintf('%s, %s, diffuse:%f, roughness:%s, %s\n', shape(flagShape), light(index(stiNum,2)), diffuseVar(index(stiNum,3)), roughVar(index(stiNum,4)), colorizeW(index(stiNum,5)));
-        fprintf('color pair : %s vs %s\n', colorName(pair2color(index(stiNum,6),oneOrTwo)), colorName(pair2color(index(stiNum,6),3-oneOrTwo)));
+        fprintf('luminance:%d, saturation:%d, color:%s\n', index(stiNum,1), index(stiNum,2), colorName(index(stiNum,3)));
         
         %% 刺激呈示
-        leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
-        rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
-
         % show stimuli
         Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
         Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
+        Screen('FillRect', winPtr, rgbGray, posGray);
         flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
         % capture
         %imageArray = Screen('GetImage',winPtr);
 
         % 1秒後に刺激を消す
-        Screen('FillRect', winPtr, bgColor);
-        flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
-        Screen('Close', [leftStimulus, rightStimulus]);
+        
+        %Screen('Close', [leftStimulus, rightStimulus]);
+        
+        
+        
+        
         
         
         %% 被験者応答
