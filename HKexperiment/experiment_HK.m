@@ -53,7 +53,7 @@ try
     
     FlipInterval = Screen('GetFlipInterval', winPtr); % monitor 1 flame time
     RefleshRate = 1./FlipInterval; 
-    HideCursor(screenNumber);
+    %HideCursor(screenNumber);
     
     % Key
     escapeKey = KbName('ESCAPE');
@@ -70,7 +70,7 @@ try
     
     % 刺激データ
     % low, column, rgb, color, luminance, saturation
-    load('../../stimuli/stimuliPatch.mat');
+    load('../../stimuli/patch/stimuliPatch.mat');
     load('../../mat/patch/rgbGrayPatch.mat');
     load('../../mat/patch/patchPosition.mat');
     load('../../stimuli/back/bgStimuli.mat');
@@ -92,6 +92,12 @@ try
     sy = sx * iy / ix; % stimuli y size (pixel)
     distance = 14; % stimulus distance  (pixel)
     
+    % 画像左上頂点からのパッチまでの距離
+    px = patchPosition(1)*sx /ix;
+    py = patchPosition(2)*sy /iy;
+    px_max = patchPosition(3)*sx / ix;
+    py_max = patchPosition(4)*sy / iy;
+    
     %{
     % stimuli position (center) 
     leftPosition = [mx-sx-distance/2, my-sy/2, mx-distance/2, my+sy/2];
@@ -109,7 +115,7 @@ try
     % make index matrix for stimuli (pair table)
     index = zeros(allSessionNum, 3);
     a = stimuliN;
-    paramNum = [a/lumNum, a/(lumNum*satNum), a/(lumNum*satNum*colorNum)];
+    paramNum = [a/lumNum, a/(lumNum*satNum)];
     for i = 1:lumNum
         for j = 1:satNum
             for k = 1:colorNum
@@ -119,12 +125,12 @@ try
     end
     
     % セッションごとの記録をするテーブル
-    varTypes = {'string','string','stirng','uint8','datetime'};
+    varTypes = {'string','string','string','uint8','datetime'};
     varNames = {'luminance','saturation','color','gray_lum','responseTime'};
     sessionTable = table('Size',[sessionTrialNum,5],'VariableTypes',varTypes,'VariableNames',varNames);
     
     % 応答データを記録するテーブル・刺激呈示順を作るまたは読み込む
-    varTypes = {'string','string','stirng','uint8','uint8','uint8','uint8','uint8'};
+    varTypes = {'string','string','string','uint8','uint8','uint8','uint8','uint8'};
     varNames = {'luminance','saturation','color','gray_lum1','gray_lum2','gray_lum3','gray_lum4','gray_lum5'};
     if sessionNum == 1  
         % make data table
@@ -143,11 +149,16 @@ try
     
     %% 実験開始直前
     % display initial text
-    startText = 'Press any key to start';
+    startText = 'Click to start';
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, startText, 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
-    KbWait([], 2);
+    while 1
+        [x,y,buttons] = GetMouse;
+        if any(buttons)
+            break;
+        end
+    end
     WaitSecs(2);
     
     
@@ -190,12 +201,12 @@ try
             rgbLeft = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
             rgbRight = bgStimuli(:,:,:,2);
             % 無色パッチの位置
-            posGray = [leftPosition(1)+patchPosition(1),leftPosition(2)+patchPosition(2),leftPosition(1)+patchPosition(3),leftPosition(2)+patchPosition(4)];
+            posGray = [rightPosition(1)+px,rightPosition(2)+py,rightPosition(1)+px_max,rightPosition(2)+py_max];
         else % 有色パッチが右
             rgbLeft = bgStimuli(:,:,:,2);
             rgbRight = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
             % 無色パッチの位置
-            posGray = [rightPosition(1)+patchPosition(1),rightPosition(2)+patchPosition(2),rightPosition(1)+patchPosition(3),rightPosition(2)+patchPosition(4)];
+            posGray = [leftPosition(1)+px,leftPosition(2)+py,leftPosition(1)+px_max,leftPosition(2)+py_max];
         end
         leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
         rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
@@ -210,55 +221,52 @@ try
         fprintf('stimuli number : %d\n', stiNum);
         fprintf('luminance:%d, saturation:%d, color:%s\n', index(stiNum,1), index(stiNum,2), colorName(index(stiNum,3)));
         
-        %% 刺激呈示
-        % show stimuli
-        Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
-        Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
-        Screen('FillRect', winPtr, rgbGray, posGray);
-        flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
+        %% 刺激呈示・被験者応答
+        SetMouse(rx+sx+distance/2, ry+sy/2, winPtr);
+        while 1  
+            % 刺激呈示
+            Screen('DrawTexture', winPtr, leftStimulus, [], leftPosition);
+            Screen('DrawTexture', winPtr, rightStimulus, [], rightPosition);
+            Screen('FillRect', winPtr, rgbGray, posGray);
+            flipTime = Screen('Flip', winPtr, flipTime+beforeStimuli);
 
-        % capture
-        %imageArray = Screen('GetImage',winPtr);
-
-        % 1秒後に刺激を消す
+            % capture
+            %imageArray = Screen('GetImage',winPtr);       
         
-        %Screen('Close', [leftStimulus, rightStimulus]);
-        
-        
-        
-        
-        
-        
-        %% 被験者応答
-        % Wait for subject's response
-        keyIsDown = 0;
-        while 1
-            [keyIsDown, seconds, keyCode] = KbCheck(-1);
-            if keyIsDown && keyCode(leftKey)
+            % 被験者応答
+            [x,y,buttons] = GetMouse;
+            
+            % マウスをクリックしたら次の試行
+            if any(buttons)
                 flag = 1;
-                response = oneOrTwo;
                 break;
-            elseif keyIsDown && keyCode(rightKey)
+            end
+            
+            % escキーを押したら実験中断
+            keyIsDown = 0;
+            [keyIsDown, seconds, keyCode] = KbCheck(-1);
+            if keyIsDown && keyCode(escapeKey)
                 flag = 2;
-                response = 3-oneOrTwo;
-                break;
-            elseif keyIsDown && keyCode(escapeKey)
-                response = 0;
-                flag = 3;
                 break;
             end
         end
         resTime = datetime;
         
+        % 刺激を消す
+        Screen('FillRect', winPtr, bgColor);
+        flipTime = Screen('Flip', winPtr);
+        Screen('Close', [leftStimulus, rightStimulus]);
+        
         %% 中断処理
         % if push escape key, experiment is interrupted
-        if flag == 3
+        if flag == 2
             DrawFormattedText(winPtr, 'Experiment is interrupted', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
             WaitSecs(1);
             break
         end
         
+        %{
         %% 応答データを記録
         if i > trashTrialNum
             
@@ -278,10 +286,13 @@ try
             sessionTable(i-trashTrialNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
             dataTable(stiNum,:) = {shape(flagShape),light(index(stiNum,2)),diffuseVar(index(stiNum,3)),roughVar(index(stiNum,4)),colorizeW(index(stiNum,5)),colorName(pair2color(index(stiNum,6),1)),colorName(pair2color(index(stiNum,6),2)),colorName(pair2color(index(stiNum,6),response)),resTime};
         end
+        %}
         
+        %{
         % 応答表示
         fprintf('pressed key : %d\n', flag);
         fprintf('subject response : %s\n\n', colorName(pair2color(index(stiNum,6),response)));
+        %}
         
         %% 実験が半分経過
         if i == round((sessionTrialNum+trashTrialNum)/2)
@@ -299,6 +310,7 @@ try
     clear stimuliBlob;
     finTime = datetime;
     
+    %{
     % データを保存
     save(strcat(dataTableName,'.mat'), 'dataTable');
     save(orderFile, 'order');
@@ -314,6 +326,7 @@ try
     fprintf(fp, '試行回数　%d回\n', i);
     fprintf(fp, '実験時間　%s\n\n', char(expTime));
     fclose(fp);    
+    %}
     
     % 終了の表示
     finishText = 'The experiment is over. Press any key.';
