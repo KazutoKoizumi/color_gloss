@@ -30,7 +30,7 @@ try
     
     SetMouse(winWidth/2,winHeight/2,winPtr);
     while 1
-        [x,y,buttons,focus,val] = GetMouse
+        [x,y,buttons,focus,val] = GetMouse(winPtr,0)
         
         
         if any(buttons)
