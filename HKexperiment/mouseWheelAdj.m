@@ -21,6 +21,7 @@ try
     FlipInterval = Screen('GetFlipInterval', winPtr); % monitor 1 flame time
     RefleshRate = 1./FlipInterval; 
     %HideCursor(screenNumber);
+    [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
     
     startText = 'Click to start';
@@ -29,11 +30,26 @@ try
     Screen('Flip', winPtr);
     
     SetMouse(winWidth/2,winHeight/2,winPtr);
+    changeRGB = 0;
+    wheelValBefore = 0;
+    rgbGray = [50 50 50];
     while 1
-        [x,y,buttons,focus,val] = GetMouse(winPtr,0)
+        [x,y,buttons,focus,val] = GetMouse(winPtr,0);
+        val;
         
+        if size(val,2) == 4
+            changeRGB = -(val(4)-wheelValBefore) / 15;
+            if abs(changeRGB) == 1
+                rgbGray = rgbGray + changeRGB;
+                if rgbGray
+            end
+            wheelValBefore = val(4);
+        end
         
-        if any(buttons)
+        Screen('FillRect',winPtr,rgbGray, [mx-200,my-200,mx+200,my+200]);      
+        Screen('Flip', winPtr);
+        
+        if buttons(1) == 1
             break;
         end
     end
