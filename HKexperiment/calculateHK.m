@@ -46,5 +46,4 @@ end
 %% 
 function xyz = conv_RGB2XYZ(RGB,ccmat)
 
-LUT = load('../../mat/gamma_lut')
-;
+LUT = load('../../mat/gamma_lut');
