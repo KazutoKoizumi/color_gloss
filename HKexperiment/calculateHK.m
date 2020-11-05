@@ -31,7 +31,7 @@ end
 
 %% 実験結果（RGB値）を輝度（Y）に変換
 repeat = 1;
-grayLum = zeros(stiNum,repeat)
+grayLum = zeros(stiNum,repeat);
 for i = 1:3
     for j = 1:3
         for k = 1:8
@@ -44,6 +44,9 @@ for i = 1:3
 end
             
 %% 
-function xyz = conv_RGB2XYZ(RGB,ccmat)
+function XYZ = conv_RGB2XYZ(RGB,ccmat)
 
-LUT = load('../../mat/gamma_lut');
+    LUT = load('../../mat/gamma_lut');
+    rgb = TNT_RGBTorgb_LUT(RGB*257, LUT);
+    
+    
