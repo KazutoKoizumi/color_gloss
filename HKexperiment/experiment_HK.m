@@ -98,16 +98,18 @@ try
     rightPosition = [mx+distance/2, my-sy/2, mx+sx+distance/2, my+sy/2];
     %}
     
+    % 繰り返し回数
+    repeatN = 5;
     % 全セッション数
     allSessionNum = 5;
     % 試行数
-    sessionTrialNum = stimuliN;
+    sessionTrialNum = stimuliN/2;
     trashTrialNum = 10;
     
     
     %% 刺激のインデックス・呈示順・結果保存用の配列
     % make index matrix for stimuli (pair table)
-    index = zeros(allSessionNum, 3);
+    index = zeros(repeatN, 3);
     a = stimuliN;
     paramNum = [a/lumNum, a/(lumNum*satNum)];
     for i = 1:lumNum
@@ -129,14 +131,25 @@ try
     if sessionNum == 1  
         % make data table
         dataTable = table('Size',[stimuliN,8],'VariableTypes',varTypes,'VariableNames',varNames);
+        
+        % 各セッションの呈示順
+        order = zeros(stimuliN,5);
+        for i = 1:5
+            order(:,i) = randperm(stimuliN)';
+        end
     else
         % load subject data
         load(strcat(dataTableName,'.mat'));
         load(orderFile);
     end
     
-    % セッションごとに刺激の呈示順をランダムに決定
-    order = randperm(stimuliN);
+    % セッションごとに刺激の呈示順
+    if rem(sessionNum,2) == 1
+        orderSession = order(1:stimuliN/2,round(sessionNum/2));
+    else
+        orderSession = order(stimuliN/2+1:stimuliN,round(sessionNum/2));
+    end
+    %order = randperm(stimuliN);
     
     % 捨て試行の呈示順
     orderTrash = randi([1,stimuliN], 1,trashTrialNum);
@@ -166,7 +179,7 @@ try
         else
             % main trial
             n = i - trashTrialNum; % trial number
-            stiNum = order(n); % stimuli number
+            stiNum = orderSession(n); % stimuli number
         end
               
         % 刺激呈示位置 (random)
@@ -291,8 +304,8 @@ try
             %}
             % table data
             sessionTable(i-trashTrialNum,:) = {index(stiNum,1),index(stiNum,2),colorName(index(stiNum,3)),grayVal,resTime};
-            dataTable(stiNum,3+sessionNum) = {grayVal};
-            if sessionNum == 1
+            dataTable(stiNum,3+round(sessionNum/2)) = {grayVal};
+            if round(sessionNum/2) == 1
                 dataTable(stiNum,1:3) = {index(stiNum,1),index(stiNum,2),colorName(index(stiNum,3))};
             end
         end
