@@ -64,6 +64,7 @@ try
     % 刺激データ
     % low, column, rgb, color, luminance, saturation
     load('../../stimuli/patch/stimuliPatch.mat');
+    load('../../stimuli/patch/stimuliGrayPatch.mat');
     load('../../mat/patch/rgbGrayPatch.mat');
     load('../../mat/patch/patchPosition.mat');
     load('../../stimuli/back/bgStimuli.mat');
@@ -188,11 +189,11 @@ try
         % 刺激の決定
         if oneOrTwo == 1 % 有色パッチが左
             rgbLeft = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
-            rgbRight = bgStimuli(:,:,:,2);
+            rgbRight = stimuliGrayPatch(:,:,:,index(stiNum,1));
             % 無色パッチの位置
             posGray = [rightPosition(1)+px,rightPosition(2)+py,rightPosition(1)+px_max,rightPosition(2)+py_max];
         else % 有色パッチが右
-            rgbLeft = bgStimuli(:,:,:,2);
+            rgbLeft = stimuliGrayPatch(:,:,:,index(stiNum,1));
             rgbRight = stimuliPatch(:,:,:,index(stiNum,3),index(stiNum,1),index(stiNum,2));
             % 無色パッチの位置
             posGray = [leftPosition(1)+px,leftPosition(2)+py,leftPosition(1)+px_max,leftPosition(2)+py_max];
@@ -215,7 +216,8 @@ try
         changeRGB = 0;
         wheelValBefore = 0;
         % 無彩色パッチの最初に呈示する色を決定
-        grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double');
+        grayRandom = randi(21)-1;
+        grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double') + grayRandom;
         rgbGray = ones(1,3) * grayVal;
         
         % 刺激呈示
@@ -242,8 +244,13 @@ try
             if size(val,2) == 4
                 changeRGB = -(val(4)-wheelValBefore) / 15;
                 if abs(changeRGB) == 1
-                    rgbGray = rgbGray + changeRGB;
                     grayVal = grayVal + changeRGB;
+                    if grayVal < 0
+                        grayVal = 0;
+                    elseif grayVal > 255
+                        grayVal = 255;
+                    end
+                    rgbGray = ones(1,3)*grayVal;
                 end
                 wheelValBefore = val(4);
             end
