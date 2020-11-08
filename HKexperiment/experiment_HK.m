@@ -37,8 +37,7 @@ load('../../mat/upvplWhitePoints.mat');
 lum = 2;
 bgUpvpl = upvplWhitePoints(knnsearch(upvplWhitePoints(:,3), lum),:);
 bgColor = conv_upvpl2rgb(bgUpvpl,ccmat);
-clear ccmat;
-clear upvplWhitePoints;
+clear ccmat upvplWhitePoints;
 
 %% Main
 try
@@ -104,7 +103,7 @@ try
     allSessionNum = 5;
     % 試行数
     sessionTrialNum = stimuliN/2;
-    trashTrialNum = 10;
+    trashTrialNum = 6;
     
     
     %% 刺激のインデックス・呈示順・結果保存用の配列
@@ -229,8 +228,8 @@ try
         changeRGB = 0;
         wheelValBefore = 0;
         % 無彩色パッチの最初に呈示する色を決定
-        grayRandom = randi(21)-1;
-        grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double') + grayRandom;
+        %grayRandom = randi(21)-1;
+        grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double');
         rgbGray = ones(1,3) * grayVal;
         
         % 刺激呈示
@@ -317,13 +316,13 @@ try
         if i == round((sessionTrialNum+trashTrialNum)/2)
             DrawFormattedText(winPtr, 'Half. Click to continue.', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
+            WaitSecs(0.5);
             while 1
-                [x,y,buttons] = GetMouse;
+                [x,y,buttons] = GetMouse
                 if any(buttons)
                     break;
                 end
             end
-            WaitSecs(2);
         end
         
         WaitSecs(intervalTime);
