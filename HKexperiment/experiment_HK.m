@@ -70,7 +70,7 @@ try
     
     %% 実験パラメータ設定
     flag = 0;
-    %[mx,my] = RectCenter(winRect);
+    [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
     [iy,ix,iz] = size(bgStimuli(:,:,:,1));
     showStimuliTime = 1; % [s]
@@ -186,6 +186,10 @@ try
         ry = randi(fix(winHeight-sy)-1);
         leftPosition = [rx, ry, rx+sx, ry+sy];
         rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+        
+        % stimuli position (center) 
+        %leftPosition = [mx-sx-distance/2, my-sy/2, mx-distance/2, my+sy/2];
+        %rightPosition = [mx+distance/2, my-sy/2, mx+sx+distance/2, my+sy/2];
         
         %% 刺激呈示前に背景のみ表示
         leftStimulus = Screen('MakeTexture', winPtr,bgStimuli(:,:,:,2));

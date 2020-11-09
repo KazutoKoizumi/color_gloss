@@ -105,6 +105,9 @@ try
             end
             Screen('Flip', winPtr);
             
+            % capture
+            %imageArray = Screen('GetImage',winPtr);  
+            
             fprintf('luminance:%d, saturation:%d\n\n', i,j);
             
             while 1

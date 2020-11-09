@@ -1,4 +1,5 @@
 %% 実験結果からH-K効果量（輝度比）を計算する
+clear all;
 
 exp = 'experiment_HK';
 sn = 'pre_koizumi';
@@ -31,7 +32,7 @@ for i = 1:3
 end
 
 %% 実験結果（RGB値）をXYZに変換
-repeat = 1;
+repeat = 3;
 grayLum = zeros(stiNum,repeat);
 count = 0;
 for i = 1:3
@@ -49,7 +50,9 @@ end
 
 %% 結果
 data = table(lum,sat,table2array(dataTable(:,3)),grayLum);
-data.HK = data.grayLum ./ data.lum;
+data.grayLumAve = mean(data.grayLum,2);
+%data = splitvars(data, 'grayLum');
+data.HK = data.grayLumAve ./ data.lum;
 
 %% プロット
 axisColorNum = [1 2 3 4 5 6 7 8];
@@ -67,11 +70,12 @@ for i = 1:3 % lum
         
         % axis
         xticks(axisColorNum);
-        xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
-        xlabel('色相');
+        %xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
+        xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+        xlabel('hue');
         xlim([0 9]);
         ylabel('H-K効果の大きさ');
-        ylim([1 4]);
+        ylim([1 max(data.HK)+0.3]);
 
         
         hold off;     
