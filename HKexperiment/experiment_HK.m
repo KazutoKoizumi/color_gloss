@@ -103,7 +103,8 @@ try
     allSessionNum = 5;
     % 試行数
     sessionTrialNum = stimuliN/2;
-    trashTrialNum = 6;
+    %trashTrialNum = 6;
+    trashTrialTime = duration(0,1,30); 
     
     
     %% 刺激のインデックス・呈示順・結果保存用の配列
@@ -151,7 +152,7 @@ try
     %order = randperm(stimuliN);
     
     % 捨て試行の呈示順
-    orderTrash = randi([1,stimuliN], 1,trashTrialNum);
+    %orderTrash = randi([1,stimuliN], 1,trashTrialNum);
     
     %% 実験開始直前
     % display initial text
@@ -169,9 +170,26 @@ try
     WaitSecs(2);
     
     %% 実験のメインループ
-    for i = 1:sessionTrialNum + trashTrialNum
+    %for i = 1:sessionTrialNum + trashTrialNum
+    i = 1;
+    roopStartTime = datetime();
+    roopEndTime = datetime();
+    flagMain = 0;
+    while i <= sessionTrialNum
         %% 呈示する刺激・位置を決定
         % 刺激番号
+        if roopEndTime - roopStartTime < trashTrialTime
+            % 捨て試行
+            stiNum = randi(stimuliN);
+        else
+            % 本試行
+            if i == 1
+                roopEndTime-roopStartTime
+            end
+            stiNum = orderSession(i);
+            flagMain = 1;
+        end
+        %{
         if i <= trashTrialNum
             % trash trial
             stiNum = orderTrash(i);
@@ -180,6 +198,7 @@ try
             n = i - trashTrialNum; % trial number
             stiNum = orderSession(n); % stimuli number
         end
+        %}
               
         % 刺激呈示位置 (random)
         rx = randi(fix(winWidth-(2*sx+distance))-1);
@@ -218,7 +237,7 @@ try
         rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
         
         % 試行番号と呈示する刺激のパラメータ表示
-        if i <= trashTrialNum
+        if flagMain == 0
             fprintf('trash\n');
         else
             fprintf('main\n');
@@ -295,7 +314,7 @@ try
         end
         
         %% 応答データを記録
-        if i > trashTrialNum
+        if flagMain == 1
             
             %{
             ------ data table ----------
@@ -306,7 +325,7 @@ try
             responseTime : resTime
             %}
             % table data
-            sessionTable(i-trashTrialNum,:) = {index(stiNum,1),index(stiNum,2),colorName(index(stiNum,3)),grayVal,resTime};
+            sessionTable(i,:) = {index(stiNum,1),index(stiNum,2),colorName(index(stiNum,3)),grayVal,resTime};
             dataTable(stiNum,3+round(sessionNum/2)) = {grayVal};
             if round(sessionNum/2) == 1
                 dataTable(stiNum,1:3) = {index(stiNum,1),index(stiNum,2),colorName(index(stiNum,3))};
@@ -317,17 +336,23 @@ try
         fprintf('gray RGB val : %d\n\n', grayVal);
         
         %% 実験が半分経過
-        if i == round((sessionTrialNum+trashTrialNum)/2)
+        if i == round(sessionTrialNum/2)
             DrawFormattedText(winPtr, 'Half. Click to continue.', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
             WaitSecs(0.5);
             while 1
-                [x,y,buttons] = GetMouse
+                [x,y,buttons] = GetMouse;
                 if any(buttons)
                     break;
                 end
             end
         end
+        
+        %% 次のループへ
+        if flagMain == 1
+            i = i+1;
+        end
+        roopEndTime = datetime();
         
         WaitSecs(intervalTime);
     end
@@ -348,7 +373,7 @@ try
     fp = fopen(recordFile, 'a');
     fprintf(fp, '%dセッション目\n', sessionNum);
     fprintf(fp, '実験実施日　%s\n', char(date));
-    fprintf(fp, '試行回数　%d回\n', i);
+    fprintf(fp, '試行回数　%d回\n', i-1);
     fprintf(fp, '実験時間　%s\n\n', char(expTime));
     fclose(fp);    
     

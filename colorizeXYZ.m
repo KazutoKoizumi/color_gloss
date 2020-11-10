@@ -26,6 +26,10 @@ function coloredXYZ = colorizeXYZ(xyzMaterial, refLuminanceImage, mask, flag)
     [iy,ix,iz] = size(xyzMaterial);
     load('../mat/fixedColorMax.mat');
     load('../mat/upvplWhitePoints.mat');
+    %load('../mat/D65/fixedColorMaxD65.mat');
+    %load('../mat/D65/upvplWhitePointsD65.mat');
+    %fixedColorMax = fixedColorMaxD65;
+    %upvplWhitePoints = upvplWhitePointsD65;
     
     % 色空間変換
     cx2u = makecform('xyz2upvpl');
@@ -45,6 +49,11 @@ function coloredXYZ = colorizeXYZ(xyzMaterial, refLuminanceImage, mask, flag)
     % 彩色距離(uv座標の変位)読み込み
     load('../mat/saturateColor.mat');
     load('../mat/saturationMax.mat');
+    %load('../mat/D65/saturateColorD65.mat');
+    %load('../mat/D65/saturationMaxD65.mat');
+    %saturateColor = saturateColorD65;
+    %saturationMax = saturationMaxD65;
+    
     lumStep = saturateColor(:,3,1);  % 輝度
     [~, iMax] = max(saturationMax);
     

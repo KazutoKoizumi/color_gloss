@@ -2,9 +2,9 @@
 
 %% オブジェクトのパラメータ
 shape = 'bunny'; % shape : bunny, dragon, blob
-light = 'envmap'; % light : area or envmap
-diffuse = 'D01'; % diffuse rate
-roughness = 'alpha01'; % roughness parameter
+light = 'area'; % light : area or envmap
+diffuse = 'D05'; % diffuse rate
+roughness = 'alpha02'; % roughness parameter
 
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD.mat'));
