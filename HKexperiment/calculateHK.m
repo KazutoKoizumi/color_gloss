@@ -32,7 +32,7 @@ for i = 1:3
 end
 
 %% 実験結果（RGB値）をXYZに変換
-repeat = 3;
+repeat = 4;
 grayLum = zeros(stiNum,repeat);
 count = 0;
 for i = 1:3
@@ -53,6 +53,8 @@ data = table(lum,sat,table2array(dataTable(:,3)),grayLum);
 data.grayLumAve = mean(data.grayLum,2);
 %data = splitvars(data, 'grayLum');
 data.HK = data.grayLumAve ./ data.lum;
+
+save(strcat('../../analysis_result/',exp,'/',sn,'/data.mat'), 'data');
 
 %% プロット
 axisColorNum = [1 2 3 4 5 6 7 8];
