@@ -50,6 +50,7 @@ end
 
 %% 結果
 data = table(lum,sat,table2array(dataTable(:,3)),grayLum);
+data.Properties.VariableNames{'Var3'} = 'color';
 data.grayLumAve = mean(data.grayLum,2);
 %data = splitvars(data, 'grayLum');
 data.HK = data.grayLumAve ./ data.lum;
