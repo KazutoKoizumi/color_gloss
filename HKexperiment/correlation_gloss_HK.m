@@ -4,8 +4,13 @@ clear all;
 sn = 'pre_koizumi';
 sn2 = 'all';
 
+colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
+
 load(strcat('../../analysis_result/experiment_gloss/',sn2,'/sv.mat'));
 load(strcat('../../analysis_result/experiment_HK/',sn,'/data.mat'));
+
+load('../../mat/patch/patchLuminance.mat');
+load('../../mat/patch/patchSaturation.mat');
 
 paramnum = 3*2*3*3*2;
 idx_gloss = zeros(paramnum, 5);
@@ -28,17 +33,55 @@ for i = 1:paramnum
     sValue(:,i) = sv(:,:,idx_gloss(i,1),idx_gloss(i,2),idx_gloss(i,3),idx_gloss(i,4),idx_gloss(i,5))';
 end
 
+%% HK効果量をパラメータごとにz-score化
+HKave_param = reshape(data.HKave,[8,9]);
+HK_zscore = zscore(HKave_param);
+
 %% 相関係数
 R = zeros(108,9);
+R_zscore = zeros(108,9);
 for i = 1:108
     gloss = sValue(2:9,i)';
     for j = 1:9
-        HK = data.HK(8*(j-1)+1:8*j)';
+        HK = data.HKave(8*(j-1)+1:8*j)';
         
         r = corrcoef(gloss, HK);
         R(i,j) = r(1,2);
         
+        r_z = corrcoef(gloss, HK_zscore(:,j)');
+        R_zscore(i,j) = r_z(1,2); 
+        
     end
 end
-        
-        
+
+%% 一部のパラメータに限定した相関係数
+% SDと彩度0.0460のH-K
+% D,diffuse0.1と彩度0.0316のH-K
+% D,diffuse0.3と彩度0.0388のH-K
+% D,diffuse0.5と彩度0.0388のH-K
+
+% H-K効果を輝度で平均化
+dataHK = zeros(3,3,8);
+for i = 1:8
+    dataHK(:,:,i) = reshape(data.HKave(data.color==colorName(i)), [3,3])';
+end
+HK_meanLum = reshape(mean(dataHK), [3,8]);
+
+% 相関係数
+R_param = zeros(108,1);
+for i = 1:108
+    gloss = sValue(2:9,i)';
+    if idx_gloss(i,5) == 1 % SD
+        HK = HK_meanLum(3,:);
+    else
+        if idx_gloss(i,3) == 1 % D, diffuse=0.1
+            HK = HK_meanLum(1,:);
+        else
+            HK = HK_meanLum(2,:);
+        end
+    end
+    
+    r = corrcoef(gloss,HK);
+    R_param(i) = r(1,2);
+end
+
