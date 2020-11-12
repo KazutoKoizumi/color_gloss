@@ -56,6 +56,13 @@ data.grayLumAve = mean(data.grayLum,2);
 data.HK = data.grayLum ./ data.lum;
 data.HKave = data.grayLumAve ./ data.lum;
 
+% z-score化
+HKzscore = zeros(9*8,1);
+for i =1:9
+    HKzscore(8*(i-1)+1:8*i) = zscore(data.HKave(8*(i-1)+1:8*i));
+end
+data = addvars(data,HKzscore);
+
 save(strcat('../../analysis_result/',exp,'/',sn,'/data.mat'), 'data');
 
 
@@ -134,7 +141,17 @@ for i = 1:3
     subplot(3,1,i);
     
     plot(axisColorNum,HK_meanLum(i,:));
+    
+    title(strcat('saturation : ',num2str(i)));
+    
+    xticks(axisColorNum);
+    xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+    xlabel('hue');
+    xlim([0 9]);
+    ylabel('H-K効果の大きさ');
+    ylim([1 max(data.HKave)+0.3]);
 end
+sgtitle('輝度で平均化したH-K効果');
     
 
 %% RGBからXYZに変換する関数
