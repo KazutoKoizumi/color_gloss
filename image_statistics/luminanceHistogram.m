@@ -28,9 +28,9 @@ for i = 1:3 % shape
                 [iy,ix,iz] = size(coloredSD(:,:,:,1));
                 
                 load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/xyzD.mat'));
-                lumMap = xyzD(:,:,2);
+                %lumMap = xyzD(:,:,2);
 
-                %lumMap = coloredSD(:,:,2,1);
+                lumMap = coloredSD(:,:,2,1);
 
                 % オブジェクト部分のみ
                 lumMap = lumMap .* mask;
