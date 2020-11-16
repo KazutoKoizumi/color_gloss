@@ -6,8 +6,8 @@ clear all;
 %% オブジェクトのパラメータ
 shape = 'bunny';
 light = 'area';
-diffuse = 'D05';
-roughness = 'alpha02';
+diffuse = 'D01';
+roughness = 'alpha01';
 
 %{
 indexD = ["D01", "D03", "D05"];
@@ -93,3 +93,6 @@ sd = strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredD');
 save(ss,'coloredSD');
 save(sd,'coloredD');
 
+
+%% 彩色specularの取り出し
+colorSpecular = colorizeXYZ(noColorSpecular,noColorSD,mask,0);
