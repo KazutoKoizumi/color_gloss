@@ -1,9 +1,9 @@
 % 刺激画像を1種呈示する
 
 % Object
-shape = 'blob';
-light = 'envmap';
-diffuse = 'D01';
+shape = 'bunny';
+light = 'area';
+diffuse = 'D03';
 roughness = 'alpha005';
 
 load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'));
@@ -11,7 +11,7 @@ load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliD.m
 
 
 figure;
-image(stimuliSD(:,:,:,2));
+image(stimuliSD(:,:,:,9));
 xticks({});
 yticks({});
 xticklabels({});
