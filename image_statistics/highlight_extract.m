@@ -13,25 +13,41 @@ methodN = size(method,2);
 
 allObj = 3*2*3*3*2;
 load('../../mat/ccmat.mat');
-load(strcat('../../mat/',shape(1),'Mask/mask.mat'));
+load('../../mat/highlight/lumThreshold.mat');
 
-load(strcat('../../mat/',shape(1),'/',light(1),'/',diffuse(1),'/',roughness(3),'/coloredSD.mat'));
 
 %% 輝度閾値
 % 
-threshold = 9;
 
-%% 輝度抽出
-lumMap = coloredSD(:,:,2,1);
-lumMap = lumMap .* mask;
 
-lumMap(lumMap < threshold) = 0;
-lumMap = cast(lumMap,'uint8');
+%% ハイライト抽出
+count = 37;
+for i = 3:3 % shape
+    load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
+    for j = 1:2 % light
+        for k = 1:3 % diffuse
+            for l = 1:3 % roughness
+                load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+                
+                lumMap = coloredD(:,:,2,1);
+                lumMap = lumMap .* mask;
 
-imageRGB = imageXYZ2RGB(coloredSD(:,:,:,2),ccmat);
-highlight_RGB = imageRGB .* lumMap;
+                lumMap(lumMap < lumThreshold(count)) = 0;
+                lumMap = cast(lumMap,'uint8');
 
-figure;
-image(imageRGB);
-figure;
-image(highlight_RGB);
+                imageRGB = imageXYZ2RGB(coloredD(:,:,:,2),ccmat);
+                highlight_RGB = imageRGB .* lumMap;
+
+                figure;
+                image(imageRGB);
+                title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
+                figure;
+                image(highlight_RGB);
+                title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
+                
+                count = count + 1;
+                
+            end
+        end
+    end
+end

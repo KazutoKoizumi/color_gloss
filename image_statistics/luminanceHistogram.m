@@ -15,6 +15,9 @@ x = [1 2];
 allObj = 3*2*3*3;
 progress = 0;
 
+% ハイライト抽出用の輝度閾値
+lumThreshold = zeros(1,3*2*3*3);
+
 %% Main
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
@@ -60,8 +63,15 @@ for i = 1:3 % shape
                 % 進行度表示
                 progress = progress + 1;
                 fprintf('finish : %d/%d\n\n', progress, allObj);
+                
+                %% ハイライト抽出のための輝度解析
+                % 輝度ヒストグラムの上位5%をハイライトとする
+                lumThreshold(progress) = min(maxk(lumMap,round(size(lumMap,2)*0.05)));
+                
             end
         end
         sgtitle(strcat('shape:',shape(i),'  light:',light(j)));
     end
 end
+
+save('../../mat/highlight/lumThreshold.mat','lumThreshold');
