@@ -157,13 +157,13 @@ try
     %% 実験開始直前
     % display initial text
     SetMouse(winWidth/2,winHeight/2-150,winPtr);
-    startText = 'Click to start';
+    startText = 'Right click to start';
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, startText, 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
     while 1
         [x,y,buttons] = GetMouse;
-        if any(buttons)
+        if buttons(3) == 1
             break;
         end
     end
@@ -247,7 +247,8 @@ try
         fprintf('luminance:%d, saturation:%d, color:%s\n', index(stiNum,1), index(stiNum,2), colorName(index(stiNum,3)));
         
         %% 刺激呈示・被験者応答
-        SetMouse(rx+sx+distance/2, ry+sy/2, winPtr);
+        %SetMouse(rx+sx+distance/2, ry+sy/2, winPtr);
+        SetMouse(winWidth-100, winHeight-100, winPtr);
         changeRGB = 0;
         wheelValBefore = 0;
         % 無彩色パッチの最初に呈示する色を決定
@@ -269,7 +270,7 @@ try
             % 被験者応答
             [x,y,buttons,focus,val] = GetMouse(winPtr,0);
             
-            % 左クリックしたら次の試行
+            % 右クリックしたら次の試行
             if buttons(1) == 1
                 flag = 1;
                 break;
@@ -337,12 +338,12 @@ try
         
         %% 実験が半分経過
         if i == round(sessionTrialNum/2)
-            DrawFormattedText(winPtr, 'Half. Click to continue.', 'center', 'center',[255 255 255]);
+            DrawFormattedText(winPtr, 'Half. Right click to continue.', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
             WaitSecs(0.5);
             while 1
                 [x,y,buttons] = GetMouse;
-                if any(buttons)
+                if buttons(3) == 1
                     break;
                 end
             end

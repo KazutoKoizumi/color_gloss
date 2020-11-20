@@ -36,12 +36,13 @@ try
     while 1
         [x,y,buttons,focus,val] = GetMouse(winPtr,0);
         val;
+        buttons
         
         if size(val,2) == 4
             changeRGB = -(val(4)-wheelValBefore) / 15;
             if abs(changeRGB) == 1
                 rgbGray = rgbGray + changeRGB;
-                if rgbGray
+                %if rgbGray
             end
             wheelValBefore = val(4);
         end
