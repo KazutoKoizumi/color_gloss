@@ -87,7 +87,7 @@ for i = 1:3 % lum
         xlabel('hue');
         xlim([0 9]);
         ylabel('H-K効果の大きさ');
-        ylim([1 max(data.HKave)+0.3]);
+        ylim([0 max(data.HKave)+0.3]);
 
         
         hold off;     

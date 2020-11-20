@@ -69,9 +69,19 @@ uvl = reshape(cat(2,uvWhite,patchLuminance'), [3,1,3]);
 rgb = conv_upvpl2rgb(uvl,ccmat);
 rgbGrayPatch = reshape(rgb,[3,3]);
 
+uvlMin = uvl;
+uvlMin(:,:,3) = uvl(:,:,3)*1.3;
+rgbGrayPatchMin = reshape(conv_upvpl2rgb(uvlMin,ccmat),[3,3]);
+
+uvlMax = uvl;
+uvlMax(:,:,3) = uvl(:,:,3)*1.6;
+rgbGrayPatchMax = reshape(conv_upvpl2rgb(uvlMax,ccmat),[3,3]);
+
 %% 保存・出力
 save('../../stimuli/patch/stimuliGrayPatch.mat', 'stimuliGrayPatch');
 save('../../mat/patch/rgbGrayPatch.mat', 'rgbGrayPatch');
+save('../../mat/patch/rgbGrayPatchMin.mat', 'rgbGrayPatchMin');
+save('../../mat/patch/rgbGrayPatchMax.mat', 'rgbGrayPatchMax');
 
 figure
 montage(stimuliGrayPatch/255,'size',[1 lumNum]);

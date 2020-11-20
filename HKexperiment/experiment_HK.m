@@ -65,6 +65,8 @@ try
     load('../../stimuli/patch/stimuliPatch.mat');
     load('../../stimuli/patch/stimuliGrayPatch.mat');
     load('../../mat/patch/rgbGrayPatch.mat');
+    load('../../mat/patch/rgbGrayPatchMin.mat');
+    load('../../mat/patch/rgbGrayPatchMax.mat');
     load('../../mat/patch/patchPosition.mat');
     load('../../stimuli/back/bgStimuli.mat');
     
@@ -253,7 +255,11 @@ try
         wheelValBefore = 0;
         % 無彩色パッチの最初に呈示する色を決定
         %grayRandom = randi(21)-1;
-        grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double');
+        %grayVal = cast(rgbGrayPatch(index(stiNum,1),2),'double');
+        grayValMin = rgbGrayPatchMin(index(stiNum,1),2);
+        grayValMax = rgbGrayPatchMax(index(stiNum,1),2);
+        grayVal = randi([grayValMin, grayValMax]);
+        
         rgbGray = ones(1,3) * grayVal;
         
         % 刺激呈示
