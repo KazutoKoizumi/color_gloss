@@ -2,7 +2,7 @@
 clear all;
 
 exp = 'experiment_HK';
-sn = 'pre_koizumi';
+sn = 'nohira';
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 lumNum = 3;
@@ -32,7 +32,7 @@ for i = 1:3
 end
 
 %% 実験結果（RGB値）をXYZに変換
-repeat = 5;
+repeat = 2;
 grayLum = zeros(stiNum,repeat);
 count = 0;
 for i = 1:3
