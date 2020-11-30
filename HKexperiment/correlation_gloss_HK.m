@@ -1,7 +1,7 @@
 %% 光沢感の選好尺度値とH-K効果との相関係数を求める
 clear all;
 
-sn = 'pre_koizumi';
+sn = 'nohira';
 sn2 = 'nohira';
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];

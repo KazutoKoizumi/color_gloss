@@ -2,7 +2,7 @@
 clear all;
 
 exp = 'experiment_HK';
-sn = 'nohira';
+sn = 'kosone';
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 lumNum = 3;
