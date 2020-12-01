@@ -368,22 +368,24 @@ try
     clear stimuliPatch;
     finTime = datetime;
     
-    % データを保存
-    save(strcat(dataTableName,'.mat'), 'dataTable');
-    save(orderFile, 'order');
-    save(strcat(sessionFile,'.mat'), 'sessionTable');
-    writetable(dataTable, strcat(dataTableName,'.txt'));
-    writetable(sessionTable, strcat(sessionFile,'.txt'));
-    
-    % セッションごとのログ
-    expTime = finTime - date;
-    fp = fopen(recordFile, 'a');
-    fprintf(fp, '%dセッション目\n', sessionNum);
-    fprintf(fp, '実験実施日　%s\n', char(date));
-    fprintf(fp, '試行回数　%d回\n', i-1);
-    fprintf(fp, '実験時間　%s\n\n', char(expTime));
-    fclose(fp);    
-    
+    if flag == 1
+        % データを保存
+        save(strcat(dataTableName,'.mat'), 'dataTable');
+        save(orderFile, 'order');
+        save(strcat(sessionFile,'.mat'), 'sessionTable');
+        writetable(dataTable, strcat(dataTableName,'.txt'));
+        writetable(sessionTable, strcat(sessionFile,'.txt'));
+
+        % セッションごとのログ
+        expTime = finTime - date;
+        fp = fopen(recordFile, 'a');
+        fprintf(fp, '%dセッション目\n', sessionNum);
+        fprintf(fp, '実験実施日　%s\n', char(date));
+        fprintf(fp, '試行回数　%d回\n', i-1);
+        fprintf(fp, '実験時間　%s\n\n', char(expTime));
+        fclose(fp);    
+    end
+        
     % 終了の表示
     finishText = 'The experiment is over. Click to finish.';
     Screen('TextSize', winPtr, 50);
