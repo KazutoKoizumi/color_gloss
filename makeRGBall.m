@@ -30,8 +30,10 @@ for i = 1:3
                 stimuliSD = zeros(ix,iy,iz,9);
                 stimuliD = zeros(ix,iy,iz,9);
                 
+                disp([i j k l])
                 %% XYZ　-> RGB(uint8) （rgbが0~1を超えていないかチェック）
                 for m = 1:9
+                    m
                     stimuliSD(:,:,:,m) =  imageXYZ2RGB(coloredSD(:,:,:,m),ccmat);
                     stimuliD(:,:,:,m) = imageXYZ2RGB(coloredD(:,:,:,m),ccmat);
                 end
