@@ -87,8 +87,8 @@ for i = 1:3  % shape
                 save(ss,'coloredSD');
                 save(sd,'coloredD');
                 
-                save(strcat('../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD'),'coloredSD');
-                save(strcat('../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD'),'coloredD');
+                %save(strcat('../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD'),'coloredSD');
+                %save(strcat('../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD'),'coloredD');
                 
                 %% 進行度表示
                 progress = progress + 1;
