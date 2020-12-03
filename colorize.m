@@ -5,9 +5,9 @@ clear all;
 
 %% オブジェクトのパラメータ
 shape = 'bunny';
-light = 'area';
+light = 'envmap';
 diffuse = 'D01';
-roughness = 'alpha01';
+roughness = 'alpha005';
 
 %{
 indexD = ["D01", "D03", "D05"];
