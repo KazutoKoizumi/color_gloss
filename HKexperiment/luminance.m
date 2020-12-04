@@ -20,6 +20,6 @@ lumMean = mean(lum);
 lumSD = std(lum);
 
 %% パッチに使用する輝度
-patchLuminance = [lumMean-lumSD, lumMean, lumMean+lumSD];
+patchLuminance = [lumMean-lumSD, lumMean, lumMean+lumSD]
 
-save('../../mat/patch/patchLuminance.mat', 'patchLuminance');
+%save('../../mat/patch/patchLuminance.mat', 'patchLuminance');

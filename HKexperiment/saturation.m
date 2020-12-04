@@ -70,9 +70,9 @@ satDiffuse1 = meanSat_diffuse_method_mean(4);
 midSat = (satMax + satDiffuse1) / 2;
 
 %% パッチに使用する彩度
-patchSaturation = [satDiffuse1,midSat,satMax];
+patchSaturation = [satDiffuse1,midSat,satMax]
 
-save('../../mat/patch/patchSaturation.mat', 'patchSaturation');
+%save('../../mat/patch/patchSaturation.mat', 'patchSaturation');
 
 
 %% 平均を取る関数

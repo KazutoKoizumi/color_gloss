@@ -21,20 +21,23 @@ load('../../mat/highlight/lumThreshold.mat');
 
 
 %% ハイライト抽出
-count = 37;
-for i = 3:3 % shape
+%count = 1;
+highlightMap = zeros(720,960,3,2,3); % shape, light, diffuse
+for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
-        for k = 1:3 % diffuse
-            for l = 1:3 % roughness
-                load(strcat('../../mat/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
+        for k = 1:3 % diffuseは最大のもの
+            for l = 1:1 % roughnessは最小のもの
+                count = 18*(i-1) + 9*(j-1) + 3*(k-1) + l;
+                load(strcat('../../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                 
                 lumMap = coloredD(:,:,2,1);
                 lumMap = lumMap .* mask;
 
                 lumMap(lumMap < lumThreshold(count)) = 0;
                 lumMap = cast(lumMap,'uint8');
-
+                highlightMap(:,:,i,j,k) = lumMap;
+                
                 imageRGB = imageXYZ2RGB(coloredD(:,:,:,2),ccmat);
                 highlight_RGB = imageRGB .* lumMap;
 
@@ -45,9 +48,11 @@ for i = 3:3 % shape
                 image(highlight_RGB);
                 title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
                 
-                count = count + 1;
+                %count = count + 1;
                 
             end
         end
     end
 end
+
+save('../../mat/highlight/highlightMap.mat', 'highlightMap');
