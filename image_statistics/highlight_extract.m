@@ -35,11 +35,13 @@ for i = 1:3 % shape
                 lumMap = lumMap .* mask;
 
                 lumMap(lumMap < lumThreshold(count)) = 0;
+                lumMap(lumMap ~= 0) = 1;
                 lumMap = cast(lumMap,'uint8');
                 highlightMap(:,:,i,j,k) = lumMap;
                 
                 imageRGB = imageXYZ2RGB(coloredD(:,:,:,2),ccmat);
                 highlight_RGB = imageRGB .* lumMap;
+                highlight_RGB(highlight_RGB~=0) = 255;
 
                 figure;
                 image(imageRGB);

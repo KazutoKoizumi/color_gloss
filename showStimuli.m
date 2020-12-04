@@ -3,7 +3,7 @@
 % Object
 shape = 'bunny';
 light = 'area';
-diffuse = 'D01';
+diffuse = 'D05';
 roughness = 'alpha005';
 
 load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'));
