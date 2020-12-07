@@ -16,8 +16,8 @@ load('../../mat/colorSatLum/dragonSatLum.mat');
 load('../../mat/colorSatLum/blobSatLum.mat');
 
 % plot
-for i = 1:3 % shape
-    for j = 1:2 % light
+for i = 1:1 % shape
+    for j = 1:1 % light
         for k = 1:3 % diffuse
             f = figure;
             for l = 1:3 % roughness
@@ -42,6 +42,7 @@ for i = 1:3 % shape
                     % axis
                     xlabel('彩度');
                     ylabel('輝度');
+                    xlim([0 0.05]);
                     
                     hold off;
                     clear data;

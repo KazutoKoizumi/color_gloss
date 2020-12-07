@@ -68,8 +68,8 @@ for i = 1:3 % shape
                 upvpl(:,:,:,2) = applycform(coloredD(:,:,:,2),cx2u);
                 
                 %% 彩度を記録
-                satHighlight = zeros(1,nnz(highlightMap(:,:,i,j,k)));
-                satNoHighlight = zeros(1,nnz(mask-highlightMap(:,:,i,j,k)));
+                satHighlight = zeros(1,nnz(highlightMap(:,:,i,j,3)));
+                satNoHighlight = zeros(1,nnz(mask-highlightMap(:,:,i,j,3)));
                 for m = 1:2 % method
                     count = 0;
                     for p = 1:iy
@@ -99,7 +99,7 @@ for i = 1:3 % shape
                                 sat = sqrt(sum(displacement.^2));
                                 
                                 % ハイライト
-                                if highlightMap(p,q,i,j,k) == 1
+                                if highlightMap(p,q,i,j,3) == 1
                                     satHighlight(count) = sat;
                                 else % ハイライト以外
                                     satNoHighlight(count) = sat;
@@ -176,7 +176,7 @@ hold off
 
 % roughness method
 x_label = 'roughness';
-t = 'roughnessと彩色方法ごとのハイライト領域の彩度';
+t = 'roughnessと彩色方法ごとのハイライト領域以外の彩度';
 xtick_param = repmat(roughVar,1,2);
 f = scatterPlot(paramnum,roughN*methodN,noHLsat_rough_method,noHLsat_rough_method_mean,xtick_param,x_label,y_label,t);
 hold on;
