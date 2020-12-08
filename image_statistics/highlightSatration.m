@@ -71,11 +71,11 @@ for i = 1:3 % shape
                 satHighlight = zeros(1,nnz(highlightMap(:,:,i,j,3)));
                 satNoHighlight = zeros(1,nnz(mask-highlightMap(:,:,i,j,3)));
                 for m = 1:2 % method
-                    count = 0;
+                    count = [0 0 0]; % [all, highlight, nohighlight]
                     for p = 1:iy
                         for q = 1:ix
                             if mask(p,q)==1
-                                count = count + 1;
+                                count(1) = count(1) + 1;
                                 
                                 % 輝度チェック
                                 if upvpl(p,q,3,m) <= upvplWhitePoints(iMax,3)
@@ -100,9 +100,11 @@ for i = 1:3 % shape
                                 
                                 % ハイライト
                                 if highlightMap(p,q,i,j,3) == 1
-                                    satHighlight(count) = sat;
+                                    count(2) = count(2) + 1;
+                                    satHighlight(count(2)) = sat;
                                 else % ハイライト以外
-                                    satNoHighlight(count) = sat;
+                                    count(3) = count(3) + 1;
+                                    satNoHighlight(count(3)) = sat;
                                 end
                                 
                             end
@@ -137,9 +139,9 @@ xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,HLsat_diffuse_method,HLsat_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-ylim([0 0.0045]);
-text(1.75,0.00425,'SD');
-text(5.25,0.00425,'D');
+ylim([0 0.052]);
+text(1.75,0.05,'SD');
+text(5.25,0.05,'D');
 hold off
 
 % roughenss method
@@ -149,9 +151,9 @@ xtick_param = repmat(roughVar,1,2);
 f = scatterPlot(paramnum,roughN*methodN,HLsat_rough_method,HLsat_rough_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-ylim([0 0.0045]);
-text(1.75,0.00425,'SD');
-text(5.25,0.00425,'D');
+ylim([0 0.052]);
+text(1.75,0.05,'SD');
+text(5.25,0.05,'D');
 hold off
 
 
@@ -169,9 +171,9 @@ xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,noHLsat_diffuse_method,noHLsat_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-ylim([0 0.05]);
-text(1.75,0.048,'SD');
-text(5.25,0.048,'D');
+ylim([0 0.052]);
+text(1.75,0.05,'SD');
+text(5.25,0.05,'D');
 hold off
 
 % roughness method
@@ -181,9 +183,9 @@ xtick_param = repmat(roughVar,1,2);
 f = scatterPlot(paramnum,roughN*methodN,noHLsat_rough_method,noHLsat_rough_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-ylim([0 0.05]);
-text(1.75,0.048,'SD');
-text(5.25,0.048,'D');
+ylim([0 0.052]);
+text(1.75,0.05,'SD');
+text(5.25,0.05,'D');
 hold off
 
 %% 保存
