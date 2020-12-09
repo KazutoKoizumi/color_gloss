@@ -6,6 +6,7 @@ method = ["SD", "D"];
 
 wp = zeros(54,2);
 count = 0;
+a = 1;
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     num = nnz(mask);
