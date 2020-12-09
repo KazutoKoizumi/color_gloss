@@ -159,7 +159,7 @@ try
     %% 実験開始直前
     % display initial text
     SetMouse(winWidth/2,winHeight/2-150,winPtr);
-    startText = 'Right click to start';
+    startText = 'Click right to start';
     Screen('TextSize', winPtr, 50);
     DrawFormattedText(winPtr, startText, 'center', 'center',[255 255 255]);
     Screen('Flip', winPtr);
@@ -344,7 +344,7 @@ try
         
         %% 実験が半分経過
         if i == round(sessionTrialNum/2)
-            DrawFormattedText(winPtr, 'Half. Right click to continue.', 'center', 'center',[255 255 255]);
+            DrawFormattedText(winPtr, 'Half. Click right to continue.', 'center', 'center',[255 255 255]);
             Screen('Flip', winPtr);
             WaitSecs(0.5);
             while 1
