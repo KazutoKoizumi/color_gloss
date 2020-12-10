@@ -8,6 +8,13 @@ light = ["area", "envmap"]; % j
 diffuse = ["D01", "D03", "D05"]; % k
 roughness = ["alpha005", "alpha01", "alpha02"]; %l
 method = ["SD", "D"];
+diffuseVar = ["0.1", "0.3", "0.5"];
+roughVar = ["0.05", "0.1", "0.2"];
+diffuseN = size(diffuse,2);
+roughN = size(roughness,2);
+methodN = size(method,2);
+
+paramnum = 3*2*diffuseN*roughN*2;
 
 %% 基準白色点
 load('../../mat/ccmat');
@@ -70,6 +77,9 @@ for i = 1:3 % shape
                         
                         % 色度コントラスト
                         vec = labHL_mean - labHLno_mean;
+                        if n == 2
+                            norm(vec(2:3))
+                        end
                         colorContrast(n-1,count) = norm(vec(2:3));
                         contrast(n-1,count) = norm(vec);
                     end
@@ -83,7 +93,124 @@ for i = 1:3 % shape
         end
     end
 end
-                                    
-                                    
-                    
-                    
+%}
+
+%% データ整理
+%% パラメータのインデックス
+count = 1;
+idx = zeros(108,5);
+for i = 1:3 % shape
+    for j = 1:2 % light
+        for k = 1:3 % diffuse
+            for l = 1:3 % roughness
+                for m = 1:2 % SD or D
+                    idx(count,:) = [i, j, k, l, m];
+                    count = count + 1;
+                end
+            end
+        end
+    end
+end
+for i = 1:diffuseN
+    %idx_shape(:,i) = find(idx(:,1)==i);
+    idx_diffuse(:,i) = find(idx(:,3)==i);
+    idx_rough(:,i) = find(idx(:,4)==i);
+    for j = 1:2
+        %idx_shape_method(:,3*(j-1)+i) = find(idx(:,1)==i & idx(:,5)==j);
+        idx_diffuse_method(:,diffuseN*(j-1)+i) = find(idx(:,3)==i & idx(:,5)==j);
+        idx_rough_method(:,roughN*(j-1)+i) = find(idx(:,4)==i & idx(:,5)==j);
+    end
+end
+
+%% diffuse、roughnessパラメータごとに色度コントラストの平均を取る
+% diffuseとmethodで平均
+[colorCont_diffuse_method,colorCont_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,colorContrast(1,:));
+% roughnessとmethodで平均
+[colorCont_rough_method,colorCont_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,colorContrast(1,:));
+
+% プロット
+% diffuse, method
+x_label = 'diffuse';
+y_label = '色度コントラスト';
+t = 'diffuseと彩色方法ごとの色度コントラスト';
+xtick_param = repmat(diffuseVar,1,2);
+f = scatterPlot(paramnum,diffuseN*methodN,colorCont_diffuse_method,colorCont_diffuse_method_mean,xtick_param,x_label,y_label,t);
+hold on;
+l = xline(3.5, '--');
+%ylim([0 0.052]);
+%text(1.75,0.05,'SD');
+%text(5.25,0.05,'D');
+hold off
+
+% roughness method
+x_label = 'roughness';
+t = 'roughnessと彩色方法ごとの色度コントラスト';
+xtick_param = repmat(roughVar,1,2);
+f = scatterPlot(paramnum,roughN*methodN,colorCont_rough_method,colorCont_rough_method_mean,xtick_param,x_label,y_label,t);
+hold on;
+l = xline(3.5, '--');
+%ylim([0 0.052]);
+%text(1.75,0.05,'SD');
+%text(5.25,0.05,'D');
+hold off
+
+%% 平均を取る関数
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数
+%  idx : パラメータのインデックス
+%  value : 値
+
+% Output
+%  param : パラメータごとに値をわける（列がパラメータ）
+%  param_mean : パラメータごとの平均
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [param, param_mean] = getMean(paramNum,idx,value)
+    
+    param = zeros(108/paramNum, paramNum);
+    for i = 1:108/paramNum
+        for j = 1:paramNum
+            param(i,j) = value(idx(i,j));
+        end
+    end
+    
+    param_mean = mean(param);
+    
+end
+
+%% 散布図プロット用の関数
+% roughness,diffuse,method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramAll : 全パラメータの組み合わせの数（条件数）
+%  paramNum : パラメータの個数
+%  value : 値全て
+%  value_mean : 平均値
+%  x_tick : x軸の軸ラベル
+%  x_label : x軸のラベル
+%  y_label : y軸のラベル
+%  t : タイトル
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_label,t)
+    
+    figure;
+    x_mean = 1:paramNum;
+    x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
+    y = reshape(value, 1, paramAll);
+    scatter(x,y);
+    hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    
+    % グラフの設定
+    xlim([0 paramNum+1]);
+    xticks(x_mean);
+    xticklabels(x_tick);
+    xlabel(x_label);
+    ylabel(y_label);
+    title(t, 'FontSize',13);
+    hold off;
+    
+    f = 1;
+end
