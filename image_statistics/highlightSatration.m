@@ -188,6 +188,22 @@ text(1.75,0.05,'SD');
 text(5.25,0.05,'D');
 hold off
 
+%% コントラスト
+contrast = abs(highlightSat(1,:) - highlightSat(2,:));
+% プロット
+[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrast);
+x_label = 'diffuse';
+y_label = '色度コントラスト';
+t = 'diffuseと彩色方法ごとの色度コントラスト';
+xtick_param = repmat(diffuseVar,1,2);
+f = scatterPlot(paramnum,diffuseN*methodN,contrast_diffuse_method,contrast_diffuse_method_mean,xtick_param,x_label,y_label,t);
+hold on;
+l = xline(3.5, '--');
+%ylim([0 0.052]);
+%text(1.75,0.05,'SD');
+%text(5.25,0.05,'D');
+hold off
+
 %% 保存
 save('../../mat/highlight/highlightSat.mat','highlightSat');
 

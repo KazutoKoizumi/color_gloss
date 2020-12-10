@@ -55,7 +55,27 @@ for i = 1:3 % shape
                     % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                     % それらのユークリッド距離を求める
                     for m = 1:2 % method
+                        
+                        labHL_list = zeros(nnz(HL_mask),3);
+                        labHLno_list = zeros(nnz(HLno_mask),3);
+                        c = [0 0 0];
+                        for p = 1:iy
+                            for q = 1:ix
+                                if mask(p,q) == 1
+                                    c(1) = c(1) + 1;
+                                    if HL_mask(p,q) == 1
+                                        c(2) = c(2) + 1;
+                                        labHL_list(c(2),:) = reshape(lab(p,q,:,m),[1,3]);
+                                    else
+                                        c(3) = c(3) + 1;
+                                        labHLno_list(c(3),:) = reshape(lab(p,q,:,m),[1,3]);
+                                    end
+                                end
+                            end
+                        end
+                                 
                         count = 36*(i-1) + 18*(j-1) + 6*(k-1) + 2*(l-1) + m;
+                        %{
                         labHL = lab(:,:,:,m) .* HL_mask;
                         labHLno = lab(:,:,:,m) .* HLno_mask;
                         
@@ -70,6 +90,7 @@ for i = 1:3 % shape
                             labHL_list(:,p) = HL_temp;
                             labHLno_list(:,p) = HLno_temp;
                         end
+                        %}
                         
                         % 平均色度座標
                         labHL_mean = mean(labHL_list);
