@@ -21,7 +21,8 @@ load('../../mat/ccmat');
 cx2u = makecform('xyz2upvpl');
 wp_rgb = [1 1 1];
 wp_XYZ = TNT_rgb2XYZ(wp_rgb',ccmat)';
-wp_XYZ = wp_XYZ * (1/wp_XYZ(2));
+%prop = wp_XYZ(2);
+%wp_XYZ = wp_XYZ ./ prop;
 wp_upvpl = applycform(wp_XYZ,cx2u);
 
 %% ハイライト領域
@@ -55,7 +56,7 @@ for i = 1:3 % shape
                     % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                     % それらのユークリッド距離を求める
                     for m = 1:2 % method
-                        
+                        %{
                         labHL_list = zeros(nnz(HL_mask),3);
                         labHLno_list = zeros(nnz(HLno_mask),3);
                         c = [0 0 0];
@@ -73,9 +74,9 @@ for i = 1:3 % shape
                                 end
                             end
                         end
-                                 
+                        %}
                         count = 36*(i-1) + 18*(j-1) + 6*(k-1) + 2*(l-1) + m;
-                        %{
+                        
                         labHL = lab(:,:,:,m) .* HL_mask;
                         labHLno = lab(:,:,:,m) .* HLno_mask;
                         

@@ -16,7 +16,7 @@ allObj = 3*2*3*3;
 progress = 0;
 
 % ハイライト抽出用の輝度閾値
-lumThreshold = zeros(1,3*2*3*3);
+lumThreshold = zeros(2,3*2*3*3);
 
 %% Main
 for i = 1:3 % shape
@@ -66,7 +66,9 @@ for i = 1:3 % shape
                 
                 %% ハイライト抽出のための輝度解析
                 % 輝度ヒストグラムの上位5%をハイライトとする
-                lumThreshold(progress) = min(maxk(lumMap,round(size(lumMap,2)*0.05)));
+                lumThreshold(1,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.05)));
+                % 輝度ヒストグラムの上位5~10%をハイライト近傍のdiffuse領域とする
+                lumThreshold(2,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.1)));
                 
             end
         end
