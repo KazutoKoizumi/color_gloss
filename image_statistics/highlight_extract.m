@@ -22,32 +22,47 @@ load('../../mat/highlight/lumThreshold.mat');
 
 %% ハイライト抽出
 %count = 1;
-highlightMap = zeros(720,960,3,2,3); % shape, light, diffuse
+highlightMap = zeros(720,960,2,3,2,3); % highlight or diffuse, shape, light, diffuse
+
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
-        for k = 1:3 % diffuseは最大のもの
+        for k = 1:3 % diffuse
             for l = 1:1 % roughnessは最小のもの
                 count = 18*(i-1) + 9*(j-1) + 3*(k-1) + l;
                 load(strcat('../../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                 
                 lumMap = coloredD(:,:,2,1);
                 lumMap = lumMap .* mask;
-
-                lumMap(lumMap < lumThreshold(count)) = 0;
-                lumMap(lumMap ~= 0) = 1;
-                lumMap = cast(lumMap,'uint8');
-                highlightMap(:,:,i,j,k) = lumMap;
+                
+                % ハイライト領域
+                HLmap = lumMap; 
+                HLmap(HLmap < lumThreshold(1,count)) = 0;
+                HLmap(HLmap ~= 0) = 1;
+                HLmap = cast(HLmap,'uint8');
+                highlightMap(:,:,1,i,j,k) = HLmap;
+                
+                % ハイライト周辺のdiffuse領域
+                HLnoMap = lumMap;
+                HLnoMap(HLnoMap < lumThreshold(2,count) | HLnoMap >= lumThreshold(1,count)) = 0;
+                HLnoMap(HLnoMap ~= 0) = 1;
+                HLnoMap = cast(HLnoMap,'uint8');
+                highlightMap(:,:,2,i,j,k) = HLnoMap;
                 
                 imageRGB = imageXYZ2RGB(coloredD(:,:,:,2),ccmat);
-                highlight_RGB = imageRGB .* lumMap;
-                highlight_RGB(highlight_RGB~=0) = 255;
+                HL_RGB = imageRGB .* HLmap;
+                HL_RGB(HL_RGB~=0) = 255;
+                HLno_RGB = imageRGB .* HLnoMap;
+                HLno_RGB(HLno_RGB~=0) = 255;
 
                 figure;
                 image(imageRGB);
                 title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
                 figure;
-                image(highlight_RGB);
+                image(HL_RGB);
+                title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
+                figure;
+                image(HLno_RGB);
                 title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
                 
                 %count = count + 1;

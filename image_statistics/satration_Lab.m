@@ -25,12 +25,13 @@ wp_XYZ = TNT_rgb2XYZ(wp_rgb',ccmat)';
 %wp_XYZ = wp_XYZ ./ prop;
 wp_upvpl = applycform(wp_XYZ,cx2u);
 
-%% ハイライト領域
+%% ハイライトとハイライトの周辺領域のマスクマップ
 load('../../mat/highlight/highlightMap.mat');
 
 %% Main
 colorContrast = zeros(8,108); % 色度座標間のユークリッド距離
 contrast = zeros(8,108); % 輝度込み
+lab_mean = zeros(108,6);
 progress = 1;
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
@@ -38,8 +39,8 @@ for i = 1:3 % shape
         for k = 1:3 % diffuse
             for l = 1:3 % roughness
                 % ハイライトとそれ以外の領域のマスクマップ
-                HL_mask = highlightMap(:,:,i,j,3);
-                HLno_mask = mask - highlightMap(:,:,i,j,3);
+                %HL_mask = highlightMap(:,:,1,i,j,3);
+                %HLno_mask = highlightMap(:,:,2,i,j,3);
                 
                 %% データ読み込み
                 load(strcat('../../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredSD.mat'));
@@ -56,29 +57,11 @@ for i = 1:3 % shape
                     % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                     % それらのユークリッド距離を求める
                     for m = 1:2 % method
-                        %{
-                        labHL_list = zeros(nnz(HL_mask),3);
-                        labHLno_list = zeros(nnz(HLno_mask),3);
-                        c = [0 0 0];
-                        for p = 1:iy
-                            for q = 1:ix
-                                if mask(p,q) == 1
-                                    c(1) = c(1) + 1;
-                                    if HL_mask(p,q) == 1
-                                        c(2) = c(2) + 1;
-                                        labHL_list(c(2),:) = reshape(lab(p,q,:,m),[1,3]);
-                                    else
-                                        c(3) = c(3) + 1;
-                                        labHLno_list(c(3),:) = reshape(lab(p,q,:,m),[1,3]);
-                                    end
-                                end
-                            end
-                        end
-                        %}
+                        
                         count = 36*(i-1) + 18*(j-1) + 6*(k-1) + 2*(l-1) + m;
                         
-                        labHL = lab(:,:,:,m) .* HL_mask;
-                        labHLno = lab(:,:,:,m) .* HLno_mask;
+                        labHL = lab(:,:,:,m) .* highlightMap(:,:,1,i,j,k);
+                        labHLno = lab(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
                         
                         labHL_list = zeros(nnz(labHL)/3,3);
                         labHLno_list = zeros(nnz(labHLno)/3,3);
@@ -91,11 +74,12 @@ for i = 1:3 % shape
                             labHL_list(:,p) = HL_temp;
                             labHLno_list(:,p) = HLno_temp;
                         end
-                        %}
                         
                         % 平均色度座標
                         labHL_mean = mean(labHL_list);
                         labHLno_mean = mean(labHLno_list);
+                        lab_mean(count,1:3) = labHL_mean;
+                        lab_mean(count,4:6) = labHLno_mean;
                         
                         % 色度コントラスト
                         vec = labHL_mean - labHLno_mean;
@@ -146,9 +130,9 @@ end
 
 %% diffuse、roughnessパラメータごとに色度コントラストの平均を取る
 % diffuseとmethodで平均
-[colorCont_diffuse_method,colorCont_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,colorContrast(1,:));
+[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrast(1,:));
 % roughnessとmethodで平均
-[colorCont_rough_method,colorCont_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,colorContrast(1,:));
+[contrast_rough_method,contrast_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,contrast(1,:));
 
 % プロット
 % diffuse, method
@@ -156,7 +140,7 @@ x_label = 'diffuse';
 y_label = '色度コントラスト';
 t = 'diffuseと彩色方法ごとの色度コントラスト';
 xtick_param = repmat(diffuseVar,1,2);
-f = scatterPlot(paramnum,diffuseN*methodN,colorCont_diffuse_method,colorCont_diffuse_method_mean,xtick_param,x_label,y_label,t);
+f = scatterPlot(paramnum,diffuseN*methodN,contrast_diffuse_method,contrast_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
 %ylim([0 0.052]);
@@ -168,7 +152,7 @@ hold off
 x_label = 'roughness';
 t = 'roughnessと彩色方法ごとの色度コントラスト';
 xtick_param = repmat(roughVar,1,2);
-f = scatterPlot(paramnum,roughN*methodN,colorCont_rough_method,colorCont_rough_method_mean,xtick_param,x_label,y_label,t);
+f = scatterPlot(paramnum,roughN*methodN,contrast_rough_method,contrast_rough_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
 %ylim([0 0.052]);

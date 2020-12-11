@@ -1,5 +1,5 @@
 %% ハイライトとそれ以外の領域の彩度をそれぞれ求める
-%{
+
 clear all;
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
@@ -68,8 +68,12 @@ for i = 1:3 % shape
                 upvpl(:,:,:,2) = applycform(coloredD(:,:,:,2),cx2u);
                 
                 %% 彩度を記録
-                satHighlight = zeros(1,nnz(highlightMap(:,:,i,j,3)));
-                satNoHighlight = zeros(1,nnz(mask-highlightMap(:,:,i,j,3)));
+                HL_mask = highlightMap(:,:,1,i,j,3);
+                %HLno_mask = mask-highlightMap(:,:,1,i,j,3);
+                HLno_mask = highlightMap(:,:,2,i,j,3);
+                satHighlight = zeros(1,nnz(HL_mask));
+                satNoHighlight = zeros(1,nnz(HLno_mask));
+                
                 for m = 1:2 % method
                     count = [0 0 0]; % [all, highlight, nohighlight]
                     for p = 1:iy
@@ -99,10 +103,11 @@ for i = 1:3 % shape
                                 sat = sqrt(sum(displacement.^2));
                                 
                                 % ハイライト
-                                if highlightMap(p,q,i,j,3) == 1
+                                if HL_mask(p,q) == 1
                                     count(2) = count(2) + 1;
                                     satHighlight(count(2)) = sat;
-                                else % ハイライト以外
+                                end
+                                if HLno_mask(p,q) == 1 % ハイライト周辺
                                     count(3) = count(3) + 1;
                                     satNoHighlight(count(3)) = sat;
                                 end
