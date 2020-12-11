@@ -76,6 +76,8 @@ for i = 1:3 % shape
                     scatter(sat_lum(:,1,j,k,l,m), sat_lum(:,2,j,k,l,m));
                     %}
                     
+                    % D条件での相関係数
+                    
                     %% 進行度表示
                     progress = progress + 1;
                     fprintf('finish : %d/%d\n\n', progress, allObj);

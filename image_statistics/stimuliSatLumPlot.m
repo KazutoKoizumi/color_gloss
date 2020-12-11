@@ -34,7 +34,10 @@ for i = 1:1 % shape
                     subplot(3,2,2*(l-1)+m);
                     hold on;
                     
+                    %x = maxk(data(:,1),round(size(data,1)*1));
+                    %y = maxk(data(:,2),round(size(data,1)*1));
                     scatter(data(:,1),data(:,2),sz);
+                    %scatter(x,y);
                     
                     % title
                     title(strcat(method(m),'  roughness:',roughness(l)));
@@ -45,7 +48,7 @@ for i = 1:1 % shape
                     xlim([0 0.05]);
                     
                     hold off;
-                    clear data;
+                    %clear data;
                 end
             end
             sgtitle(strcat('shape:',shape(i),'   light:',light(j),'   diffuse:',diffuse(k)));
