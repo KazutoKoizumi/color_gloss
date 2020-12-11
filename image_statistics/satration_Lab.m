@@ -83,9 +83,6 @@ for i = 1:3 % shape
                         
                         % 色度コントラスト
                         vec = labHL_mean - labHLno_mean;
-                        if n == 2
-                            norm(vec(2:3))
-                        end
                         colorContrast(n-1,count) = norm(vec(2:3));
                         contrast(n-1,count) = norm(vec);
                     end

@@ -58,7 +58,7 @@ for i = 1:3 % shape
 
                 hold off;
                 
-                max(lumMap)
+                max(lumMap);
 
                 % 進行度表示
                 progress = progress + 1;
@@ -66,9 +66,10 @@ for i = 1:3 % shape
                 
                 %% ハイライト抽出のための輝度解析
                 % 輝度ヒストグラムの上位5%をハイライトとする
-                lumThreshold(1,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.05)));
+                lumThreshold(1,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.03)));
+                lumThreshold(1,progress)
                 % 輝度ヒストグラムの上位5~10%をハイライト近傍のdiffuse領域とする
-                lumThreshold(2,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.3)));
+                lumThreshold(2,progress) = min(maxk(lumMap,round(size(lumMap,2)*0.1)));
                 
             end
         end

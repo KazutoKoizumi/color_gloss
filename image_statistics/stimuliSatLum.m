@@ -34,6 +34,8 @@ for i = 1:3 % shape
                 upvpl(:,:,:,2) = applycform(coloredD(:,:,:,2),cx2u);
                 
                 %% 彩度、輝度を記録
+                satMap = zeros(720,960);
+                lumMap = zeros(720,960);
                 for m = 1:2 % colorize method
                     count = 0;
                     for p = 1:iy
@@ -65,7 +67,10 @@ for i = 1:3 % shape
                                 sat_lum(count,1,j,k,l,m) = sqrt(sum(displacement.^2));
                                 %sat_lum(count,1,j,k,l,m) = upvpl(p,q,1,m);
                                 % 輝度
-                                sat_lum(count,2,j,k,l,m) = upvpl(p,q,3,m);  
+                                sat_lum(count,2,j,k,l,m) = upvpl(p,q,3,m); 
+                                
+                                satMap(p,q) = sat_lum(count,1,j,k,l,m);
+                                lumMap(p,q) = sat_lum(count,2,j,k,l,m);
                             end
                         end
                     end
@@ -76,7 +81,14 @@ for i = 1:3 % shape
                     scatter(sat_lum(:,1,j,k,l,m), sat_lum(:,2,j,k,l,m));
                     %}
                     
-                    % D条件での相関係数
+                    % 彩度のヒートマップ
+                    figure;
+                    heatmap(satMap);
+                    colormap('jet');
+                    figure;
+                    heatmap(lumMap);
+                    colormap('jet');
+                    
                     
                     %% 進行度表示
                     progress = progress + 1;
