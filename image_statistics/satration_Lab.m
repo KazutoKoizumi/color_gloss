@@ -62,6 +62,7 @@ for i = 1:3 % shape
                         
                         labHL = lab(:,:,:,m) .* highlightMap(:,:,1,i,j,k);
                         labHLno = lab(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
+                        %labHLno = lab(:,:,:,m) .* (mask - highlightMap(:,:,1,i,j,k));
                         
                         labHL_list = zeros(nnz(labHL)/3,3);
                         labHLno_list = zeros(nnz(labHLno)/3,3);
@@ -85,6 +86,7 @@ for i = 1:3 % shape
                         vec = labHL_mean - labHLno_mean;
                         colorContrast(n-1,count) = norm(vec(2:3));
                         contrast(n-1,count) = norm(vec);
+                        contrast(n-1,count)
                     end
                 end
                 

@@ -54,7 +54,8 @@ for i = 1:3 % shape
                 HL_RGB(HL_RGB~=0) = 255;
                 HLno_RGB = imageRGB .* HLnoMap;
                 HLno_RGB(HLno_RGB~=0) = 255;
-
+                
+                %{
                 figure;
                 image(imageRGB);
                 title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
@@ -64,6 +65,7 @@ for i = 1:3 % shape
                 figure;
                 image(HLno_RGB);
                 title(strcat('shape:',num2str(i),'  light:',num2str(j),'  diffuse:',num2str(k),'  roughness:',num2str(l)));
+                %}
                 
                 %count = count + 1;
                 
