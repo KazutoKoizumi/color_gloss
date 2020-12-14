@@ -1,6 +1,6 @@
 %% ハイライトとそれ以外の領域の彩度をそれぞれ求める
-
-clear all;
+%{
+%clear all;
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
 light = ["area", "envmap"]; % j
@@ -51,6 +51,7 @@ load('../../mat/highlight/highlightMap.mat');
 
 %% Main
 highlightSat = zeros(2,108);
+highlightLum = zeros(2,108);
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
     for j = 1:2 % light
@@ -69,10 +70,13 @@ for i = 1:3 % shape
                 
                 %% 彩度を記録
                 HL_mask = highlightMap(:,:,1,i,j,3);
-                %HLno_mask = mask-highlightMap(:,:,1,i,j,3);
-                HLno_mask = highlightMap(:,:,2,i,j,3);
+                HLno_mask = mask-highlightMap(:,:,1,i,j,3);
+                %HLno_mask = highlightMap(:,:,2,i,j,3);
                 satHighlight = zeros(1,nnz(HL_mask));
                 satNoHighlight = zeros(1,nnz(HLno_mask));
+                
+                lumHL = zeros(1,nnz(HL_mask));
+                lumNoHL = zeros(1,nnz(HLno_mask));
                 
                 for m = 1:2 % method
                     count = [0 0 0]; % [all, highlight, nohighlight]
@@ -101,15 +105,19 @@ for i = 1:3 % shape
                                 
                                 % 彩度
                                 sat = sqrt(sum(displacement.^2));
+                                % 輝度
+                                lum = upvpl(p,q,3);
                                 
                                 % ハイライト
                                 if HL_mask(p,q) == 1
                                     count(2) = count(2) + 1;
                                     satHighlight(count(2)) = sat;
+                                    lumHL(count(2)) = lum;
                                 end
                                 if HLno_mask(p,q) == 1 % ハイライト周辺
                                     count(3) = count(3) + 1;
                                     satNoHighlight(count(3)) = sat;
+                                    lumNoHL(count(3)) = lum;
                                 end
                                 
                             end
@@ -118,6 +126,8 @@ for i = 1:3 % shape
                     
                     % 平均彩度
                     highlightSat(:,progress) = [mean(satHighlight);mean(satNoHighlight)];
+                    % 平均輝度
+                    highlightLum(:,progress) = [mean(lumHL);mean(lumNoHL)];
                     
                     %% 進行度表示
                     fprintf('finish : %d/%d\n\n', progress, allObj);
@@ -134,6 +144,8 @@ end
 [HLsat_diffuse_method,HLsat_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,highlightSat(1,:));
 % roughnessとmethodで平均
 [HLsat_rough_method,HLsat_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,highlightSat(1,:));
+% 輝度
+[HLlum_diffuse_method,HLlum_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,highlightLum(1,:));
 
 % プロット
 % diffuse method
@@ -167,6 +179,8 @@ hold off
 [noHLsat_diffuse_method,noHLsat_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,highlightSat(2,:));
 % roughnessとmethodで平均
 [noHLsat_rough_method,noHLsat_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,highlightSat(2,:));
+% 輝度
+[noHLlum_diffuse_method,noHLlum_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,highlightLum(2,:));
 
 % プロット
 % diffuse method

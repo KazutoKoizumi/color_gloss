@@ -53,6 +53,10 @@ for i = 1:3 % shape
                     lab(:,:,:,1) = xyz2lab(coloredSD(:,:,:,n),'WhitePoint', wp_XYZ);
                     lab(:,:,:,2) = xyz2lab(coloredD(:,:,:,n),'WhitePoint', wp_XYZ);
                     
+                    upvpl =zeros(iy,ix,iz,2);
+                    upvpl(:,:,:,1) = applycform(coloredSD(:,:,:,n),cx2u);
+                    upvpl(:,:,:,2) = applycform(coloredD(:,:,:,n),cx2u);
+                    
                     %% 色度コントラストを求める
                     % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                     % それらのユークリッド距離を求める
@@ -62,6 +66,10 @@ for i = 1:3 % shape
                         
                         labHL = lab(:,:,:,m) .* highlightMap(:,:,1,i,j,k);
                         labHLno = lab(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
+                        %labHLno = lab(:,:,:,m) .* (mask - highlightMap(:,:,1,i,j,k));
+                        
+                        %labHL = upvpl(:,:,:,m) .* highlightMap(:,:,1,i,j,k);
+                        %labHLno = upvpl(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
                         %labHLno = lab(:,:,:,m) .* (mask - highlightMap(:,:,1,i,j,k));
                         
                         labHL_list = zeros(nnz(labHL)/3,3);
@@ -158,6 +166,34 @@ l = xline(3.5, '--');
 %text(1.75,0.05,'SD');
 %text(5.25,0.05,'D');
 hold off
+
+%% 横軸a、縦軸Lでプロット
+HL_SD = lab_mean(1:2:108,1:3);
+noHL_SD = lab_mean(1:2:108,4:6);
+HL_D = lab_mean(2:2:108,1:3);
+noHL_D = lab_mean(2:2:108,4:6);
+
+% プロット
+figure
+hold on;
+%scatter(HL_SD(:,2)',HL_SD(:,1)',[],'b');
+%scatter(noHL_SD(:,2)',noHL_SD(:,1)',[],'r');
+%scatter(HL_D(:,2)',HL_D(:,1)',[],'b','s');
+%scatter(noHL_D(:,2)',noHL_D(:,1)',[],'r','s');
+
+scatter(mean(HL_SD(:,2)),mean(HL_SD(:,1)),[],'b','filled');
+scatter(mean(noHL_SD(:,2)),mean(noHL_SD(:,1)),[],'b','s','filled');
+scatter(mean(HL_D(:,2)),mean(HL_D(:,1)),[],'r','filled');
+scatter(mean(noHL_D(:,2)),mean(noHL_D(:,1)),[],'r','s','filled');
+xlim([0 30]);
+ylim([0 50]);
+title('平均色度');
+xlabel('a*');
+ylabel('L*');
+legend('SD, ハイライト','SD, diffuse','D, ハイライト','D, diffuse');
+legend('Location','southeast');
+hold off;
+
 
 %% 平均を取る関数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
