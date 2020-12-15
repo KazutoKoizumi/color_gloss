@@ -1,5 +1,5 @@
 %% ハイライトとそれ以外の領域の彩度をそれぞれ求める
-%{
+
 %clear all;
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
@@ -70,8 +70,8 @@ for i = 1:3 % shape
                 
                 %% 彩度を記録
                 HL_mask = highlightMap(:,:,1,i,j,3);
-                HLno_mask = mask-highlightMap(:,:,1,i,j,3);
-                %HLno_mask = highlightMap(:,:,2,i,j,3);
+                %HLno_mask = mask-highlightMap(:,:,1,i,j,3);
+                HLno_mask = highlightMap(:,:,2,i,j,3);
                 satHighlight = zeros(1,nnz(HL_mask));
                 satNoHighlight = zeros(1,nnz(HLno_mask));
                 

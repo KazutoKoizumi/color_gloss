@@ -44,7 +44,7 @@ for i = 1:3 % shape
                 HLmap = cast(HLmap,'uint8');
                 highlightMap(:,:,1,i,j,k) = HLmap;
                 
-                %{
+                
                 % ハイライト周辺のdiffuse領域
                 HLnoMap = lumMap;
                 HLnoMap(HLnoMap < lumThreshold(2,count) | HLnoMap >= lumThreshold(1,count)) = 0;
@@ -53,6 +53,7 @@ for i = 1:3 % shape
                 highlightMap(:,:,2,i,j,k) = HLnoMap;
                 %}
                 
+                %{
                 % ハイライト周辺のdiffuse領域、周辺のピクセルを取る
                 HLnoMap = zeros(iy,ix);
                 num = 10; % 周辺のピクセル数

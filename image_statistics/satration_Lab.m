@@ -30,8 +30,11 @@ load('../../mat/highlight/highlightMap.mat');
 
 %% Main
 colorContrast = zeros(8,108); % 色度座標間のユークリッド距離
-contrast = zeros(8,108); % 輝度込み
-lab_mean = zeros(108,6);
+contrast = zeros(8,108); % コントラスト
+chroma = zeros(8,108); % 全体の平均彩度（chroma）
+chromaHL = zeros(8,108); % ハイライト領域の平均彩度
+chromaHLno = zeros(8,108); % 非ハイライト領域の平均彩度
+lab_mean = zeros(108,6); % 色相考慮していない
 progress = 1;
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
@@ -57,13 +60,11 @@ for i = 1:3 % shape
                     upvpl(:,:,:,1) = applycform(coloredSD(:,:,:,n),cx2u);
                     upvpl(:,:,:,2) = applycform(coloredD(:,:,:,n),cx2u);
                     
-                    %% 色度コントラストを求める
-                    % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
-                    % それらのユークリッド距離を求める
-                    for m = 1:2 % method
-                        
+                    
+                    for m = 1:2 % method   
                         count = 36*(i-1) + 18*(j-1) + 6*(k-1) + 2*(l-1) + m;
                         
+                        % ハイライト領域、ハイライト以外の領域のLab
                         labHL = lab(:,:,:,m) .* highlightMap(:,:,1,i,j,k);
                         labHLno = lab(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
                         %labHLno = lab(:,:,:,m) .* (mask - highlightMap(:,:,1,i,j,k));
@@ -72,9 +73,14 @@ for i = 1:3 % shape
                         %labHLno = upvpl(:,:,:,m) .* highlightMap(:,:,2,i,j,k);
                         %labHLno = lab(:,:,:,m) .* (mask - highlightMap(:,:,1,i,j,k));
                         
+                        lab_list = zeros(nnz(lab(:,:,:,m).*mask)/3,3);
                         labHL_list = zeros(nnz(labHL)/3,3);
                         labHLno_list = zeros(nnz(labHLno)/3,3);
                         for p =1:3
+                            lab_temp = lab(:,:,p,m) .* mask;
+                            lab_temp(lab_temp==0) = [];
+                            lab_list(:,p) = lab_temp;
+                            
                             HL_temp = labHL(:,:,p);
                             HL_temp(HL_temp==0) = [];
                             HLno_temp = labHLno(:,:,p);
@@ -90,11 +96,23 @@ for i = 1:3 % shape
                         lab_mean(count,1:3) = labHL_mean;
                         lab_mean(count,4:6) = labHLno_mean;
                         
-                        % 色度コントラスト
+                        %% 彩度を求める
+                        % 全体
+                        chroma_list = sqrt(sum(lab_list(:,2:3).^2,2));
+                        chroma(n-1,count) = mean(chroma_list);
+                        % ハイライト領域と非ハイライト領域それぞれ
+                        chromaHL_list = sqrt(sum(labHL_list(:,2:3).^2,2));
+                        chromaHLno_list = sqrt(sum(labHLno_list(:,2:3).^2,2));
+                        chromaHL(n-1,count) = mean(chromaHL_list);
+                        chromaHLno(n-1,count) = mean(chromaHL_list);
+                        
+                        %% 色度コントラストを求める
+                        % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
+                        % それらのユークリッド距離を求める
                         vec = labHL_mean - labHLno_mean;
                         colorContrast(n-1,count) = norm(vec(2:3));
                         contrast(n-1,count) = norm(vec);
-                        contrast(n-1,count)
+                        %contrast(n-1,count)
                     end
                 end
                 
@@ -150,9 +168,9 @@ xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,contrast_diffuse_method,contrast_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-%ylim([0 0.052]);
-%text(1.75,0.05,'SD');
-%text(5.25,0.05,'D');
+ylim([0 9]);
+text(1.75,8.5,'SD');
+text(5.25,8.5,'D');
 hold off
 
 % roughness method

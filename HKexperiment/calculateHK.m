@@ -1,8 +1,8 @@
 %% 実験結果からH-K効果量（輝度比）を計算する
-clear all;
+%clear all;
 
 exp = 'experiment_HK';
-sn = 'kosone';
+sn = 'koizumi';
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 lumNum = 3;
@@ -32,7 +32,7 @@ for i = 1:3
 end
 
 %% 実験結果（RGB値）をXYZに変換
-repeat = 2;
+repeat = 5;
 grayLum = zeros(stiNum,repeat);
 count = 0;
 for i = 1:3
