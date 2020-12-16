@@ -1,13 +1,13 @@
 %% 光沢感の選好尺度値とH-K効果との相関係数を求める
 clear all;
 
-sn = 'nohira';
-sn2 = 'nohira';
+sn1 = 'nohira'; % 実験1被験者名
+sn2 = 'nohira'; % 実験2被験者名
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 
-load(strcat('../../analysis_result/experiment_gloss/',sn2,'/sv.mat'));
-load(strcat('../../analysis_result/experiment_HK/',sn,'/data.mat'));
+load(strcat('../../analysis_result/experiment_gloss/',sn1,'/sv.mat'));
+load(strcat('../../analysis_result/experiment_HK/',sn2,'/data.mat'));
 
 load('../../mat/patch/patchLuminance.mat');
 load('../../mat/patch/patchSaturation.mat');
