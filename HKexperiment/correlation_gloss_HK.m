@@ -1,8 +1,8 @@
 %% 光沢感の選好尺度値とH-K効果との相関係数を求める
 clear all;
 
-sn1 = 'nohira'; % 実験1被験者名
-sn2 = 'nohira'; % 実験2被験者名
+sn1 = 'koizumi'; % 実験1被験者名
+sn2 = 'koizumi'; % 実験2被験者名
 
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 

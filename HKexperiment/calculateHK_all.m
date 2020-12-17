@@ -30,11 +30,11 @@ for s = 1:N
     HKtable = addvars(HKtable,data.HKzscore,'NewVariableNames',strcat('subject_',snID(s),'_zscore'));
 end
 % 全被験者平均
-HKtable.HKave = mean(HKindividual,2);
+HKtable.HKmean = mean(HKindividual,2);
 % z-score化
 HKzscore = zeros(9*8,1);
 for i =1:9
-    HKzscore(8*(i-1)+1:8*i) = zscore(HKtable.HKave(8*(i-1)+1:8*i));
+    HKzscore(8*(i-1)+1:8*i) = zscore(HKtable.HKmean(8*(i-1)+1:8*i));
 end
 HKtable = addvars(HKtable,HKzscore);
 
@@ -56,7 +56,7 @@ for i = 1:3 % lum
                 ind_table = HKtable(:,9+s);
                 h(s) = plot(axisColorNum,HKtable.(9+s)(n+1:n+8)','--o','Color',graphColor(s,:), 'MarkerSize',4);
             elseif s == N+1
-                h(s) = plot(axisColorNum,HKtable.HKave(n+1:n+8)','-o','Color',graphColor(s,:));
+                h(s) = plot(axisColorNum,HKtable.HKmean(n+1:n+8)','-o','Color',graphColor(s,:));
                 h(N+1).LineWidth = 1.5;
             end
         end
