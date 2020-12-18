@@ -30,7 +30,7 @@ load('../../mat/highlight/highlightMap.mat');
 
 %% Main
 colorContrast = zeros(8,108); % 色度座標間のユークリッド距離
-contrast = zeros(8,108); % コントラスト
+contrastLab = zeros(8,108); % コントラスト
 chroma = zeros(8,108); % 全体の平均彩度（chroma）
 chromaHL = zeros(8,108); % ハイライト領域の平均彩度
 chromaHLno = zeros(8,108); % 非ハイライト領域の平均彩度
@@ -111,8 +111,8 @@ for i = 1:3 % shape
                         % それらのユークリッド距離を求める
                         vec = labHL_mean - labHLno_mean;
                         colorContrast(n-1,count) = norm(vec(2:3));
-                        contrast(n-1,count) = norm(vec);
-                        %contrast(n-1,count)
+                        contrastLab(n-1,count) = norm(vec);
+                        
                     end
                 end
                 
@@ -155,9 +155,9 @@ end
 
 %% diffuse、roughnessパラメータごとに色度コントラストの平均を取る
 % diffuseとmethodで平均
-[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrast(1,:));
+[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrastLab(1,:));
 % roughnessとmethodで平均
-[contrast_rough_method,contrast_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,contrast(1,:));
+[contrast_rough_method,contrast_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,contrastLab(1,:));
 
 % プロット
 % diffuse, method
@@ -212,6 +212,23 @@ legend('SD, ハイライト','SD, diffuse','D, ハイライト','D, diffuse');
 legend('Location','southeast');
 hold off;
 
+%% 色コントラストの色相変化をプロット
+% 正規化したのちにプロット
+contrast_zscore = zscore(contrastLab);
+x = 1:8;
+figure;
+for i = 1:108
+    plot(x,contrast_zscore(:,i)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
+    hold on;
+end
+plot(x,mean(contrast_zscore,2), '-o','Color',[0.8500 0.3250 0.0980],'MarkerFaceColor',[0.8500 0.3250 0.0980],'LineWidth',1,'MarkerSize',8);
+xlim([0 9]);
+xticks(x);
+xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+xlabel('hue (deg)');
+ylabel('色コントラスト')
+title('色コントラストの色相変化の傾向')
+hold off;
 
 %% 平均を取る関数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
