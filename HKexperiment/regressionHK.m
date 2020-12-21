@@ -4,7 +4,7 @@ load(strcat('../../analysis_result/experiment_HK/all/HKtable.mat'));
 exp = 'experiment_HK';
 snID = ["A", "B", "C", "D", "E", "F", 'All'];
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
-N = 1;
+N = 6;
 
 %% 輝度について平均化
 HKlum = HKtable(1:24,2:3); % 輝度に関して平均化したH-K効果
@@ -41,7 +41,12 @@ end
 HKlum.HKzscore = HKzscore;
 
 %% 彩度を説明変数としてH-K効果の回帰式を作成
+Rsq = zeros(1,8);
+cf = zeros(2,8);
 for i = 1:8
+    
+    %{
+    % 全応答結果を用いて回帰
     saturation = repmat(HKlum.sat(HKlum.color==colorName(i)), [5*N 1]);
     HK = zeros(3*5*N,1);
     for j = 1:N % subject
@@ -52,7 +57,27 @@ for i = 1:8
     X = [ones(length(saturation),1) saturation];
     b = X\HK
     yHK = X*b;
-    Rsq = 1 - sum((HK - yHK).^2)/sum((HK - mean(HK)).^2); % 決定係数
+    Rsq(1,i) = 1 - sum((HK - yHK).^2)/sum((HK - mean(HK)).^2); % 決定係数
+    %}
+    
+    %{
+    % 被験者ごとに試行回数の平均をとって回帰
+    saturation = repmat(HKlum.sat(HKlum.color==colorName(i)), [N 1]);
+    HK = zeros(3*N,1);
+    for j = 1:N % subject
+        HK_individual = HKlum.(2+N+j)(HKlum.color==colorName(i));
+        HK(3*(j-1)+1:3*j) = HK_individual;
+    end
+    %}
+    
+    % 被験者・試行回数に関しての平均で回帰
+    saturation = HKlum.sat(HKlum.color==colorName(i));
+    HK = HKlum.HKmean(HKlum.color==colorName(i));
+    
+    X = [ones(length(saturation),1) saturation];
+    cf(:,i) = X\HK;
+    yHK = X*cf(:,i);
+    Rsq(1,i) = 1 - sum((HK - yHK).^2)/sum((HK - mean(HK)).^2); % 決定係数
     
     % プロット
     figure;
@@ -60,10 +85,27 @@ for i = 1:8
     hold on;
     plot(saturation,yHK,'--');
     xlabel('saturation')
-    
+    ylabel('H-K effect')
+    title(strcat('H-K effect',{' '},colorName(i)));
+
 end
+cf
+save('../../mat/HKeffect/cf.mat','cf');
+save('../../mat/HKeffect/Rsq.mat','Rsq');
 
+%% ハイライト・非ハイライト領域の彩度からそれぞれのH-K効果を算出
+load('../../mat/highlight/highlightSat.mat');
+HKstimuli = zeros(8,108,2);
+for i = 1:108 % stimuli
+    for j = 1:8 % color
+        HKstimuli(j,i,1) = cf(1,j) + cf(2,j)*highlightSat(1,i); % ハイライト
+        HKstimuli(j,i,2) = cf(1,j) + cf(2,j)*highlightSat(2,i); % 非ハイライト
+    end
+end
+save('../../mat/HKeffect/HKstimuli.mat','HKstimuli');
 
+%% 輝度平均取らない場合
+%{
 for i = 1:8 % color
     luminance = repmat(HKtable.lum(HKtable.color==colorName(i)), [30 1]);
     saturation = repmat(HKtable.sat(HKtable.color==colorName(i)), [30 1]);
@@ -92,3 +134,4 @@ for i = 1:8 % color
     %view(50,10);
     hold off
 end
+%}

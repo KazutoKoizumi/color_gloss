@@ -42,37 +42,41 @@ for i = 1:paramnum
 end
 
 %% 相関係数
-% z-score化したもので相関係数を求める
-R = zeros(108,9); 
+% 各刺激のハイライト領域のH-K効果との相関係数を見る
+load('../../mat/HKeffect/HKstimuli.mat');
+%R = zeros(108,9); 
+R = zeros(1,108);
 for i = 1:108 % 実験1パラメータ
     gloss = sValue(2:9,i)';
+    %{
     for j = 1:9 % 実験2パラメータ
         HK = HKtable.HKzscore(8*(j-1)+1:8*j)';
         r = corrcoef(gloss, HK);
         R(i,j) = r(1,2);
     end
+    %}
+    HK = HKstimuli(:,i,1)';
+    r = corrcoef(gloss, HK);
+    R(i) = r(1,2);
 end
 
 % 相関係数のヒートマップ
 figure;
-heatmap(R', 'ColorLimits',[-1 1]);
+heatmap(R, 'ColorLimits',[-1 1]);
 colormap('jet');
 xlabel('光沢感パラメータ');
-ylabel('H-K効果パラメータ');
 
 %% 相関係数整理
-% 各光沢感パラメータ（108種）について、H-Kパラメータ（9種）との相関がもっとも強いものを取得
-R_param = max(R,[],2);
 % SD,D,diffuseパラメータでわける
-R_param_method_diffuse = R_param(idx_method_diffuse);
+R_method_diffuse = R(idx_method_diffuse);
 % プロット
 figure;
 x = reshape(repmat([1,2,3,4,5,6], [18,1]),[1,6*18]);
-y = reshape(R_param_method_diffuse, [1,108]);
+y = reshape(R_method_diffuse, [1,108]);
 scatter(x,y);
 hold on;
 x_mean = [1,2,3,4,5,6];
-y_mean = mean(R_param_method_diffuse);
+y_mean = mean(R_method_diffuse);
 scatter(x_mean,y_mean,72,[1 0 0],'filled');
 % グラフの設定
 xlim([0 7]);
@@ -82,7 +86,7 @@ xlabel('diffuse');
 ylabel('相関係数');
 title('diffuseと彩色方法ごとの相関係数, 全被験者平均');
 xline(3.5, '--');
-ylim([0 1.3]);
+ylim([-1 1.3]);
 text(1.75,1.2,'SD');
 text(5.25,1.2,'D');
 hold off;
