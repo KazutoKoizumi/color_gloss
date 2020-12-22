@@ -84,9 +84,11 @@ xticks(x_mean);
 xticklabels({'0.1', '0.3', '0.5', '0.1', '0.3', '0.5'});
 xlabel('diffuse');
 ylabel('相関係数');
-title('diffuseと彩色方法ごとの相関係数, 全被験者平均');
+title('diffuseと彩色方法ごとの相関係数');
 xline(3.5, '--');
 ylim([-1 1.3]);
 text(1.75,1.2,'SD');
 text(5.25,1.2,'D');
 hold off;
+
+%% 相関係数の分散分析（diffuse,methodの主効果を見る）
