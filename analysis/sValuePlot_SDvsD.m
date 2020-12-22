@@ -70,3 +70,47 @@ for i =1:2  % light
     %}
 end
 
+%% SDの勝率plot
+load(strcat('../../data/',exp,'/',sn,'/winTable/mtx'));
+axisColor = 1:8;
+for i =1:2  % light
+    f = figure;
+    for j = 1:3  % diffuse
+        for k = 1:3  % roughness
+            % plot
+            subplot(3,3,3*(j-1)+k);
+            hold on;
+            
+            prob = zeros(1,8);
+            for l = 1:8
+                %plot(colorNum, sv(:,:,i,j,k,l,m), '--o','Color',graphColor(l,:),'MarkerFaceColor','auto');
+                prob(l) = mtx(1,2,i,j,k,l);
+            end
+            scatter(axisColor,prob);
+
+            % title
+            title(strcat('diffuse:',diffuse(j),'  roughness:',roughness(k)));
+
+            % axis
+            xticks(axisColor);
+            xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+            xlabel('色相');
+            xlim([0 9]);
+            ylabel('SDの勝率');
+            ylim([0, 1.25]);
+            yline(0.5, '--');
+
+            %{
+            % legend
+            lgd = legend(h, {'0.1', '0.3', '0.5'});
+            lgd.NumColumns = 3;
+            lgd.Title.String = 'roughness';
+            lgd.Title.FontWeight = 'normal';
+            %}
+
+            hold off;
+        end
+    end
+    sgtitle(strcat('shape:',shape,'   light:',light(i)));
+    %}
+end

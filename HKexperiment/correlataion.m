@@ -92,3 +92,17 @@ text(5.25,1.2,'D');
 hold off;
 
 %% 相関係数の分散分析（diffuse,methodの主効果を見る）
+shape = [repmat("bunny",[1 36]),repmat("dragon",[1 36]),repmat("blob",[1 36])];
+light = repmat([repmat("area",[1 18]),repmat("envmap",[1 18])],[1 3]);
+diffuse = repmat([ones(1,6)*0.1,ones(1,6)*0.3,ones(1,6)*0.5],[1 6]);
+roughness = repmat([ones(1,2)*0.05,ones(1,2)*0.1,ones(1,2)*0.2],[1 18]);
+method = repmat(["SD","D"],[1,54]);
+%p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','full', 'varnames',{'shape','light','diffuse','roughness','method'});
+p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness','method'});
+
+shapeD = shape(2:2:108);
+lightD = light(2:2:108);
+diffuseD = diffuse(2:2:108);
+roughD = roughness(2:2:108);
+R_D = R(2:2:108);
+p_D = anovan(R_D,{shapeD,lightD,diffuseD,roughD}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness'});
