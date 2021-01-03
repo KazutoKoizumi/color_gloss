@@ -82,12 +82,12 @@ for i = 1:3 % shape
                     %}
                     
                     % 彩度のヒートマップ
-                    figure;
-                    heatmap(satMap);
-                    colormap('jet');
-                    figure;
-                    heatmap(lumMap);
-                    colormap('jet');
+                    %figure;
+                    %heatmap(satMap);
+                    %colormap('jet');
+                    %figure;
+                    %heatmap(lumMap);
+                    %colormap('jet');
                     
                     
                     %% 進行度表示

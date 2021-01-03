@@ -68,7 +68,7 @@ for i = 1:3 % lum
         xticks(axisColorNum);
         %xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
         xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-        xlabel('hue');
+        xlabel('色相');
         xlim([0 9]);
         ylabel('H-K効果の大きさ');
         ylim(ylim_v(i,:));
@@ -82,7 +82,7 @@ for i = 1:3 % lum
         hold off;
     end
 end
-sgtitle('H-K効果の大きさ')
+%sgtitle('H-K効果の大きさ')
         
 % 保存
 save(strcat('../../analysis_result/',exp,'/all/HKtable.mat'),'HKtable');

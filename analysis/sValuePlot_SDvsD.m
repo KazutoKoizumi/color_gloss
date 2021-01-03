@@ -73,18 +73,26 @@ end
 %% SDの勝率plot
 load(strcat('../../data/',exp,'/',sn,'/winTable/mtx'));
 axisColor = 1:8;
+count = 0;
+count_hue = 0
+p = zeros(1,2*3*3*8);
+p_hue = zeros(8,2*3*3);
 for i =1:2  % light
     f = figure;
     for j = 1:3  % diffuse
         for k = 1:3  % roughness
+            count_hue = count_hue + 1;
             % plot
             subplot(3,3,3*(j-1)+k);
             hold on;
             
             prob = zeros(1,8);
             for l = 1:8
+                count = count + 1;
                 %plot(colorNum, sv(:,:,i,j,k,l,m), '--o','Color',graphColor(l,:),'MarkerFaceColor','auto');
                 prob(l) = mtx(1,2,i,j,k,l);
+                p(count) = mtx(1,2,i,j,k,l);
+                p_hue(l,count_hue) = mtx(1,2,i,j,k,l);
             end
             scatter(axisColor,prob);
 
@@ -114,3 +122,37 @@ for i =1:2  % light
     sgtitle(strcat('shape:',shape,'   light:',light(i)));
     %}
 end
+p_mean = mean(p);
+p_mean_hue = mean(p_hue,2);
+
+% ブートストラップ
+B = 10000;
+bst_p = bootstrp(B,@mean,p');
+% 95%信頼区間
+ubi = round(B*97.5/100);
+lbi = round(B*2.5/100);
+range95 = [abs(p_mean-bst_p(lbi)),abs(p_mean-bst_p(ubi))];
+figure;
+errorbar(1,p_mean,range95(1),range95(2),'-o');
+ylim([0.5 1]);
+ylabel('SD条件の勝率の平均値');
+
+% 色相ごとに平均を見る
+bst_p_hue = zeros(8,B);
+range95_hue = zeros(8,2);
+for l = 1:8
+    bst_p_hue(l,:) = bootstrp(B,@mean,p_hue(l,:)');
+end
+bst_p_hue_sort = sort(bst_p_hue,2);
+for l = 1:8
+    range95_hue(l,:) = [abs(p_mean_hue(l)-bst_p_hue_sort(l,lbi)),abs(p_mean_hue(l)-bst_p_hue_sort(l,ubi))];
+end
+figure;
+errorbar(axisColor,p_mean_hue,range95_hue(:,1),range95_hue(:,2),'o')
+xticks(axisColor);
+xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+xlabel('色相');
+xlim([0 9]);
+ylabel('SD条件の勝率の平均');
+ylim([0.5, 1]);
+%title('SD条件の勝率の色相ごとの平均');

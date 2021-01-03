@@ -67,8 +67,8 @@ for i =1:3  % shape
                 
                 % axis
                 xticks(colorNum(2,:));
-                xticklabels({'gray', 'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
-                xlabel('色相');
+                xticklabels({'gray', '0', '45', '90', '135', '180', '225', '270', '315'})
+                xlabel('色相 (deg)');
                 xlim([0 10]);
                 ylabel('選好尺度値');
                 ylim([-vAbs, vAbs]);
@@ -96,7 +96,7 @@ end
 % 色ごとにgrayとの有意差がない個数
 noSigDiffNum = array2table(noSigDiffNum, 'VariableNames',colorName(2:9));
 %}
-
+%{
 %% 抜粋
 % plot
 for i =1:1  % shape
@@ -148,6 +148,6 @@ for i =1:1  % shape
             end
         end
         sgtitle(strcat('shape:',shape(i),'   light:',light(j),'   diffuse:0.1  roughness:0.1'));
-        %}
     end
 end
+%}

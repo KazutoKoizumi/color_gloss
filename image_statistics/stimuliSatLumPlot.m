@@ -4,7 +4,7 @@ clear all;
 % オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
 light = ["area", "envmap"]; % j
-diffuse = ["01", "03", "05"]; % k
+diffuse = ["0.1", "0.3", "0.5"]; % k
 roughness = ["0.05", "0.1", "0.2"]; %l
 method = ["SD", "D"];
 
@@ -20,7 +20,7 @@ for i = 1:1 % shape
     for j = 1:1 % light
         for k = 1:3 % diffuse
             f = figure;
-            for l = 1:3 % roughness
+            for l = 1:1 % roughness
                 for m = 1:2 % method
                     
                     if i == 1
@@ -31,7 +31,7 @@ for i = 1:1 % shape
                         data = blobSatLum(:,:,j,k,l,m);
                     end
                     
-                    subplot(3,2,2*(l-1)+m);
+                    subplot(1,2,2*(l-1)+m);
                     hold on;
                     
                     %x = maxk(data(:,1),round(size(data,1)*1));
@@ -53,10 +53,10 @@ for i = 1:1 % shape
             end
             sgtitle(strcat('shape:',shape(i),'   light:',light(j),'   diffuse:',diffuse(k)));
             
-            f.WindowState = 'maximized';
-            graphName = strcat(shape(i),'_',light(j),'_',diffuse(k),'.png');
-            fileName = strcat('../../mat/colorSatLum/graph/',graphName);
-            saveas(gcf, fileName);
+            %f.WindowState = 'maximized';
+            %graphName = strcat(shape(i),'_',light(j),'_',diffuse(k),'.png');
+            %fileName = strcat('../../mat/colorSatLum/graph/',graphName);
+            %saveas(gcf, fileName);
         end
     end
 end

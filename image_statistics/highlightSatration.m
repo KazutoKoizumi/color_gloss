@@ -185,7 +185,7 @@ hold off
 % プロット
 % diffuse method
 x_label = 'diffuse';
-t = 'diffuseと彩色方法ごとのハイライト領域以外の彩度';
+t = 'diffuseと彩色方法ごとの周辺領域の彩度';
 xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,noHLsat_diffuse_method,noHLsat_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
@@ -197,7 +197,7 @@ hold off
 
 % roughness method
 x_label = 'roughness';
-t = 'roughnessと彩色方法ごとのハイライト領域以外の彩度';
+t = 'roughnessと彩色方法ごとの周辺領域の彩度';
 xtick_param = repmat(roughVar,1,2);
 f = scatterPlot(paramnum,roughN*methodN,noHLsat_rough_method,noHLsat_rough_method_mean,xtick_param,x_label,y_label,t);
 hold on;
@@ -218,10 +218,10 @@ xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,contrast_diffuse_method,contrast_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
-%ylim([0 0.052]);
-%text(1.75,0.05,'SD');
-%text(5.25,0.05,'D');
-hold off
+ylim([0 0.016]);
+text(1.75,0.015,'SD');
+text(5.25,0.015,'D');
+hold off;
 
 %% 保存
 save('../../mat/highlight/highlightSat.mat','highlightSat');
@@ -269,10 +269,24 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     
     figure;
     x_mean = 1:paramNum;
+
+    %{
     x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
     y = reshape(value, 1, paramAll);
     scatter(x,y);
     hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    %}
+
+    % diffuse,method以外のパラメータが同じ刺激を結ぶ
+    for i = 1:18
+        for m = 1:2
+            plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+            hold on;
+        end
+    end
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0])
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
@@ -281,7 +295,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xticklabels(x_tick);
     xlabel(x_label);
     ylabel(y_label);
-    title(t, 'FontSize',13);
+    %title(t, 'FontSize',13);
     hold off;
     
     f = 1;
