@@ -1,4 +1,4 @@
-%% 光沢感とH-K効果との相関係数を求める
+%% 光沢感と回帰したH-K効果との相関係数を求める
 clear all;
 
 sn1 = 'all'; % 実験1被験者名
@@ -71,20 +71,32 @@ xlabel('光沢感パラメータ');
 R_method_diffuse = R(idx_method_diffuse);
 % プロット
 figure;
+x_mean = [1,2,3,4,5,6];
+y_mean = mean(R_method_diffuse);
+%{
 x = reshape(repmat([1,2,3,4,5,6], [18,1]),[1,6*18]);
 y = reshape(R_method_diffuse, [1,108]);
 scatter(x,y);
 hold on;
-x_mean = [1,2,3,4,5,6];
-y_mean = mean(R_method_diffuse);
+%}
+% diffuse,method以外のパラメータが同じ刺激を結ぶ
+for i = 1:18
+    for m = 1:2
+        plot(x_mean(3*(m-1)+1:3*m),R_method_diffuse(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+        hold on;
+    end
+end
+plot(x_mean(1:3),y_mean(1,1:3),'-o','Color',[1,0,0]);
+plot(x_mean(4:6),y_mean(1,4:6),'-o','Color',[1,0,0]);
 scatter(x_mean,y_mean,72,[1 0 0],'filled');
+
 % グラフの設定
 xlim([0 7]);
 xticks(x_mean);
 xticklabels({'0.1', '0.3', '0.5', '0.1', '0.3', '0.5'});
 xlabel('diffuse');
 ylabel('相関係数');
-title('diffuseと彩色方法ごとの相関係数');
+%title('diffuseと彩色方法ごとの相関係数');
 xline(3.5, '--');
 ylim([-1 1.3]);
 text(1.75,1.2,'SD');
@@ -100,9 +112,9 @@ method = repmat(["SD","D"],[1,54]);
 %p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','full', 'varnames',{'shape','light','diffuse','roughness','method'});
 p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness','method'});
 
-shapeD = shape(2:2:108);
-lightD = light(2:2:108);
-diffuseD = diffuse(2:2:108);
-roughD = roughness(2:2:108);
-R_D = R(2:2:108);
+shapeD = shape(1:2:108);
+lightD = light(1:2:108);
+diffuseD = diffuse(1:2:108);
+roughD = roughness(1:2:108);
+R_D = R(1:2:108);
 p_D = anovan(R_D,{shapeD,lightD,diffuseD,roughD}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness'});

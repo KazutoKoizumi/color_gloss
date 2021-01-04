@@ -4,6 +4,7 @@ load(strcat('../../analysis_result/experiment_HK/all/HKtable.mat'));
 exp = 'experiment_HK';
 snID = ["A", "B", "C", "D", "E", "F", 'All'];
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
+colorDeg = ["0", "45", "90", "135", "180", "225", "270", "315"];
 N = 6;
 
 %% 輝度について平均化
@@ -43,6 +44,7 @@ HKlum.HKzscore = HKzscore;
 %% 彩度を説明変数としてH-K効果の回帰式を作成
 Rsq = zeros(1,8);
 cf = zeros(2,8);
+figure;
 for i = 1:8
     
     %{
@@ -79,19 +81,35 @@ for i = 1:8
     yHK = X*cf(:,i);
     Rsq(1,i) = 1 - sum((HK - yHK).^2)/sum((HK - mean(HK)).^2); % 決定係数
     
+    %{
     % プロット
-    figure;
     scatter(saturation,HK);
     hold on;
     plot(saturation,yHK,'--');
     xlabel('saturation')
     ylabel('H-K effect')
     title(strcat('H-K effect',{' '},colorName(i)));
+    %}
+    
+    % まとめて1枚にプロット
+    subplot(4,2,i);
+    scatter(saturation,HK);
+    hold on;
+    lg = strcat(num2str(cf(1,i)),'+',num2str(cf(2,i)),'x, R^2=',num2str(Rsq(i)));
+    h = plot(saturation,yHK,'--');
+    legend(h,lg,'Location','northwest');
+    xlabel('彩度')
+    ylabel('H-K効果の大きさ')
+    ylim([1.5 3]);
+    title(strcat(colorDeg(i),' deg'));
+    hold off;
 
 end
 cf
 save('../../mat/HKeffect/cf.mat','cf');
 save('../../mat/HKeffect/Rsq.mat','Rsq');
+
+% プロット
 
 %% ハイライト・非ハイライト領域の彩度からそれぞれのH-K効果を算出
 load('../../mat/highlight/highlightSat.mat');

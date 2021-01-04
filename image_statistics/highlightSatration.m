@@ -286,7 +286,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
         end
     end
     plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
-    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0])
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0]);
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
