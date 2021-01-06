@@ -76,17 +76,17 @@ SDnoGray = std(svNoGray);
 x_label = 'diffuse';
 y_label = '標準偏差';
 t = 'diffuseごとの選好尺度値の標準偏差';
-f = scatterPlot(paramnum,diffuseN,SDnoGray_diffuse,SDnoGray_diffuse_mean,diffuse,x_label,y_label,t);
+%f = scatterPlot(paramnum,diffuseN,SDnoGray_diffuse,SDnoGray_diffuse_mean,diffuse,x_label,y_label,t);
 
 % roughness
 x_label = 'roughness';
 t = 'roughnessごとの選好尺度値の標準偏差';
-f = scatterPlot(paramnum,roughN,SDnoGray_rough,SDnoGray_rough_mean,roughness,x_label,y_label,t);
+%f = scatterPlot(paramnum,roughN,SDnoGray_rough,SDnoGray_rough_mean,roughness,x_label,y_label,t);
 
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの選好尺度値の標準偏差';
-f = scatterPlot(paramnum,methodN,SDnoGray_method,SDnoGray_method_mean,method,x_label,y_label,t);
+%f = scatterPlot(paramnum,methodN,SDnoGray_method,SDnoGray_method_mean,method,x_label,y_label,t);
 
 % diffuseごとにわけたものをSDとDにさらにわける
 x_label = 'diffuse';
@@ -150,17 +150,17 @@ glossEffect = svNoGray_mean - svGray;
 x_label = 'diffuse';
 y_label = '効果量';
 t = 'diffuseごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(paramnum,diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
+%f = scatterPlot(paramnum,diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
 
 %roughness
 x_label = 'roughness';
 t = 'roughnessごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(paramnum,roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
+%f = scatterPlot(paramnum,roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
 
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの彩色による光沢感上昇の効果量';
-f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+%f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
 
 % diffuseごとにわけたものをSDとDにさらにわける
 x_label = 'diffuse';
@@ -256,10 +256,24 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     
     figure;
     x_mean = 1:paramNum;
+    
+    %{
     x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
     y = reshape(value, 1, paramAll);
     scatter(x,y);
     hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    %}
+    
+    % diffuse,method以外のパラメータが同じ刺激を結ぶ
+    for i = 1:18
+        for m = 1:2
+            plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+            hold on;
+        end
+    end
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0]);
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
@@ -268,7 +282,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xticklabels(x_tick);
     xlabel(x_label);
     ylabel(y_label);
-    title(t, 'FontSize',13);
+    %title(t, 'FontSize',13);
     hold off;
     
     f = 1;
