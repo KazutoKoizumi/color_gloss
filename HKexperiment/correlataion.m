@@ -46,8 +46,12 @@ end
 load('../../mat/HKeffect/HKstimuli.mat');
 %R = zeros(108,9); 
 R = zeros(1,108);
+
+HKgray = ones(9,108);
+HKgray(2:9,:) = HKstimuli(:,:,1);
+
 for i = 1:108 % 実験1パラメータ
-    gloss = sValue(2:9,i)';
+    gloss = sValue(:,i)';
     %{
     for j = 1:9 % 実験2パラメータ
         HK = HKtable.HKzscore(8*(j-1)+1:8*j)';
@@ -55,7 +59,8 @@ for i = 1:108 % 実験1パラメータ
         R(i,j) = r(1,2);
     end
     %}
-    HK = HKstimuli(:,i,1)';
+    %HK = HKstimuli(:,i,1)';
+    HK = HKgray(:,i)';
     r = corrcoef(gloss, HK);
     R(i) = r(1,2);
 end
@@ -112,9 +117,9 @@ method = repmat(["SD","D"],[1,54]);
 %p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','full', 'varnames',{'shape','light','diffuse','roughness','method'});
 p = anovan(R,{shape,light,diffuse,roughness,method}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness','method'});
 
-shapeD = shape(1:2:108);
-lightD = light(1:2:108);
-diffuseD = diffuse(1:2:108);
-roughD = roughness(1:2:108);
-R_D = R(1:2:108);
+shapeD = shape(2:2:108);
+lightD = light(2:2:108);
+diffuseD = diffuse(2:2:108);
+roughD = roughness(2:2:108);
+R_D = R(2:2:108);
 p_D = anovan(R_D,{shapeD,lightD,diffuseD,roughD}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness'});
