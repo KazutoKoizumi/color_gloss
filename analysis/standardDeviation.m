@@ -131,6 +131,7 @@ sigDiff_SD_rough_methodD = BStest(B,BS_SDnoGray,paramnum/methodN,roughness,rough
 svNoGray_mean = mean(svNoGray);
 
 glossEffect = svNoGray_mean - svGray;
+save('../../analysis_result/experiment_gloss/all/glossEffect/glossEffect.mat','glossEffect');
 
 % diffuse,roughnessパラメータごとに平均を取る
 % diffuseで平均

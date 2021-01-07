@@ -229,6 +229,7 @@ xlabel('hue (deg)');
 ylabel('色コントラスト')
 title('色コントラストの色相変化の傾向')
 hold off;
+save('../../mat/contrast/contrastLab.mat','contrastLab');
 
 %% 平均を取る関数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

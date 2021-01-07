@@ -225,6 +225,7 @@ hold off;
 
 %% 保存
 save('../../mat/highlight/highlightSat.mat','highlightSat');
+save('../../mat/contrast/contrast.mat', 'contrast');
 
 %% 平均を取る関数
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
