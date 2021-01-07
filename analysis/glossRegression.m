@@ -7,6 +7,9 @@ load('../../mat/HKeffect/HKstimuli.mat');
 load('../../mat/contrast/contrast.mat');
 load('../../mat/contrast/contrastLab.mat');
 
+% 選好尺度値整理
+
+
 HK = mean(HKstimuli(:,:,1));
 
 HKzscore = zscore(HK);
