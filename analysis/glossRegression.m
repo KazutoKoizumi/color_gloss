@@ -50,34 +50,72 @@ contrastLabZscore = zscore(contrastLab,0,1);
 % SD条件についてH-Kで回帰
 y = reshape(gloss(:,1:2:108), [9*54,1]);
 x1 = reshape(HKall(:,1:2:108), [9*54,1]);
-X = [ones(size(x1)) x1];
-[b_SD_HK,~,~,~,stats_SD_HK] = regress(y,X) % 回帰式 y = b(1) + b(2)*x1;
+%X = [ones(size(x1)) x1];
+%[b_SD_HK,~,~,~,stats_SD_HK] = regress(y,X) % 回帰式 y = b(1) + b(2)*x1;
+md_SD_HK = fitlm(x1,y)
+
+% SD条件についてH-Kと色度差で回帰
+x1 = reshape(HKallZscore(:,1:2:108), [9*54,1]);
+x2 = reshape(contrastAllZscore(:,1:2:108), [9*54,1]);
+X = [x1 x2];
+md_SD_HK_cont = fitlm(X,y)
 
 % D条件についてH-Kで回帰
 y = reshape(gloss(:,2:2:108), [9*54,1]);
 x1 = reshape(HKall(:,2:2:108), [9*54,1]);
-X = [ones(size(x1)) x1];
-[b_D_HK,~,~,~,stats_D_HK] = regress(y,X) % 回帰式 y = b(1) + b(2)*x1;
+md_D_HK = fitlm(x1,y)
 
 % D条件についてH-Kと色度差で回帰
 x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
 x2 = reshape(contrastAllZscore(:,2:2:108), [9*54,1]);
-X = [ones(size(x1)) x1 x2];
-[b_D_HK_cont,~,~,~,stats_D_HK_cont] = regress(y,X)
+%X = [ones(size(x1)) x1 x2];
+%[b_D_HK_cont,~,~,~,stats_D_HK_cont] = regress(y,X)
+X = [x1 x2];
+md_D_HK_cont = fitlm(X,y)
 
 % 全刺激について光沢をH-Kと色度差で回帰
 y = reshape(gloss, [9*108,1]);
 x1 = reshape(HKallZscore, [9*108,1]);
 x2 = reshape(contrastAllZscore, [9*108,1]);
-X = [ones(size(x1)) x1 x2];
-[b_HK_cont,~,~,~,stats_HK_cont] = regress(y,X)
+%X = [ones(size(x1)) x1 x2];
+%[b_HK_cont,~,~,~,stats_HK_cont] = regress(y,X)
+X = [x1 x2];
+md_HK_cont = fitlm(X,y)
+
+% 全刺激について光沢をH-KとLabコントラストで回帰
+x2 = reshape(contrastLabZscore, [9*108,1]);
+X = [x1 x2];
+md_HK_LabCont = fitlm(X,y)
+
+% D条件についてH-KとLabコントラストで回帰
+y = reshape(gloss(:,2:2:108), [9*54,1]);
+x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
+x2 = reshape(contrastLabZscore(:,2:2:108), [9*54,1]);
+X = [x1 x2];
+md_D_HK_LabCont = fitlm(X,y)
 
 %% SD条件におけるH-Kを用いた光沢予測モデルをD条件に適用
 % 実際の測定値との差分を見る
-glossEstimated = b_SD_HK(1) + b_SD_HK(2)*HKall(:,2:2:108);
+glossEstimated = md_SD_HK.Coefficients.Estimate(1) + md_SD_HK.Coefficients.Estimate(2)*HKall(:,2:2:108);
+glossEstimatedSD = md_SD_HK.Coefficients.Estimate(1) + md_SD_HK.Coefficients.Estimate(2)*HKall(:,1:2:108);
 sa = gloss(:,2:2:108) - glossEstimated;
 
+SSE = sum(sa.^2,'all');
+SST = sum((gloss - mean(gloss,'all')).^2,'all');
+R = 1 - (SSE/SST)
 
+x = reshape(HKall(:,2:2:108), [9*54,1]);
+y = reshape(sa,[9*54,1]);
+figure;
+scatter(x,y)
+
+%% grayを除いた回帰
+% 全刺激について光沢をH-KとLabコントラストで回帰
+y = reshape(gloss(2:9,:), [8*108,1]);
+x1 = reshape(HKallZscore(2:9,:), [8*108,1]);
+x2 = reshape(contrastLabZscore(2:9,:), [8*108,1]);
+X = [x1 x2];
+md_color_HK_LabCont = fitlm(X,y)
 
 %{
 %% Labコントラストで光沢効果量回帰

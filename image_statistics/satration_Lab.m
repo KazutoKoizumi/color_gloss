@@ -29,11 +29,11 @@ wp_upvpl = applycform(wp_XYZ,cx2u);
 load('../../mat/highlight/highlightMap.mat');
 
 %% Main
-colorContrast = zeros(8,108); % 色度座標間のユークリッド距離
-contrastLab = zeros(8,108); % コントラスト
-chroma = zeros(8,108); % 全体の平均彩度（chroma）
-chromaHL = zeros(8,108); % ハイライト領域の平均彩度
-chromaHLno = zeros(8,108); % 非ハイライト領域の平均彩度
+colorContrast = zeros(9,108); % 色度座標間のユークリッド距離
+contrastLab = zeros(9,108); % コントラスト
+chroma = zeros(9,108); % 全体の平均彩度（chroma）
+chromaHL = zeros(9,108); % ハイライト領域の平均彩度
+chromaHLno = zeros(9,108); % 非ハイライト領域の平均彩度
 lab_mean = zeros(108,6); % 色相考慮していない
 progress = 1;
 for i = 1:3 % shape
@@ -50,7 +50,7 @@ for i = 1:3 % shape
                 load(strcat('../../mat_analysis/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/coloredD.mat'));
                 [iy,ix,iz] = size(coloredSD(:,:,:,1));
                 
-                for n = 2:9 % color
+                for n = 1:9 % color
                     %% 色空間変換  XYZ -> L*a*b*
                     lab = zeros(iy,ix,iz,2);
                     lab(:,:,:,1) = xyz2lab(coloredSD(:,:,:,n),'WhitePoint', wp_XYZ);
@@ -99,19 +99,19 @@ for i = 1:3 % shape
                         %% 彩度を求める
                         % 全体
                         chroma_list = sqrt(sum(lab_list(:,2:3).^2,2));
-                        chroma(n-1,count) = mean(chroma_list);
+                        chroma(n,count) = mean(chroma_list);
                         % ハイライト領域と非ハイライト領域それぞれ
                         chromaHL_list = sqrt(sum(labHL_list(:,2:3).^2,2));
                         chromaHLno_list = sqrt(sum(labHLno_list(:,2:3).^2,2));
-                        chromaHL(n-1,count) = mean(chromaHL_list);
-                        chromaHLno(n-1,count) = mean(chromaHL_list);
+                        chromaHL(n,count) = mean(chromaHL_list);
+                        chromaHLno(n,count) = mean(chromaHL_list);
                         
                         %% 色度コントラストを求める
                         % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                         % それらのユークリッド距離を求める
                         vec = labHL_mean - labHLno_mean;
-                        colorContrast(n-1,count) = norm(vec(2:3));
-                        contrastLab(n-1,count) = norm(vec);
+                        colorContrast(n,count) = norm(vec(2:3));
+                        contrastLab(n,count) = norm(vec);
                         
                     end
                 end
@@ -215,7 +215,7 @@ hold off;
 %% 色コントラストの色相変化をプロット
 % 正規化したのちにプロット
 contrast_zscore = zscore(contrastLab);
-x = 1:8;
+x = 1:9;
 figure;
 for i = 1:108
     plot(x,contrast_zscore(:,i)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);

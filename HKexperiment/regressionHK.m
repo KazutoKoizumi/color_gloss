@@ -122,6 +122,20 @@ for i = 1:108 % stimuli
 end
 save('../../mat/HKeffect/HKstimuli.mat','HKstimuli');
 
+% ハイライト領域のH-Kを色相ごとにプロット
+x = 1:8;
+figure;
+for i = 1:108
+    plot(x,HKstimuli(:,i,1)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
+    hold on;
+end
+plot(x,mean(HKstimuli(:,i,1),2)', '-o','Color',[1 0 0],'MarkerFaceColor',[1 0 0],'LineWidth',2,'MarkerSize',8);
+xlim([0 9]);
+xticks(x);
+xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+xlabel('hue (deg)');
+ylabel('H-K効果の大きさ')
+
 %% 輝度平均取らない場合
 %{
 for i = 1:8 % color
