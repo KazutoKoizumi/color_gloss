@@ -164,15 +164,15 @@ t = '彩色方法ごとの彩色による光沢感上昇の効果量';
 %f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
 
 % diffuseごとにわけたものをSDとDにさらにわける
-x_label = 'diffuse';
+x_label = '拡散反射率';
 t = 'difffuseと彩色方法ごとの効果量';
 xtick_param = repmat(diffuse,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,glossEffect_diffuse_method,glossEffect_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
 ylim([0 4]);
-text(1.75,3.75,'SD');
-text(5.25,3.75,'D');
+text(1.75,3.75,'全体条件');
+text(5.25,3.75,'拡散条件');
 hold off;
 
 %{
