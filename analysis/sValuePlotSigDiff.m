@@ -74,7 +74,7 @@ for i =1:3  % shape
                 ylim([-vAbs, vAbs]);
                 
                 % legend
-                lgd = legend(h, {'0.1', '0.3', '0.5'});
+                lgd = legend(h, {'0.05', '0.1', '0.2'});
                 lgd.NumColumns = 3;
                 lgd.Title.String = 'roughness';
                 lgd.Title.FontWeight = 'normal';
