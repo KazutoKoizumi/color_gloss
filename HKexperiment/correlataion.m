@@ -51,7 +51,7 @@ HKgray = ones(9,108);
 HKgray(2:9,:) = HKstimuli(:,:,1);
 
 for i = 1:108 % 実験1パラメータ
-    gloss = sValue(:,i)';
+    gloss = sValue(2:9,i)';
     %{
     for j = 1:9 % 実験2パラメータ
         HK = HKtable.HKzscore(8*(j-1)+1:8*j)';
@@ -59,8 +59,8 @@ for i = 1:108 % 実験1パラメータ
         R(i,j) = r(1,2);
     end
     %}
-    %HK = HKstimuli(:,i,1)';
-    HK = HKgray(:,i)';
+    HK = HKstimuli(:,i,1)';
+    %HK = HKgray(:,i)';
     r = corrcoef(gloss, HK);
     R(i) = r(1,2);
 end
@@ -99,13 +99,13 @@ scatter(x_mean,y_mean,72,[1 0 0],'filled');
 xlim([0 7]);
 xticks(x_mean);
 xticklabels({'0.1', '0.3', '0.5', '0.1', '0.3', '0.5'});
-xlabel('diffuse');
+xlabel('拡散反射率');
 ylabel('相関係数');
 %title('diffuseと彩色方法ごとの相関係数');
 xline(3.5, '--');
-ylim([-1 1.3]);
-text(1.75,1.2,'SD');
-text(5.25,1.2,'D');
+ylim([-1 1.0]);
+%text(1.75,1.2,'SD');
+%text(5.25,1.2,'D');
 hold off;
 
 %% 相関係数の分散分析（diffuse,methodの主効果を見る）

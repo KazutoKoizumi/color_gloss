@@ -211,7 +211,7 @@ hold off
 contrast = abs(highlightSat(1,:) - highlightSat(2,:));
 % プロット
 [contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrast);
-x_label = 'diffuse';
+x_label = '拡散反射率';
 y_label = '色度コントラスト';
 t = 'diffuseと彩色方法ごとの色度コントラスト';
 xtick_param = repmat(diffuseVar,1,2);

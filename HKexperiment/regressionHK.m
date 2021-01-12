@@ -6,6 +6,33 @@ snID = ["A", "B", "C", "D", "E", "F", 'All'];
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
 colorDeg = ["0", "45", "90", "135", "180", "225", "270", "315"];
 N = 6;
+diffuseVar = ["0.1", "0.3", "0.5"];
+
+% パラメータのインデックス
+count = 1;
+idx = zeros(108,5);
+for i = 1:3 % shape
+    for j = 1:2 % light
+        for k = 1:3 % diffuse
+            for l = 1:3 % roughness
+                for m = 1:2 % SD or D
+                    idx(count,:) = [i, j, k, l, m];
+                    count = count + 1;
+                end
+            end
+        end
+    end
+end
+for i = 1:diffuseN
+    %idx_shape(:,i) = find(idx(:,1)==i);
+    idx_diffuse(:,i) = find(idx(:,3)==i);
+    idx_rough(:,i) = find(idx(:,4)==i);
+    for j = 1:2
+        %idx_shape_method(:,3*(j-1)+i) = find(idx(:,1)==i & idx(:,5)==j);
+        idx_diffuse_method(:,diffuseN*(j-1)+i) = find(idx(:,3)==i & idx(:,5)==j);
+        idx_rough_method(:,roughN*(j-1)+i) = find(idx(:,4)==i & idx(:,5)==j);
+    end
+end
 
 %% 輝度について平均化
 HKlum = HKtable(1:24,2:3); % 輝度に関して平均化したH-K効果
@@ -136,6 +163,21 @@ xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
 xlabel('hue (deg)');
 ylabel('H-K効果の大きさ')
 
+% 彩色方法・拡散反射率ごとにハイライト領域のH-K効果の大きさをプロット
+HK_HL = mean(HKstimuli(:,:,1));
+[HK_diffuse_method,HK_diffuse_method_mean] = getMean(3*2,idx_diffuse_method,HK_HL);
+x_label = '拡散反射率';
+y_label = 'H-K効果';
+t = 'diffuseと彩色方法ごとのH-K効果';
+xtick_param = repmat(diffuseVar,1,2);
+f = scatterPlot(108,3*2,HK_diffuse_method,HK_diffuse_method_mean,xtick_param,x_label,y_label,t);
+hold on;
+l = xline(3.5, '--');
+ylim([1 2.45]);
+%text(1.75,2.4,'SD');
+%text(5.25,2.4,'D');
+hold off;
+
 %% 輝度平均取らない場合
 %{
 for i = 1:8 % color
@@ -167,3 +209,80 @@ for i = 1:8 % color
     hold off
 end
 %}
+
+
+%% 平均を取る関数
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramNum : パラメータの個数
+%  idx : パラメータのインデックス
+%  value : 値
+
+% Output
+%  param : パラメータごとに値をわける（列がパラメータ）
+%  param_mean : パラメータごとの平均
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function [param, param_mean] = getMean(paramNum,idx,value)
+    
+    param = zeros(108/paramNum, paramNum);
+    for i = 1:108/paramNum
+        for j = 1:paramNum
+            param(i,j) = value(idx(i,j));
+        end
+    end
+    
+    param_mean = mean(param);
+    
+end
+
+%% 散布図プロット用の関数
+% roughness,diffuse,method
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Input
+%  paramAll : 全パラメータの組み合わせの数（条件数）
+%  paramNum : パラメータの個数
+%  value : 値全て
+%  value_mean : 平均値
+%  x_tick : x軸の軸ラベル
+%  x_label : x軸のラベル
+%  y_label : y軸のラベル
+%  t : タイトル
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_label,t)
+    
+    figure;
+    x_mean = 1:paramNum;
+
+    %{
+    x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
+    y = reshape(value, 1, paramAll);
+    scatter(x,y);
+    hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    %}
+
+    % diffuse,method以外のパラメータが同じ刺激を結ぶ
+    for i = 1:18
+        for m = 1:2
+            plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+            hold on;
+        end
+    end
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0]);
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    
+    % グラフの設定
+    xlim([0 paramNum+1]);
+    xticks(x_mean);
+    xticklabels(x_tick);
+    xlabel(x_label);
+    ylabel(y_label);
+    %title(t, 'FontSize',13);
+    hold off;
+    
+    f = 1;
+end
+                
