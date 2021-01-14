@@ -171,8 +171,8 @@ f = scatterPlot(paramnum,diffuseN*methodN,glossEffect_diffuse_method,glossEffect
 hold on;
 l = xline(3.5, '--');
 ylim([0 4]);
-text(1.75,3.75,'全体条件');
-text(5.25,3.75,'拡散条件');
+%text(1.75,3.75,'全体条件');
+%text(5.25,3.75,'拡散条件');
 hold off;
 
 %{
@@ -269,12 +269,12 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     % diffuse,method以外のパラメータが同じ刺激を結ぶ
     for i = 1:18
         for m = 1:2
-            plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+            p = plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
             hold on;
         end
     end
-    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
-    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0]);
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0],'LineWidth',1.5);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0],'LineWidth',1.5);
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
@@ -284,6 +284,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xlabel(x_label);
     ylabel(y_label);
     %title(t, 'FontSize',13);
+    set(gca, "FontName", "Noto Sans CJK JP");
     hold off;
     
     f = 1;

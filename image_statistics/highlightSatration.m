@@ -286,8 +286,8 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
             hold on;
         end
     end
-    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0]);
-    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0]);
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0],'LineWidth',1.5);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0],'LineWidth',1.5);
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
@@ -296,6 +296,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xticklabels(x_tick);
     xlabel(x_label);
     ylabel(y_label);
+    set(gca, "FontName", "Noto Sans CJK JP");
     %title(t, 'FontSize',13);
     hold off;
     
