@@ -31,6 +31,13 @@ vMax = max(reshape(max(max(selectionScale)), 1, 108));
 vMin = min(reshape(min(min(selectionScale)), 1, 108));
 vAbs = max(abs([vMin, vMax]));
 
+% size
+t_sz = 22;
+sgt_sz = 20;
+label_sz = 22;
+ax_sz = 20;
+lgd_sz = 16;
+
 noSigDiffNum = zeros(1,8);
 
 
@@ -60,29 +67,33 @@ for i =1:3  % shape
                             noSigDiffNum(p) = noSigDiffNum(p)+1;
                         end
                     end
-                end               
+                end   
+                ax = gca;
                         
                 % title
-                title(strcat(method(m),'  diffuse:',diffuse(k)));
+                %title(strcat(method(m),'  diffuse:',diffuse(k)),'FontSize',sgt_sz);
                 
                 % axis
                 xticks(colorNum(2,:));
                 xticklabels({'gray', '0', '45', '90', '135', '180', '225', '270', '315'})
-                xlabel('色相 (deg)');
+                xlabel('色相 (degree)','FontSize',label_sz);
                 xlim([0 10]);
-                ylabel('選好尺度値');
+                ylabel('選好尺度値','FontSize',label_sz);
                 ylim([-vAbs, vAbs]);
+                ax.FontSize = ax_sz;
                 
                 % legend
-                lgd = legend(h, {'0.05', '0.1', '0.2'});
-                lgd.NumColumns = 3;
-                lgd.Title.String = 'roughness';
-                lgd.Title.FontWeight = 'normal';
+                %lgd = legend(h, {'0.05', '0.1', '0.2'});
+                %lgd.NumColumns = 3;
+                %lgd.Title.String = 'roughness';
+                %lgd.Title.FontWeight = 'normal';
+                %lgd.FontSize = lgd_sz;
+                %lgd.Location = 'northeastoutside'
                 
                 hold off;
             end
         end
-        sgtitle(strcat('shape:',shape(i),'   light:',light(j)));
+        %sgtitle(strcat('shape:',shape(i),'   light:',light(j)),'FontSize',t_sz);
         
         
         f.WindowState = 'maximized';

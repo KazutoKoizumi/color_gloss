@@ -23,6 +23,13 @@ vMax = max(reshape(max(max(selectionScale)), 1, 144));
 vMin = min(reshape(min(min(selectionScale)), 1, 144));
 vAbs = max(abs([vMin, vMax]));
 
+% size
+t_sz = 22;
+sgt_sz = 20;
+label_sz = 18;
+ax_sz = 16;
+lgd_sz = 16;
+
 % plot
 for i =1:2  % light
     f = figure;
@@ -95,18 +102,20 @@ for i =1:2  % light
                 p_hue(l,count_hue) = mtx(1,2,i,j,k,l);
             end
             scatter(axisColor,prob);
+            ax = gca;
 
             % title
-            title(strcat('diffuse:',diffuse(j),'  roughness:',roughness(k)));
+            %title(strcat('diffuse:',diffuse(j),'  roughness:',roughness(k)));
 
             % axis
             xticks(axisColor);
             xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-            xlabel('色相');
+            xlabel('色相（degree）','FontSize',label_sz);
             xlim([0 9]);
-            ylabel('SDの勝率');
-            ylim([0, 1.25]);
+            ylabel('SD条件の勝率','FontSize',label_sz);
+            ylim([0, 1.0]);
             yline(0.5, '--');
+            ax.FontSize = ax_sz;
 
             %{
             % legend
@@ -119,7 +128,7 @@ for i =1:2  % light
             hold off;
         end
     end
-    sgtitle(strcat('shape:',shape,'   light:',light(i)));
+    %sgtitle(strcat('shape:',shape,'   light:',light(i)));
     %}
 end
 p_mean = mean(p);
@@ -151,8 +160,9 @@ figure;
 errorbar(axisColor,p_mean_hue,range95_hue(:,1),range95_hue(:,2),'o')
 xticks(axisColor);
 xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-xlabel('色相');
+xlabel('色相（degree）');
 xlim([0 9]);
 ylabel('SD条件の勝率の平均');
-ylim([0.5, 1]);
+ylim([0, 1]);
+yline(0.5, '--');
 %title('SD条件の勝率の色相ごとの平均');
