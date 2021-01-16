@@ -180,6 +180,8 @@ set(gca, "FontName", "Noto Sans CJK JP");
 % ハイライト領域のH-Kを色相ごとにプロット, SD,D条件でわける
 figure;
 HK_SD_D = zeros(8,54,2);
+label_sz = 20;
+ax_sz = 18;
 for m = 1:2
     subplot(1,2,m);
     HK_SD_D(:,:,m) = HKstimuli(:,m:2:108,1);
