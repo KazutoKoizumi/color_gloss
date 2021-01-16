@@ -10,6 +10,13 @@ graphColor = [[0 0.4470 0.7410]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250];
 
 mkdir(strcat('../../analysis_result/',exp,'/all'));
 
+% size
+t_sz = 22;
+sgt_sz = 20;
+label_sz = 18;
+ax_sz = 16;
+lgd_sz = 16;
+
 %% 全結果をまとめたテーブル HKtable を作成
 HKindividual = zeros(72,5*N); % 各個人のH-K効果（5試行分）
 HKindividual_mean = zeros(72,N); % 各個人のH-K効果平均（5試行分）
@@ -43,6 +50,7 @@ axisColorNum = [1 2 3 4 5 6 7 8];
 % 最大・最小値を求めておく
 v = [min(HKindividual_mean,[],'all'),max(HKindividual_mean,[],'all')];
 ylim_v = [0.8, v(2); 0.8, 4; 0.8, 3];
+y_max = max(ylim_v(:,2));
 
 figure;
 for i = 1:3 % lum
@@ -60,24 +68,28 @@ for i = 1:3 % lum
                 h(N+1).LineWidth = 1.5;
             end
         end
+        ax = gca;
         
         % title
-        title(strcat('lum:',num2str(i),'  sat:',num2str(j)));
+        %title(strcat('lum:',num2str(i),'  sat:',num2str(j)),'FontSize',sgt_sz);
         
         % axis
         xticks(axisColorNum);
         %xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
         xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-        xlabel('色相');
+        xlabel('色相（degree）','FontSize',label_sz);
         xlim([0 9]);
-        ylabel('H-K効果の大きさ');
-        ylim(ylim_v(i,:));
+        ylabel('H-K効果の大きさ','FontSize',label_sz);
+        ylim([ylim_v(i,1),y_max]);
+        ax.FontSize = ax_sz;
         
         % legend
-        lgd = legend(h,snID);
-        lgd.Title.String = 'subject';
-        lgd.Title.FontWeight = 'normal';
-        lgd.Location = 'eastoutside';
+        %lgd = legend(h,snID);
+        %lgd.Title.String = 'subject';
+        %lgd.Title.FontWeight = 'normal';
+        %lgd.Location = 'eastoutside';
+        
+        set(gca, "FontName", "Noto Sans CJK JP");
         
         hold off;
     end

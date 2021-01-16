@@ -7,6 +7,15 @@ colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta
 colorDeg = ["0", "45", "90", "135", "180", "225", "270", "315"];
 N = 6;
 diffuseVar = ["0.1", "0.3", "0.5"];
+diffuseN = 3;
+roughN = 3;
+
+% size
+t_sz = 22;
+sgt_sz = 20;
+label_sz = 14;
+ax_sz = 16;
+lgd_sz = 16;
 
 % パラメータのインデックス
 count = 1;
@@ -122,13 +131,17 @@ for i = 1:8
     subplot(4,2,i);
     scatter(saturation,HK);
     hold on;
-    lg = strcat(num2str(cf(1,i)),'+',num2str(cf(2,i)),'x, R^2=',num2str(Rsq(i)));
+    lg = strcat(num2str(round(cf(1,i),3,'significant')),'+',num2str(round(cf(2,i),3,'significant')),'x, R^2=',num2str(round(Rsq(i),2,'significant')));
     h = plot(saturation,yHK,'--');
-    legend(h,lg,'Location','northwest');
-    xlabel('彩度')
-    ylabel('H-K効果の大きさ')
+    ax = gca;
+    legend(h,lg,'Location','northwest','FontSize',lgd_sz);
+    xlabel('彩度','FontSize',label_sz)
+    ylabel('H-K効果','FontSize',label_sz)
+    xlim([0.03 0.047]);
     ylim([1.5 3]);
-    title(strcat(colorDeg(i),' deg'));
+    title(strcat(colorDeg(i),' degree'),'FontSize',sgt_sz);
+    ax.FontSize = ax_sz;
+    set(gca, "FontName", "Noto Sans CJK JP");
     hold off;
 
 end
@@ -156,12 +169,35 @@ for i = 1:108
     plot(x,HKstimuli(:,i,1)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
     hold on;
 end
-plot(x,mean(HKstimuli(:,i,1),2)', '-o','Color',[1 0 0],'MarkerFaceColor',[1 0 0],'LineWidth',2,'MarkerSize',8);
+plot(x,mean(HKstimuli(:,:,1),2)', '-o','Color',[1 0 0],'MarkerFaceColor',[1 0 0],'LineWidth',2,'MarkerSize',8);
 xlim([0 9]);
 xticks(x);
 xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-xlabel('hue (deg)');
-ylabel('H-K効果の大きさ')
+xlabel('色相 (degree)');
+ylabel('H-K効果の大きさ');
+set(gca, "FontName", "Noto Sans CJK JP");
+
+% ハイライト領域のH-Kを色相ごとにプロット, SD,D条件でわける
+figure;
+HK_SD_D = zeros(8,54,2);
+for m = 1:2
+    subplot(1,2,m);
+    HK_SD_D(:,:,m) = HKstimuli(:,m:2:108,1);
+    for i = 1:54
+        plot(x,HK_SD_D(:,i,m)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
+        hold on;
+    end
+    plot(x,mean(HK_SD_D(:,:,m),2)', '-o','Color',[1 0 0],'MarkerFaceColor',[1 0 0],'LineWidth',2,'MarkerSize',8);
+    ax = gca;
+    xlim([0 9]);
+    ylim([1.2 3]);
+    xticks(x);
+    xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+    xlabel('色相 (degree)','FontSize',label_sz);
+    ylabel('H-K効果の大きさ','FontSize',label_sz);
+    ax.FontSize = ax_sz;
+    set(gca, "FontName", "Noto Sans CJK JP");
+end
 
 % 彩色方法・拡散反射率ごとにハイライト領域のH-K効果の大きさをプロット
 HK_HL = mean(HKstimuli(:,:,1));

@@ -165,4 +165,5 @@ xlim([0 9]);
 ylabel('SD条件の勝率の平均');
 ylim([0, 1]);
 yline(0.5, '--');
+set(gca, "FontName", "Noto Sans CJK JP");
 %title('SD条件の勝率の色相ごとの平均');
