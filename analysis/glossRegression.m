@@ -7,15 +7,23 @@ load('../../mat/HKeffect/HKstimuli.mat');
 load('../../mat/contrast/contrast.mat');
 load('../../mat/contrast/contrastLab.mat');
 
+graphColor = [[0 0 0]; [1 0 0]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0 1 0]; 
+            [0.4660 0.6740 0.1880]; [0.310 0.7450 0.9330]; [0 0.4470 0.7410]; [1 0 1]];
+gridNum = 50;
+        
 paramnum = 108;
-idx_gloss = zeros(paramnum, 5);
+idx = zeros(paramnum, 5);
+idx_noMethod = zeros(54,4);
 count = 1;
+count_noMethod = 1;
 for i = 1:3 % shape
     for j = 1:2 % light
         for k = 1:3 % diffuse
             for l = 1:3 % roughness
+                idx_noMethod(count_noMethod,:) = [i,j,k,l];
+                count_noMethod = count_noMethod + 1;
                 for m = 1:2 % SD or D
-                    idx_gloss(count,:) = [i, j, k, l, m];
+                    idx(count,:) = [i, j, k, l, m];
                     count = count + 1;
                 end
             end
@@ -23,11 +31,23 @@ for i = 1:3 % shape
     end
 end
 
+for i = 1:3
+    idx_diffuse(:,i) = find(idx(:,3)==i);
+    idx_rough(:,i) = find(idx(:,4)==i);
+    idx_diffuse_noMethod(:,i) = find(idx_noMethod(:,3)==i);
+    for j = 1:2
+        idx_diffuse_method(:,3*(j-1)+i) = find(idx(:,3)==i & idx(:,5)==j);
+        idx_rough_method(:,3*(j-1)+i) = find(idx(:,4)==i & idx(:,5)==j);
+    end
+end
+
 gloss = zeros(9, 108);
 for i = 1:paramnum
-    gloss(:,i) = sv(:,:,idx_gloss(i,1),idx_gloss(i,2),idx_gloss(i,3),idx_gloss(i,4),idx_gloss(i,5))';
+    gloss(:,i) = sv(:,:,idx(i,1),idx(i,2),idx(i,3),idx(i,4),idx(i,5))';
 end
 gray = repmat(gloss(1,:),[8,1]);
+gloss_SD = reshape(gloss(:,1:2:108),[9*54,1]);
+gloss_D = reshape(gloss(:,2:2:108),[9*54,1]);
 
 %glossColor = gloss(2:9,:) - gray;
 
@@ -35,45 +55,144 @@ HK = HKstimuli(:,:,1);
 % grayを含めたH-K効果, grayのH-K効果を1とする
 HKall = ones(9,108);
 HKall(2:9,:) = HK;
-HKallZscore = zscore(HKall,0,1);
+HK_SD_z = zscore(reshape(HKall(:,1:2:108),[9*54,1])); 
+HK_D_z = zscore(reshape(HKall(:,2:2:108),[9*54,1]));
+%HKallZscore = zscore(HKall,0,1);
 
 % grayを含めた色度コントラスト, u'v'L色度, grayの色度コントラストを0とする
 contrastAll = zeros(9,108);
 contrastAll(2:9,:) = repmat(contrast,[8 1]);
-contrastAllZscore = zscore(contrastAll,0,1);
+contrast_SD_z = zscore(reshape(contrastAll(:,1:2:108),[9*54,1]));
+contrast_D_z = zscore(reshape(contrastAll(:,2:2:108),[9*54,1]));
+%contrastAllZscore = zscore(contrastAll,0,1);
 
 % zscore化
-HKzscore = zscore(HK,0,1);
-contrastLabZscore = zscore(contrastLab,0,1);
+%HKzscore = zscore(HK,0,1);
+%contrastLabZscore = zscore(contrastLab,0,1);
+
 
 %% 光沢感回帰
-% SD条件についてH-Kで回帰
+%% SD条件についてH-Kで回帰
 y = reshape(gloss(:,1:2:108), [9*54,1]);
 x1 = reshape(HKall(:,1:2:108), [9*54,1]);
-%X = [ones(size(x1)) x1];
-%[b_SD_HK,~,~,~,stats_SD_HK] = regress(y,X) % 回帰式 y = b(1) + b(2)*x1;
 md_SD_HK = fitlm(x1,y)
 
-% SD条件についてH-Kと色度差で回帰
-x1 = reshape(HKallZscore(:,1:2:108), [9*54,1]);
-x2 = reshape(contrastAllZscore(:,1:2:108), [9*54,1]);
+%% SD条件についてH-Kと色度差で回帰
+y = gloss_SD;
+x1 = HK_SD_z;
+x2 = contrast_SD_z;
+%x1 = reshape(HKallZscore(:,1:2:108), [9*54,1]);
+%x2 = reshape(contrastAllZscore(:,1:2:108), [9*54,1]);
 X = [x1 x2];
 md_SD_HK_cont = fitlm(X,y)
 
-% D条件についてH-Kで回帰
+% プロット
+figure;
+%scatter3(x1,x2,y,'filled');
+
+% diffuseごとに整理
+colorMarker = [[0 0.4470 0.7410];[0.8500 0.3250 0.0980];[0.9290 0.6940 0.1250]];
+HK_hue = reshape(HK_SD_z,[9,54]);
+cont_hue = reshape(contrast_SD_z,[9,54]);
+gloss_hue = reshape(gloss_SD,[9,54]);
+HK_diffuse_method = zeros(18,6,9);
+cont_diffuse_method = zeros(18,6,9);
+gloss_diffuse_method = zeros(18,6,9);
+for i = 1:9 % hue
+    HK_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,HK_hue(i,:));
+    cont_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,cont_hue(i,:));
+    gloss_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,gloss_hue(i,:));
+end
+
+for i = 1:3 % diffuse
+    for j = 1:9 % hue
+        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),gloss_diffuse_method(:,i,j),'filled','MarkerFaceColor',graphColor(j,:));
+        hold on;
+    end
+end
+hold on;
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_SD_HK_cont.Coefficients.Estimate(1) + md_SD_HK_cont.Coefficients.Estimate(2)*x1_grid + md_SD_HK_cont.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('光沢感')
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
+%% D条件についてH-Kで回帰
 y = reshape(gloss(:,2:2:108), [9*54,1]);
 x1 = reshape(HKall(:,2:2:108), [9*54,1]);
 md_D_HK = fitlm(x1,y)
 
-% D条件についてH-Kと色度差で回帰
-x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
-x2 = reshape(contrastAllZscore(:,2:2:108), [9*54,1]);
-%X = [ones(size(x1)) x1 x2];
-%[b_D_HK_cont,~,~,~,stats_D_HK_cont] = regress(y,X)
+%% D条件についてH-Kと色度差で回帰
+y = gloss_D;
+x1 = HK_D_z;
+x2 = contrast_D_z;
+%x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
+%x2 = reshape(contrastAllZscore(:,2:2:108), [9*54,1]);
 X = [x1 x2];
 md_D_HK_cont = fitlm(X,y)
 
-% 全刺激について光沢をH-Kと色度差で回帰
+% プロット
+figure;
+HK_hue = reshape(HK_D_z,[9,54]);
+cont_hue = reshape(contrast_D_z,[9,54]);
+gloss_hue = reshape(gloss_D,[9,54]);
+for i = 1:9 % hue
+    HK_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,HK_hue(i,:));
+    cont_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,cont_hue(i,:));
+    gloss_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,gloss_hue(i,:));
+end
+
+for i = 1:3 % diffuse
+    for j = 1:9 % hue
+        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),gloss_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',graphColor(j,:));
+        hold on;
+    end
+end
+hold on;
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_D_HK_cont.Coefficients.Estimate(1) + md_D_HK_cont.Coefficients.Estimate(2)*x1_grid + md_D_HK_cont.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('光沢感')
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
+
+%% 光沢感増大効果を回帰で求める
+
+% 光沢感増大効果
+cg_effect = gloss(1:9,:) - repmat(gloss(1,:),[9,1]);
+cg_effect_SD = reshape(cg_effect(:,1:2:108),[9*54,1]);
+cg_effect_D = reshape(cg_effect(:,2:2:108),[9*54,1]);
+
+% 有彩色H-K効果
+HK_SD_z_color = zscore(reshape(HKall(1:9,1:2:108),[9*54,1])); 
+HK_D_z_color = zscore(reshape(HKall(1:9,2:2:108),[9*54,1])); 
+
+% 有彩色色度コントラスト
+contrast_SD_z_color = zscore(reshape(contrastAll(1:9,1:2:108),[9*54,1]));
+contrast_D_z_color = zscore(reshape(contrastAll(1:9,2:2:108),[9*54,1]));
+
+%% SD条件において増大効果の回帰（H-K効果、色度コントラスト）
+y = cg_effect_SD;
+x1 = HK_SD_z_color;
+x2 = contrast_SD_z_color;
+X = [x1 x2];
+md_cgEffect_SD_HK_cont = fitlm(X,y)
+
+%% D条件において増大効果の回帰（H-K効果、色度コントラスト）
+y = cg_effect_D;
+x1 = HK_D_z_color;
+x2 = contrast_D_z_color;
+X = [x1 x2];
+md_cgEffect_D_HK_cont = fitlm(X,y)
+%}
+
+%% 全刺激について光沢をH-Kと色度差で回帰
 y = reshape(gloss, [9*108,1]);
 x1 = reshape(HKallZscore, [9*108,1]);
 x2 = reshape(contrastAllZscore, [9*108,1]);
@@ -83,16 +202,16 @@ X = [x1 x2];
 md_HK_cont = fitlm(X,y)
 
 % 全刺激について光沢をH-KとLabコントラストで回帰
-x2 = reshape(contrastLabZscore, [9*108,1]);
-X = [x1 x2];
-md_HK_LabCont = fitlm(X,y)
+%x2 = reshape(contrastLabZscore, [8*108,1]);
+%X = [x1 x2];
+%md_HK_LabCont = fitlm(X,y)
 
 % D条件についてH-KとLabコントラストで回帰
-y = reshape(gloss(:,2:2:108), [9*54,1]);
-x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
-x2 = reshape(contrastLabZscore(:,2:2:108), [9*54,1]);
-X = [x1 x2];
-md_D_HK_LabCont = fitlm(X,y)
+%y = reshape(gloss(:,2:2:108), [9*54,1]);
+%x1 = reshape(HKallZscore(:,2:2:108), [9*54,1]);
+%x2 = reshape(contrastLabZscore(:,2:2:108), [9*54,1]);
+%X = [x1 x2];
+%md_D_HK_LabCont = fitlm(X,y)
 
 %% SD条件におけるH-Kを用いた光沢予測モデルをD条件に適用
 % 実際の測定値との差分を見る
@@ -111,11 +230,11 @@ scatter(x,y)
 
 %% grayを除いた回帰
 % 全刺激について光沢をH-KとLabコントラストで回帰
-y = reshape(gloss(2:9,:), [8*108,1]);
-x1 = reshape(HKallZscore(2:9,:), [8*108,1]);
-x2 = reshape(contrastLabZscore(2:9,:), [8*108,1]);
-X = [x1 x2];
-md_color_HK_LabCont = fitlm(X,y)
+%y = reshape(gloss(2:9,:), [8*108,1]);
+%x1 = reshape(HKallZscore(2:9,:), [8*108,1]);
+%x2 = reshape(contrastLabZscore(2:9,:), [8*108,1]);
+%X = [x1 x2];
+%md_color_HK_LabCont = fitlm(X,y)
 
 %{
 %% Labコントラストで光沢効果量回帰
@@ -166,3 +285,14 @@ X = [ones(size(x1)) x1];
 
 [b_effect_HK,~,~,~,stats_effect_HK] = regress(y,X)
 %}
+%}
+
+%% パラメータごとに整理する関数
+function v = arrangeParam(allParamN,paramNum,idx,value)
+    v = zeros(allParamN/paramNum, paramNum);
+    for i = 1:allParamN/paramNum
+        for j = 1:paramNum
+            v(i,j) = value(idx(i,j));
+        end
+    end
+end
