@@ -46,8 +46,10 @@ for i = 1:paramnum
     gloss(:,i) = sv(:,:,idx(i,1),idx(i,2),idx(i,3),idx(i,4),idx(i,5))';
 end
 gray = repmat(gloss(1,:),[8,1]);
-gloss_SD = reshape(gloss(:,1:2:108),[9*54,1]);
-gloss_D = reshape(gloss(:,2:2:108),[9*54,1]);
+%gloss_SD = reshape(gloss(:,1:2:108),[9*54,1]);
+%gloss_D = reshape(gloss(:,2:2:108),[9*54,1]);
+gloss_SD = zscore(reshape(gloss(:,1:2:108),[9*54,1]));
+gloss_D = zscore(reshape(gloss(:,2:2:108),[9*54,1]));
 
 %glossColor = gloss(2:9,:) - gray;
 
@@ -165,17 +167,17 @@ hold off;
 %% 光沢感増大効果を回帰で求める
 
 % 光沢感増大効果
-cg_effect = gloss(1:9,:) - repmat(gloss(1,:),[9,1]);
-cg_effect_SD = reshape(cg_effect(:,1:2:108),[9*54,1]);
-cg_effect_D = reshape(cg_effect(:,2:2:108),[9*54,1]);
+cg_effect = gloss(2:9,:) - repmat(gloss(1,:),[8,1]);
+cg_effect_SD = zscore(reshape(cg_effect(:,1:2:108),[8*54,1]));
+cg_effect_D = zscore(reshape(cg_effect(:,2:2:108),[8*54,1]));
 
 % 有彩色H-K効果
-HK_SD_z_color = zscore(reshape(HKall(1:9,1:2:108),[9*54,1])); 
-HK_D_z_color = zscore(reshape(HKall(1:9,2:2:108),[9*54,1])); 
+HK_SD_z_color = zscore(reshape(HKall(2:9,1:2:108),[8*54,1])); 
+HK_D_z_color = zscore(reshape(HKall(2:9,2:2:108),[8*54,1])); 
 
 % 有彩色色度コントラスト
-contrast_SD_z_color = zscore(reshape(contrastAll(1:9,1:2:108),[9*54,1]));
-contrast_D_z_color = zscore(reshape(contrastAll(1:9,2:2:108),[9*54,1]));
+contrast_SD_z_color = zscore(reshape(contrastAll(2:9,1:2:108),[8*54,1]));
+contrast_D_z_color = zscore(reshape(contrastAll(2:9,2:2:108),[8*54,1]));
 
 %% SD条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_SD;
@@ -192,6 +194,7 @@ X = [x1 x2];
 md_cgEffect_D_HK_cont = fitlm(X,y)
 %}
 
+%{
 %% 全刺激について光沢をH-Kと色度差で回帰
 y = reshape(gloss, [9*108,1]);
 x1 = reshape(HKallZscore, [9*108,1]);
