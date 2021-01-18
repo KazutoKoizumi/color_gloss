@@ -9,7 +9,7 @@ load('../../mat/contrast/contrastLab.mat');
 
 graphColor = [[0 0 0]; [1 0 0]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0 1 0]; 
             [0.4660 0.6740 0.1880]; [0.310 0.7450 0.9330]; [0 0.4470 0.7410]; [1 0 1]];
-gridNum = 50;
+gridNum = 30;
         
 paramnum = 108;
 idx = zeros(paramnum, 5);
@@ -108,7 +108,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:9 % hue
-        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),gloss_diffuse_method(:,i,j),'filled','MarkerFaceColor',graphColor(j,:));
+        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),gloss_diffuse_method(:,i,j),'filled','MarkerFaceColor',colorMarker(i,:));
         hold on;
     end
 end
@@ -119,6 +119,7 @@ mesh(x1_grid,x2_grid,z);
 xlabel('H-K効果');
 ylabel('色度コントラスト');
 zlabel('光沢感')
+title('SD条件　光沢感');
 set(gca, "FontName", "Noto Sans CJK JP");
 hold off;
 
@@ -149,7 +150,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:9 % hue
-        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),gloss_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',graphColor(j,:));
+        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),gloss_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',colorMarker(i,:));
         hold on;
     end
 end
@@ -160,24 +161,37 @@ mesh(x1_grid,x2_grid,z);
 xlabel('H-K効果');
 ylabel('色度コントラスト');
 zlabel('光沢感')
+title('D条件　光沢感');
 set(gca, "FontName", "Noto Sans CJK JP");
 hold off;
 
 
 %% 光沢感増大効果を回帰で求める
 
+% grayを含むか否か
+flag = 0; % 0:含む、1:含まない
+if flag == 0
+    p = 9;
+    q = 1;
+else
+    p = 8;
+    q = 2;
+    graphColor = [[1 0 0]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0 1 0]; 
+            [0.4660 0.6740 0.1880]; [0.310 0.7450 0.9330]; [0 0.4470 0.7410]; [1 0 1]];
+end
+
 % 光沢感増大効果
-cg_effect = gloss(2:9,:) - repmat(gloss(1,:),[8,1]);
-cg_effect_SD = zscore(reshape(cg_effect(:,1:2:108),[8*54,1]));
-cg_effect_D = zscore(reshape(cg_effect(:,2:2:108),[8*54,1]));
+cg_effect = gloss(q:9,:) - repmat(gloss(1,:),[p,1]);
+cg_effect_SD = zscore(reshape(cg_effect(:,1:2:108),[p*54,1]));
+cg_effect_D = zscore(reshape(cg_effect(:,2:2:108),[p*54,1]));
 
 % 有彩色H-K効果
-HK_SD_z_color = zscore(reshape(HKall(2:9,1:2:108),[8*54,1])); 
-HK_D_z_color = zscore(reshape(HKall(2:9,2:2:108),[8*54,1])); 
+HK_SD_z_color = zscore(reshape(HKall(q:9,1:2:108),[p*54,1])); 
+HK_D_z_color = zscore(reshape(HKall(q:9,2:2:108),[p*54,1])); 
 
 % 有彩色色度コントラスト
-contrast_SD_z_color = zscore(reshape(contrastAll(2:9,1:2:108),[8*54,1]));
-contrast_D_z_color = zscore(reshape(contrastAll(2:9,2:2:108),[8*54,1]));
+contrast_SD_z_color = zscore(reshape(contrastAll(q:9,1:2:108),[p*54,1]));
+contrast_D_z_color = zscore(reshape(contrastAll(q:9,2:2:108),[p*54,1]));
 
 %% SD条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_SD;
@@ -186,12 +200,74 @@ x2 = contrast_SD_z_color;
 X = [x1 x2];
 md_cgEffect_SD_HK_cont = fitlm(X,y)
 
+% プロット
+figure;
+% diffuseごとに整理
+colorMarker = [[0 0.4470 0.7410];[0.8500 0.3250 0.0980];[0.9290 0.6940 0.1250]];
+HK_hue = reshape(HK_SD_z_color,[p,54]);
+cont_hue = reshape(contrast_SD_z_color,[p,54]);
+cg_effect_hue = reshape(cg_effect_SD,[p,54]);
+HK_diffuse_method = zeros(18,6,p);
+cont_diffuse_method = zeros(18,6,p);
+cg_effect_diffuse_method = zeros(18,6,p);
+for i = 1:p % hue
+    HK_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,HK_hue(i,:));
+    cont_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,cont_hue(i,:));
+    cg_effect_diffuse_method(:,1:3,i) = arrangeParam(54,3,idx_diffuse_noMethod,cg_effect_hue(i,:));
+end
+
+for i = 1:3 % diffuse
+    for j = 1:p % hue
+        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),cg_effect_diffuse_method(:,i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        hold on;
+    end
+end
+hold on;
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_cgEffect_SD_HK_cont.Coefficients.Estimate(1) + md_cgEffect_SD_HK_cont.Coefficients.Estimate(2)*x1_grid + md_cgEffect_SD_HK_cont.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('増大効果')
+title('SD条件　増大効果');
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
 %% D条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_D;
 x1 = HK_D_z_color;
 x2 = contrast_D_z_color;
 X = [x1 x2];
 md_cgEffect_D_HK_cont = fitlm(X,y)
+
+% プロット
+figure;
+HK_hue = reshape(HK_D_z_color,[p,54]);
+cont_hue = reshape(contrast_D_z_color,[p,54]);
+cg_effect_hue = reshape(cg_effect_D,[p,54]);
+for i = 1:p % hue
+    HK_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,HK_hue(i,:));
+    cont_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,cont_hue(i,:));
+    cg_effect_diffuse_method(:,4:6,i) = arrangeParam(54,3,idx_diffuse_noMethod,cg_effect_hue(i,:));
+end
+
+for i = 1:3 % diffuse
+    for j = 1:p % hue
+        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),cg_effect_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        hold on;
+    end
+end
+hold on;
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_cgEffect_D_HK_cont.Coefficients.Estimate(1) + md_cgEffect_D_HK_cont.Coefficients.Estimate(2)*x1_grid + md_cgEffect_D_HK_cont.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('増大効果');
+title('D条件　増大効果');
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
 %}
 
 %{
