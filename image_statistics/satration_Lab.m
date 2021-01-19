@@ -1,5 +1,5 @@
 %% Lab色空間で彩度を求めて、ハイライトとそれ以外の領域の色度コントラストを定義する
-
+%{
 clear all;
 
 %% オブジェクトのパラメータ
@@ -106,12 +106,12 @@ for i = 1:3 % shape
                         chromaHL(n,count) = mean(chromaHL_list);
                         chromaHLno(n,count) = mean(chromaHL_list);
                         
-                        %% 色度コントラストを求める
+                        %% 色コントラストを求める
                         % ハイライトとそれ以外の領域のそれぞれで平均色度座標を算出
                         % それらのユークリッド距離を求める
                         vec = labHL_mean - labHLno_mean;
-                        colorContrast(n,count) = norm(vec(2:3));
-                        contrastLab(n,count) = norm(vec);
+                        colorContrast(n,count) = norm(vec(2:3)); % 色度差（L*除く）
+                        contrastLab(n,count) = norm(vec); % 色コントラスト
                         
                     end
                 end
@@ -154,15 +154,16 @@ for i = 1:diffuseN
 end
 
 %% diffuse、roughnessパラメータごとに色度コントラストの平均を取る
+contrastLab_mean = mean(contrastLab); % 色相間の平均
 % diffuseとmethodで平均
-[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrastLab(1,:));
+[contrast_diffuse_method,contrast_diffuse_method_mean] = getMean(diffuseN*methodN,idx_diffuse_method,contrastLab_mean);
 % roughnessとmethodで平均
-[contrast_rough_method,contrast_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,contrastLab(1,:));
+[contrast_rough_method,contrast_rough_method_mean] = getMean(roughN*methodN,idx_rough_method,contrastLab_mean);
 
 % プロット
 % diffuse, method
-x_label = 'diffuse';
-y_label = '色度コントラスト';
+x_label = '拡散反射率';
+y_label = '色コントラスト';
 t = 'diffuseと彩色方法ごとの色度コントラスト';
 xtick_param = repmat(diffuseVar,1,2);
 f = scatterPlot(paramnum,diffuseN*methodN,contrast_diffuse_method,contrast_diffuse_method_mean,xtick_param,x_label,y_label,t);
@@ -171,6 +172,7 @@ l = xline(3.5, '--');
 ylim([0 9]);
 text(1.75,8.5,'SD');
 text(5.25,8.5,'D');
+set(gca, "FontName", "Noto Sans CJK JP");
 hold off
 
 % roughness method
@@ -215,17 +217,17 @@ hold off;
 %% 色コントラストの色相変化をプロット
 % 正規化したのちにプロット
 contrast_zscore = zscore(contrastLab);
-x = 1:9;
+x = 1:8;
 figure;
 for i = 1:108
-    plot(x,contrast_zscore(:,i)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
+    plot(x,contrast_zscore(2:9,i)','--o','Color',[0 0.4470 0.7410],'MarkerSize',4);
     hold on;
 end
-plot(x,mean(contrast_zscore,2), '-o','Color',[0.8500 0.3250 0.0980],'MarkerFaceColor',[0.8500 0.3250 0.0980],'LineWidth',1,'MarkerSize',8);
+plot(x,mean(contrast_zscore(2:9,:),2), '-o','Color',[0.8500 0.3250 0.0980],'MarkerFaceColor',[0.8500 0.3250 0.0980],'LineWidth',2,'MarkerSize',8);
 xlim([0 9]);
 xticks(x);
 xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-xlabel('hue (deg)');
+xlabel('色相 (degree)');
 ylabel('色コントラスト')
 title('色コントラストの色相変化の傾向')
 hold off;
@@ -274,10 +276,23 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     
     figure;
     x_mean = 1:paramNum;
+    %{
     x = reshape(repmat(x_mean,paramAll/paramNum,1),1,paramAll);
     y = reshape(value, 1, paramAll);
     scatter(x,y);
     hold on;
+    scatter(x_mean,value_mean,72,[1 0 0],'filled');
+    %}
+    
+    % diffuse,method以外のパラメータが同じ刺激を結ぶ
+    for i = 1:18
+        for m = 1:2
+            p = plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
+            hold on;
+        end
+    end
+    plot(x_mean(1:3),value_mean(1,1:3),'-o','Color',[1,0,0],'LineWidth',1.5);
+    plot(x_mean(4:6),value_mean(1,4:6),'-o','Color',[1,0,0],'LineWidth',1.5);
     scatter(x_mean,value_mean,72,[1 0 0],'filled');
     
     % グラフの設定
@@ -286,7 +301,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xticklabels(x_tick);
     xlabel(x_label);
     ylabel(y_label);
-    title(t, 'FontSize',13);
+    %title(t, 'FontSize',13);
     hold off;
     
     f = 1;

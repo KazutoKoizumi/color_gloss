@@ -108,7 +108,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:9 % hue
-        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),gloss_diffuse_method(:,i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),gloss_diffuse_method(:,i,j),'filled','MarkerFaceColor',graphColor(j,:));
         hold on;
     end
 end
@@ -150,7 +150,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:9 % hue
-        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),gloss_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),gloss_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',graphColor(j,:));
         hold on;
     end
 end
@@ -169,7 +169,7 @@ hold off;
 %% 光沢感増大効果を回帰で求める
 
 % grayを含むか否か
-flag = 0; % 0:含む、1:含まない
+flag = 1; % 0:含む、1:含まない
 if flag == 0
     p = 9;
     q = 1;
@@ -192,6 +192,9 @@ HK_D_z_color = zscore(reshape(HKall(q:9,2:2:108),[p*54,1]));
 % 有彩色色度コントラスト
 contrast_SD_z_color = zscore(reshape(contrastAll(q:9,1:2:108),[p*54,1]));
 contrast_D_z_color = zscore(reshape(contrastAll(q:9,2:2:108),[p*54,1]));
+
+contrastLab_SD_z = zscore(reshape(contrastLab(:,1:2:108),[8*54,1]));
+contrastLab_D_z = zscore(reshape(contrastLab(:,2:2:108),[8*54,1]));
 
 %% SD条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_SD;
@@ -218,7 +221,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:p % hue
-        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),cg_effect_diffuse_method(:,i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        scatter3(HK_diffuse_method(:,i,j),cont_diffuse_method(:,i,j),cg_effect_diffuse_method(:,i,j),'filled','MarkerFaceColor',graphColor(j,:));
         hold on;
     end
 end
@@ -232,6 +235,44 @@ zlabel('増大効果')
 title('SD条件　増大効果');
 set(gca, "FontName", "Noto Sans CJK JP");
 hold off;
+
+%% SD条件、色相以外の条件を平均して回帰
+cg_effect_param_mean = zscore(mean(cg_effect(:,1:2:108),2));
+HK_param_mean = zscore(mean(HKall(q:9,1:2:108),2));
+cont_param_mean = zscore(mean(contrastAll(q:9,1:2:108),2));
+
+y = cg_effect_param_mean;
+x1 = HK_param_mean;
+x2 = cont_param_mean;
+X = [x1 x2];
+md_cgEffect_SD_param_mean = fitlm(X,y)
+
+% プロット
+figure;
+for i = 1:p % hue
+    scatter3(HK_param_mean(i),cont_param_mean(i),cg_effect_param_mean(i),'filled','MarkerFaceColor',graphColor(i,:));
+    hold on;
+end
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_cgEffect_SD_param_mean.Coefficients.Estimate(1) + md_cgEffect_SD_param_mean.Coefficients.Estimate(2)*x1_grid + md_cgEffect_SD_param_mean.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('増大効果');
+title('SD条件　増大効果　色相平均');
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
+%% SD条件、色相間で平均を取る
+cg_effect_hue_mean = zscore(mean(cg_effect(:,1:2:108)));
+HK_hue_mean = zscore(mean(HKall(q:9,1:2:108)));
+cont_hue_mean = zscore(mean(contrastAll(q:9,1:2:108)));
+
+y = cg_effect_hue_mean';
+x1 = HK_hue_mean';
+x2 = cont_hue_mean';
+X = [x1 x2];
+md_cgEffect_SD_hue_mean = fitlm(X,y)
 
 %% D条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_D;
@@ -253,7 +294,7 @@ end
 
 for i = 1:3 % diffuse
     for j = 1:p % hue
-        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),cg_effect_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',colorMarker(i,:));
+        scatter3(HK_diffuse_method(:,3+i,j),cont_diffuse_method(:,3+i,j),cg_effect_diffuse_method(:,3+i,j),'filled','MarkerFaceColor',graphColor(j,:));
         hold on;
     end
 end
@@ -268,8 +309,61 @@ title('D条件　増大効果');
 set(gca, "FontName", "Noto Sans CJK JP");
 hold off;
 
-%}
+%% D条件、色相以外の条件を平均して回帰
+cg_effect_param_mean = zscore(mean(cg_effect(:,2:2:108),2));
+HK_param_mean = zscore(mean(HKall(q:9,2:2:108),2));
+cont_param_mean = zscore(mean(contrastAll(q:9,2:2:108),2));
 
+y = cg_effect_param_mean;
+x1 = HK_param_mean;
+x2 = cont_param_mean;
+X = [x1 x2];
+md_cgEffect_D_param_mean = fitlm(X,y)
+
+% プロットan 
+figure;
+for i = 1:p % hue
+    scatter3(HK_param_mean(i),cont_param_mean(i),cg_effect_param_mean(i),'filled','MarkerFaceColor',graphColor(i,:));
+    hold on;
+end
+[x1_grid,x2_grid] = meshgrid(linspace(min(x1),max(x1),gridNum),linspace(min(x2),max(x2),gridNum));
+z = md_cgEffect_D_param_mean.Coefficients.Estimate(1) + md_cgEffect_D_param_mean.Coefficients.Estimate(2)*x1_grid + md_cgEffect_D_param_mean.Coefficients.Estimate(3)*x2_grid;
+mesh(x1_grid,x2_grid,z);
+xlabel('H-K効果');
+ylabel('色度コントラスト');
+zlabel('増大効果');
+title('D条件　増大効果　色相平均');
+set(gca, "FontName", "Noto Sans CJK JP");
+hold off;
+
+%% D条件、色相間で平均して回帰
+cg_effect_hue_mean = zscore(mean(cg_effect(:,2:2:108)));
+HK_hue_mean = zscore(mean(HKall(q:9,2:2:108)));
+cont_hue_mean = zscore(mean(contrastAll(q:9,2:2:108)));
+
+y = cg_effect_hue_mean';
+x1 = HK_hue_mean';
+x2 = cont_hue_mean';
+X = [x1 x2];
+md_cgEffect_D_hue_mean = fitlm(X,y)
+
+%% Labコントラストで効果量を回帰
+
+%% SD条件
+y = cg_effect_SD;
+x1 = HK_SD_z_color;
+x2 = contrastLab_SD_z;
+X = [x1 x2];
+md_cgEffect_SD_HK_contLab = fitlm(X,y)
+
+%% D条件
+y = cg_effect_D;
+x1 = HK_D_z_color;
+x2 = contrastLab_D_z;
+X = [x1 x2];
+md_cgEffect_D_HK_contLab = fitlm(X,y)
+
+%%
 %{
 %% 全刺激について光沢をH-Kと色度差で回帰
 y = reshape(gloss, [9*108,1]);
