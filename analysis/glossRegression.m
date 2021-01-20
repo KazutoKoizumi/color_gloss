@@ -193,8 +193,8 @@ HK_D_z_color = zscore(reshape(HKall(q:9,2:2:108),[p*54,1]));
 contrast_SD_z_color = zscore(reshape(contrastAll(q:9,1:2:108),[p*54,1]));
 contrast_D_z_color = zscore(reshape(contrastAll(q:9,2:2:108),[p*54,1]));
 
-contrastLab_SD_z = zscore(reshape(contrastLab(:,1:2:108),[8*54,1]));
-contrastLab_D_z = zscore(reshape(contrastLab(:,2:2:108),[8*54,1]));
+contrastLab_SD_z = zscore(reshape(contrastLab(q:9,1:2:108),[p*54,1]));
+contrastLab_D_z = zscore(reshape(contrastLab(q:9,2:2:108),[p*54,1]));
 
 %% SD条件において増大効果の回帰（H-K効果、色度コントラスト）
 y = cg_effect_SD;
