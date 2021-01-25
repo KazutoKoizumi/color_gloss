@@ -161,7 +161,7 @@ t = 'roughnessごとの彩色による光沢感上昇の効果量';
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの彩色による光沢感上昇の効果量';
-%f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
 
 % diffuseごとにわけたものをSDとDにさらにわける
 x_label = '拡散反射率';
@@ -267,7 +267,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     %}
     
     % diffuse,method以外のパラメータが同じ刺激を結ぶ
-    for i = 1:18
+    for i = 1:paramAll/paramNum
         for m = 1:2
             p = plot(x_mean(3*(m-1)+1:3*m),value(i,3*(m-1)+1:3*m),'--o','Color',[0 0.4470 0.7410]);
             hold on;
@@ -283,7 +283,7 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     xticklabels(x_tick);
     xlabel(x_label);
     ylabel(y_label);
-    %title(t, 'FontSize',13);
+    title(t, 'FontSize',13);
     set(gca, "FontName", "Noto Sans CJK JP");
     hold off;
     
