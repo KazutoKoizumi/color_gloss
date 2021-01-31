@@ -3,7 +3,7 @@
 % Object
 shape = 'bunny';
 light = 'area';
-diffuse = 'D03';
+diffuse = 'D01';
 roughness = 'alpha005';
 
 load(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'));
@@ -19,7 +19,7 @@ yticklabels({});
 
 figure;
 image(stimuliD(:,:,:,2));
-%xticks({});
-%yticks({});
-%xticklabels({});
-%yticklabels({});
+xticks({});
+yticks({});
+xticklabels({});
+yticklabels({});

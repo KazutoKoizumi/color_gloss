@@ -5,7 +5,7 @@ clear all;
 
 %% オブジェクトのパラメータ
 shape = 'bunny';
-light = 'envmap';
+light = 'area';
 diffuse = 'D01';
 roughness = 'alpha005';
 
