@@ -4,7 +4,7 @@
 shape = 'bunny'; % shape : bunny, dragon, blob
 light = 'envmap'; % light : area or envmap
 diffuse = 'D01'; % diffuse rate
-roughness = 'alpha01'; % roughness parameter
+roughness = 'rough01'; % roughness parameter
 
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD.mat'));

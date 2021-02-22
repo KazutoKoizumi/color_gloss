@@ -5,7 +5,7 @@ clear all;
 shape = ["bunny", "dragon", "blob"]; % i
 light = ["area", "envmap"]; % j
 diffuse = ["D01", "D03", "D05"]; % k
-roughness = ["alpha005", "alpha01", "alpha02"]; %l
+roughness = ["rough005", "rough01", "rough02"]; %l
 method = ["SD", "D"];
 diffuseN = size(diffuse,2);
 roughN = size(roughness,2);

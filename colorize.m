@@ -7,32 +7,8 @@ clear all;
 shape = 'bunny';
 light = 'area';
 diffuse = 'D01';
-roughness = 'alpha005';
+roughness = 'rough005';
 
-%{
-indexD = ["D01", "D03", "D05"];
-if strcmp(light, 'area') == 1
-    lum = 2*(find(indexD == diffuse)+1);
-elseif strcmp(light, 'envmap') == 1
-    if strcmp(shape, 'bunny') == 1
-        lumPar = [2, 2.5, 3];
-    elseif strcmp(shape, 'dragon') == 1
-        lumPar = [2.3, 3, 3];
-    elseif strcmp(shape, 'blob') == 1
-        lumPar = [2, 2, 3];
-    end
-    lum = lumPar(indexD==diffuse);
-end
-%}
-%{ 
- % 拡散成分ごとのトーンマップ時の輝度閾値の設定
- % bunny,area,D01 : 3.5,  D03 : 3.5,  D05 : 3.5
- % bunny,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
- % dragon,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
- % dragon,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
- % blob,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
- % blob,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
-%}
 lum = 3;
 
 %{

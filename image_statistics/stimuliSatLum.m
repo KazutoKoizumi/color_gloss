@@ -5,7 +5,7 @@
 shape = ["bunny", "dragon", "blob"]; % i
 light = ["area", "envmap"]; % j
 diffuse = ["D01", "D03", "D05"]; % k
-roughness = ["alpha005", "alpha01", "alpha02"]; %l
+roughness = ["rough005", "rough01", "rough02"]; %l
 colorizeM = ["SD", "D"];
 
 allObj = 3*2*3*3*2;

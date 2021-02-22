@@ -11,12 +11,6 @@ monitorMaxLum = max(upvplWhitePoints(:,3))/2-1;
 monitorMinLum = upvplWhitePoints(2,3);
 upvpl = applycform(xyz,cx2u);
 
-% bunny,area,D01 : 3.5,  D03 : 3.5,  D05 : 3.5
-% bunny,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
-% dragon,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
-% dragon,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
-% blob,area,D01 : 3.5, D03 : 3.5, D05 : 3.5
-% blob,envmap,D01 : 3.5, D03 : 3.5, D05 : 3.5
 %lw = 3.5;
 
 %lw = max(max(upvpl(:,:,3)))

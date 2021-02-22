@@ -7,7 +7,7 @@ clear all;
 material = 'bunny';
 light = 'area';
 Drate = 'D01';
-alpha = 'alpha02';
+alpha = 'rough02';
 tLum = '6'; %3, 6, 7, 10, 15
 
 load(strcat('../mat/',material,'/',light,'/',Drate,'/',alpha,'/xyzSD.mat'));
