@@ -2,9 +2,9 @@
 
 %% オブジェクトのパラメータ
 shape = 'bunny'; % shape : bunny, dragon, blob
-light = 'envmap'; % light : area or envmap
+light = 'area'; % light : area or envmap
 diffuse = 'D01'; % diffuse rate
-roughness = 'rough01'; % roughness parameter
+roughness = 'rough005'; % roughness parameter
 
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD.mat'));
@@ -23,8 +23,8 @@ for i = 1:9
 end
 
 %% 保存
-save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'),'stimuliSD');
-save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliD.mat'),'stimuliD');
+%save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliSD.mat'),'stimuliSD');
+%save(strcat('../stimuli/',shape,'/',light,'/',diffuse,'/',roughness,'/stimuliD.mat'),'stimuliD');
 
 %% 画像表示
 figure;
