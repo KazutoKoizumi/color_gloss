@@ -1,12 +1,14 @@
 % 色相間の選考尺度値に有意差があるかをブートストラップサンプルをもとに検定する
-clear all;
+%clear all;
 
 exp = 'experiment_gloss';
-sn = 'totsuka';
+sn = 'all';
 
 B = 10000; %ブートストラップサンプル数
-ubi = round(B*97.5/100);
-lbi = round(B*2.5/100);
+alpha = 5; % 有意水準 (片側検定)
+bonferroni_alpha = 5/8; % ボンフェローニ補正、無彩色との比較
+ubi = round(B*(100-alpha)/100);
+lbi = round(B*alpha/100);
 
 load(strcat('../../analysis_result/',exp,'/',sn,'/BSsample.mat'));
 
