@@ -74,7 +74,7 @@ for i = 1:shapeNum
                         count = count+1;
                     end
                     
-                    %{
+                    
                     % Holm法で有意差求める
                     p_sort = sort(p);
                     count = count-36;

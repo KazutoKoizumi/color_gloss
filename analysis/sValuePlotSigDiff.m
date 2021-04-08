@@ -64,7 +64,7 @@ for i =1:3  % shape
                             x = find(colorName==grayT.color2(p));
                             plot(x+sa(l),selectionScale(x,3,i,j,k,l,m), 'o', 'Color',graphColor(l,:), 'MarkerFaceColor',graphColor(l,:));
                             
-                            noSigDiffNum(p) = noSigDiffNum(p)+1;
+                            %noSigDiffNum(p) = noSigDiffNum(p)+1;
                         end
                     end
                 end   
