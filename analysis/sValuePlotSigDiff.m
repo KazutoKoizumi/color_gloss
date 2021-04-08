@@ -71,7 +71,7 @@ for i =1:3  % shape
                 ax = gca;
                         
                 % title
-                %title(strcat(method(m),'  diffuse:',diffuse(k)),'FontSize',sgt_sz);
+                title(strcat(method(m),'  diffuse:',diffuse(k)),'FontSize',sgt_sz);
                 
                 % axis
                 xticks(colorNum(2,:));
@@ -83,11 +83,11 @@ for i =1:3  % shape
                 ax.FontSize = ax_sz;
                 
                 % legend
-                %lgd = legend(h, {'0.05', '0.1', '0.2'});
-                %lgd.NumColumns = 3;
-                %lgd.Title.String = 'roughness';
-                %lgd.Title.FontWeight = 'normal';
-                %lgd.FontSize = lgd_sz;
+                lgd = legend(h, {'0.05', '0.1', '0.2'});
+                lgd.NumColumns = 3;
+                lgd.Title.String = 'roughness';
+                lgd.Title.FontWeight = 'normal';
+                lgd.FontSize = lgd_sz;
                 %lgd.Location = 'northeastoutside'
                 
                 hold off;
@@ -99,7 +99,7 @@ for i =1:3  % shape
         f.WindowState = 'maximized';
         graphName = strcat(shape(i),'_',light(j),'_sig_diff.png');
         fileName = strcat('../../analysis_result/',exp,'/',sn,'/graph_sig_diff/',graphName);
-        saveas(gcf, fileName);
+        %saveas(gcf, fileName);
         %}
     end
 end
