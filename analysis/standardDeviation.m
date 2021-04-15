@@ -339,6 +339,11 @@ end
 
 function sigDiffTable = BStest(B,arrangeSample,paramAll,param,paramNum,idx)
     
+    alpha = 5;
+    if paramNum > 2
+        alpha = 5/paramNum;
+    end
+
     BSvalue_param = zeros(B,paramNum,paramAll/paramNum);
     for i = 1:paramAll/paramNum
         for j = 1:paramNum
@@ -347,8 +352,8 @@ function sigDiffTable = BStest(B,arrangeSample,paramAll,param,paramNum,idx)
     end
     BSvalue_param_mean = mean(BSvalue_param,3);
     
-    ubi = round(B*97.5/100);
-    lbi = round(B*2.5/100);
+    ubi = round(B*(100-alpha)/100);
+    lbi = round(B*alpha/100);
     
     comb = nchoosek(1:paramNum,2);
     combination = param(comb);
