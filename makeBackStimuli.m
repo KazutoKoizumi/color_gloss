@@ -57,6 +57,8 @@ backNoMask = ones(iy,ix);
 bgStimuli(:,:,:,1) = colorizeXYZ(bgStimuli(:,:,:,1),bgStimuli(:,:,:,1),backNoMask,1);
 bgStimuli(:,:,:,2) = colorizeXYZ(bgStimuli(:,:,:,2),bgStimuli(:,:,:,2),backNoMask,1);
 
+bgStimuli_XYZ = bgStimuli;
+
 %% XYZ -> RGB (rgb0~1のチェックあり)
 for i= 1:2
     bgStimuli(:,:,:,i) = imageXYZ2RGB(bgStimuli(:,:,:,i),ccmat);
@@ -65,6 +67,7 @@ end
 %% 後処理
 bgStimuli = cast(bgStimuli, 'uint8');
 
+save('../mat/back/bgStimuli_XYZ.mat', 'bgStimuli_XYZ');
 save('../stimuli/back/bgStimuli.mat', 'bgStimuli');
 
 figure;
