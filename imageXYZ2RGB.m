@@ -28,7 +28,7 @@ function rgb = imageXYZ2RGB(XYZ, ccmat)
     if (rgbMax > 1) || (rgbMin < 0)
         rgbMax
         rgbMin
-        %error('rgb value is outside between 0 and 1');
+        error('rgb value is outside between 0 and 1');
     end 
     %}
     

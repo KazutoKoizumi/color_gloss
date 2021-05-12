@@ -1,5 +1,5 @@
 %% 彩色ファイル(colored)を刺激用のRGB値に変換する（uint8で保存）
-clear all;
+%clear all;
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
