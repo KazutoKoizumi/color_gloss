@@ -6,7 +6,7 @@ sn = 'all';
 
 B = 10000; %ブートストラップサンプル数
 alpha = 5/8; % 有意水準 (片側検定)、ボンフェローニ補正
-bonferroni_alpha = 5/8; % ボンフェローニ補正、無彩色との比較
+%bonferroni_alpha = 5/8; % ボンフェローニ補正、無彩色との比較
 ubi = round(B*(100-alpha)/100);
 lbi = round(B*alpha/100);
 
