@@ -81,6 +81,10 @@ HKlum.HKzscore = HKzscore;
 Rsq = zeros(1,8);
 cf = zeros(2,8);
 figure;
+
+% ハイライト部分を別で測定したものを追加（2021/07/08）
+load(strcat('../../analysis_result/',exp,'/high_lum_koizumi/data.mat'), 'data');
+
 for i = 1:8
     
     %{
@@ -134,14 +138,22 @@ for i = 1:8
     lg = strcat(num2str(round(cf(1,i),3,'significant')),'+',num2str(round(cf(2,i),3,'significant')),'x, R^2=',num2str(round(Rsq(i),2,'significant')));
     h = plot(saturation,yHK,'--');
     ax = gca;
-    legend(h,lg,'Location','northwest','FontSize',lgd_sz);
+    %legend(h,lg,'Location','northwest','FontSize',lgd_sz);
     xlabel('彩度','FontSize',label_sz)
     ylabel('H-K効果','FontSize',label_sz)
     xlim([0.03 0.047]);
-    ylim([1.5 3]);
+    ylim([1.3 3]);
     title(strcat(colorDeg(i),' degree'),'FontSize',sgt_sz);
     ax.FontSize = ax_sz;
     set(gca, "FontName", "Noto Sans CJK JP");
+    
+    % ハイライトの平均彩度で測定したH-K効果を追加でプロット
+    HK_high_lum = zeros(1,3);
+    for j = 1:3
+        HK_high_lum(j) = data.HKave(8*(j-1)+i);
+    end
+    scatter(saturation,HK_high_lum,'filled');
+    
     hold off;
 
 end
