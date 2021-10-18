@@ -83,7 +83,7 @@ cf = zeros(2,8);
 figure;
 
 % ハイライト部分を別で測定したものを追加（2021/07/08）
-load(strcat('../../analysis_result/',exp,'/high_lum_koizumi/data.mat'), 'data');
+%load(strcat('../../analysis_result/',exp,'/high_lum_koizumi/data.mat'), 'data');
 
 for i = 1:8
     
@@ -148,11 +148,11 @@ for i = 1:8
     set(gca, "FontName", "Noto Sans CJK JP");
     
     % ハイライトの平均彩度で測定したH-K効果を追加でプロット
-    HK_high_lum = zeros(1,3);
-    for j = 1:3
-        HK_high_lum(j) = data.HKave(8*(j-1)+i);
-    end
-    scatter(saturation,HK_high_lum,'filled');
+    %HK_high_lum = zeros(1,3);
+    %for j = 1:3
+    %    HK_high_lum(j) = data.HKave(8*(j-1)+i);
+    %end
+    %scatter(saturation,HK_high_lum,'filled');
     
     hold off;
 
