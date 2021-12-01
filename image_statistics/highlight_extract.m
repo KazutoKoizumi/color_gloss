@@ -22,7 +22,7 @@ load('../../mat/highlight/lumThreshold.mat');
 
 %% ハイライト抽出
 %count = 1;
-highlightMap = zeros(720,960,2,3,2,3); % highlight or diffuse, shape, light, diffuse
+highlightMap = zeros(720,960,3,3,2,3); % highlight or diffuse, shape, light, diffuse
 
 for i = 1:3 % shape
     load(strcat('../../mat/',shape(i),'Mask/mask.mat'));
@@ -52,6 +52,8 @@ for i = 1:3 % shape
                 HLnoMap = cast(HLnoMap,'uint8');
                 highlightMap(:,:,2,i,j,k) = HLnoMap;
                 %}
+                
+                highlightMap(:,:,3,i,j,k) = cast(mask, 'uint8') - HLmap;
                 
                 %{
                 % ハイライト周辺のdiffuse領域、周辺のピクセルを取る
