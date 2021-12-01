@@ -167,7 +167,7 @@ t = '彩色方法ごとの彩色による光沢感上昇の効果量';
 x_label = '拡散反射率';
 t = 'difffuseと彩色方法ごとの効果量';
 xtick_param = repmat(diffuse,1,2);
-f = scatterPlot(paramnum,diffuseN*methodN,glossEffect_diffuse_method,glossEffect_diffuse_method_mean,xtick_param,x_label,y_label,t);
+%f = scatterPlot(paramnum,diffuseN*methodN,glossEffect_diffuse_method,glossEffect_diffuse_method_mean,xtick_param,x_label,y_label,t);
 hold on;
 l = xline(3.5, '--');
 ylim([0 4]);
@@ -203,9 +203,9 @@ hold off;
 %% 有意差の有無の検定
 BSglossEffect = arrangeBS(B,BSsample,2);
 
-sigDiff_diffuse = BStest(B,BSglossEffect,paramnum,diffuse,diffuseN,idx_diffuse);
-sigDiff_rough = BStest(B,BSglossEffect,paramnum,roughness,roughN,idx_rough);
-sigDiff_method = BStest(B,BSglossEffect,paramnum,method,methodN,idx_method);
+%sigDiff_diffuse = BStest(B,BSglossEffect,paramnum,diffuse,diffuseN,idx_diffuse);
+%sigDiff_rough = BStest(B,BSglossEffect,paramnum,roughness,roughN,idx_rough);
+%sigDiff_method = BStest(B,BSglossEffect,paramnum,method,methodN,idx_method);
 
 sigDiff_diffuse_methodSD = BStest(B,BSglossEffect,paramnum/methodN,diffuse,diffuseN,idx_diffuse_method(:,1:3));
 sigDiff_diffuse_methodD = BStest(B,BSglossEffect,paramnum/methodN,diffuse,diffuseN,idx_diffuse_method(:,4:6));
