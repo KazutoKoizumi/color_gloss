@@ -1,6 +1,6 @@
 %% Lab色空間で彩度を求めて、ハイライトとそれ以外の領域の色度コントラストを定義する
-%{
-clear all;
+
+%clear all;
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
