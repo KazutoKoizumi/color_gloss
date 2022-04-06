@@ -161,7 +161,7 @@ t = 'roughnessごとの彩色による光沢感上昇の効果量';
 % method
 x_label = '彩色方法';
 t = '彩色方法ごとの彩色による光沢感上昇の効果量';
-%f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
+f = scatterPlot(paramnum,methodN,glossEffect_method,glossEffect_method_mean,method,x_label,y_label,t);
 
 % diffuseごとにわけたものをSDとDにさらにわける
 x_label = '拡散反射率';
