@@ -16,10 +16,10 @@ for i = 1:8
     
     yHK = cf(1,i) + sat*cf(2,i);
     
-    scatter(sat,HKlum.subject_k_mean(HKlum.color==hue(i)),'filled');
-    hold on;
-    scatter(sat,data_high_lum.HKave(data_high_lum.color==hue(i)),'filled');
-    scatter(sat,data_all.HKall(data_all.color==hue(i)),'filled');
+    %scatter(sat,HKlum.subject_k_mean(HKlum.color==hue(i)),'filled');
+    %hold on;
+    %scatter(sat,data_high_lum.HKave(data_high_lum.color==hue(i)),'filled');
+    %scatter(sat,data_all.HKall(data_all.color==hue(i)),'filled');
     plot(sat,yHK,'--','Color',graphColor(3,:));
     ax = gca;
 

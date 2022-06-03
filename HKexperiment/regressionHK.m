@@ -14,7 +14,7 @@ roughN = 3;
 t_sz = 22;
 sgt_sz = 20;
 label_sz = 14;
-ax_sz = 16;
+ax_sz = 14;
 lgd_sz = 16;
 
 % パラメータのインデックス
@@ -138,9 +138,9 @@ for i = 1:8
     lg = strcat(num2str(round(cf(1,i),3,'significant')),'+',num2str(round(cf(2,i),3,'significant')),'x, R^2=',num2str(round(Rsq(i),2,'significant')));
     h = plot(saturation,yHK,'--');
     ax = gca;
-    %legend(h,lg,'Location','northwest','FontSize',lgd_sz);
-    xlabel('彩度','FontSize',label_sz)
-    ylabel('H-K効果','FontSize',label_sz)
+    legend(h,lg,'Location','northwest','FontSize',lgd_sz);
+    %xlabel('彩度','FontSize',label_sz)
+    %ylabel('H-K効果','FontSize',label_sz)
     xlim([0.03 0.047]);
     ylim([1.3 3]);
     title(strcat(colorDeg(i),' degree'),'FontSize',sgt_sz);

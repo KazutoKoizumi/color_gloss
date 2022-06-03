@@ -99,4 +99,34 @@ end
 % 保存
 save(strcat('../../analysis_result/',exp,'/all/HKtable.mat'),'HKtable');
                 
-                
+%% 全被験者データのプロット
+value_HK = HKtable.HKmean;
+
+label_sz = 16;
+ax_sz = 14;
+sat_name = ["0.032", "0.039", "0.046"];
+figure;
+for i = 1:3 % lum
+    subplot(3,1, i);
+    hold on;
+    for j = 1:3 % sat
+        idx = 24*(i-1)+8*(j-1)+1;
+        h(j) = plot(axisColorNum, value_HK(idx:idx+(8-1)), '-o','Color',graphColor(j,:));
+    end
+    ax = gca;
+    
+    xticks(axisColorNum);
+    %xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
+    xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
+    xlabel('Hue（degree）','FontSize',label_sz);
+    xlim([0 9]);
+    ylabel('H-K Effect','FontSize',label_sz);
+    ylim([0, 4]);
+    ax.FontSize = ax_sz;
+    
+    % legend
+    %lgd = legend(h, sat_name);
+    %lgd.Title.String = 'Saturation';
+    %lgd.Title.FontWeight = 'normal';
+    %lgd.Location = 'eastoutside';
+end
