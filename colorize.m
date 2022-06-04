@@ -7,8 +7,8 @@ clear all;
 %% オブジェクトのパラメータ
 shape = 'bunny';
 light = 'area';
-diffuse = 'D01';
-roughness = 'rough005';
+diffuse = 'D05';
+roughness = 'rough01';
 
 lum = 3;
 
