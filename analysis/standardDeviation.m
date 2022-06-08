@@ -151,12 +151,12 @@ save('../../analysis_result/experiment_gloss/all/glossEffect/glossEffect.mat','g
 x_label = 'diffuse';
 y_label = '効果量';
 t = 'diffuseごとの彩色による光沢感上昇の効果量';
-%f = scatterPlot(paramnum,diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
+f = scatterPlot(paramnum,diffuseN,glossEffect_diffuse,glossEffect_diffuse_mean,diffuse,x_label,y_label,t);
 
 %roughness
 x_label = 'roughness';
 t = 'roughnessごとの彩色による光沢感上昇の効果量';
-%f = scatterPlot(paramnum,roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
+f = scatterPlot(paramnum,roughN,glossEffect_rough,glossEffect_rough_mean,roughness,x_label,y_label,t);
 
 % method
 x_label = '彩色方法';
