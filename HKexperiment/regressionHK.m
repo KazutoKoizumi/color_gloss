@@ -4,7 +4,8 @@ load(strcat('../../analysis_result/experiment_HK/all/HKtable.mat'));
 exp = 'experiment_HK';
 snID = ["A", "B", "C", "D", "E", "F", 'All'];
 colorName = ["red","orange","yellow","green","blue-green","cyan","blue","magenta"];
-colorDeg = ["0", "45", "90", "135", "180", "225", "270", "315"];
+colorDeg = ["0,     ", "45,  ", "90,  ", "135,", "180,", "225,", "270,", "315,"];
+color_def = [[1 0 0]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0 1 0]; [0.4660 0.6740 0.1880]; [0.3010 0.7450 0.9330]; [0 0.4470 0.7410]; [0.4940 0.1840 0.5560]];
 N = 6;
 diffuseVar = ["0.1", "0.3", "0.5"];
 diffuseN = 3;
@@ -81,7 +82,8 @@ HKlum.HKzscore = HKzscore;
 Rsq = zeros(1,8);
 cf = zeros(2,8);
 figure;
-
+hold on;
+box on;
 % ハイライト部分を別で測定したものを追加（2021/07/08）
 %load(strcat('../../analysis_result/',exp,'/high_lum_koizumi/data.mat'), 'data');
 
@@ -132,6 +134,7 @@ for i = 1:8
     %}
     
     % まとめて1枚にプロット
+    %{
     subplot(4,2,i);
     scatter(saturation,HK);
     hold on;
@@ -146,6 +149,14 @@ for i = 1:8
     title(strcat(colorDeg(i),' degree'),'FontSize',sgt_sz);
     ax.FontSize = ax_sz;
     set(gca, "FontName", "Noto Sans CJK JP");
+    %}
+    
+    % 1枚のパネルにプロット
+    %scatter(saturation, HK, [], color_def(i,:));
+    %hold on;
+    h = plot(saturation, yHK, '--', 'Color', color_def(i,:));
+    ax = gca;
+    lg(i) = string(strcat(colorDeg(i), " ", num2str(round(cf(1,i),3)),'+',num2str(round(cf(2,i),2)),'x, R^2=',num2str(round(Rsq(i),2))));
     
     % ハイライトの平均彩度で測定したH-K効果を追加でプロット
     %HK_high_lum = zeros(1,3);
@@ -154,9 +165,16 @@ for i = 1:8
     %end
     %scatter(saturation,HK_high_lum,'filled');
     
-    hold off;
+    %hold off;
 
 end
+
+xlim([0.03 0.047]);
+ylim([1.3 3]);
+ax.FontSize = ax_sz;
+set(gca, "FontName", "Noto Sans CJK JP");
+legend(lg, 'Location','northeastoutside','FontSize',lgd_sz);
+
 cf
 save('../../mat/HKeffect/cf.mat','cf');
 save('../../mat/HKeffect/Rsq.mat','Rsq');
@@ -207,8 +225,8 @@ for m = 1:2
     ylim([1.2 3]);
     xticks(x);
     xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-    xlabel('色相 (degree)','FontSize',label_sz);
-    ylabel('H-K効果の大きさ','FontSize',label_sz);
+    %xlabel('色相 (degree)','FontSize',label_sz);
+    %ylabel('H-K効果の大きさ','FontSize',label_sz);
     ax.FontSize = ax_sz;
     set(gca, "FontName", "Noto Sans CJK JP");
 end
@@ -336,4 +354,5 @@ function f = scatterPlot(paramAll,paramNum,value,value_mean,x_tick,x_label,y_lab
     
     f = 1;
 end
-                
+
+%% プロット

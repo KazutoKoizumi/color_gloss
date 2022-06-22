@@ -118,9 +118,9 @@ for i = 1:3 % lum
     xticks(axisColorNum);
     %xticklabels({'red', 'orange', 'yellow', 'green', 'blue-green', 'cyan', 'blue', 'magenta'});
     xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
-    xlabel('Hue（degree）','FontSize',label_sz);
+    %xlabel('Hue（degree）','FontSize',label_sz);
     xlim([0 9]);
-    ylabel('H-K Effect','FontSize',label_sz);
+    %ylabel('H-K Effect','FontSize',label_sz);
     ylim([0, 4]);
     ax.FontSize = ax_sz;
     
