@@ -90,9 +90,9 @@ try
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
     [iy,ix,iz] = size(bgStimuli(:,:,:,1));
-    showStimuliTime = 1; % [s]
-    beforeStimuli = 0.5; % [s]
-    intervalTime = 0.5; % [s]
+    showStimuliTime = 0.5; % [s]
+    beforeStimuli = 0.1; % [s]
+    intervalTime = 0.1; % [s]
     
     % 刺激サイズ
     viewingDistance = 80; % Viewing distance (cm)
@@ -180,8 +180,12 @@ try
         % 刺激呈示位置 (random)
         rx = randi(fix(winWidth-(2*sx+distance))-1);
         ry = randi(fix(winHeight-sy)-1);
-        leftPosition = [rx, ry, rx+sx, ry+sy];
-        rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+        %leftPosition = [rx, ry, rx+sx, ry+sy];
+        %rightPosition = [rx+sx+distance, ry, rx+2*sx+distance, ry+sy];
+        
+        % stimuli position (center) 
+        leftPosition = [mx-sx-distance/2, my-sy/2, mx-distance/2, my+sy/2];
+        rightPosition = [mx+distance/2, my-sy/2, mx+sx+distance/2, my+sy/2];
         %}
         
         %% 刺激呈示前に背景のみ表示
