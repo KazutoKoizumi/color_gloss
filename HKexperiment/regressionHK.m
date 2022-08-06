@@ -172,7 +172,7 @@ end
 xlim([0.03 0.047]);
 ylim([1.3 3]);
 ax.FontSize = ax_sz;
-set(gca, "FontName", "Noto Sans CJK JP");
+%set(gca, "FontName", "Noto Sans CJK JP");
 legend(lg, 'Location','northeastoutside','FontSize',lgd_sz);
 
 cf
@@ -205,7 +205,7 @@ xticks(x);
 xticklabels({'0', '45', '90', '135', '180', '225', '270', '315'});
 xlabel('色相 (degree)');
 ylabel('H-K効果の大きさ');
-set(gca, "FontName", "Noto Sans CJK JP");
+%set(gca, "FontName", "Noto Sans CJK JP");
 
 % ハイライト領域のH-Kを色相ごとにプロット, SD,D条件でわける
 figure;
@@ -228,7 +228,7 @@ for m = 1:2
     %xlabel('色相 (degree)','FontSize',label_sz);
     %ylabel('H-K効果の大きさ','FontSize',label_sz);
     ax.FontSize = ax_sz;
-    set(gca, "FontName", "Noto Sans CJK JP");
+    %set(gca, "FontName", "Noto Sans CJK JP");
 end
 
 % 彩色方法・拡散反射率ごとにハイライト領域のH-K効果の大きさをプロット
