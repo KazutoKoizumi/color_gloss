@@ -77,4 +77,4 @@ for i = 1:3 % shape
     end
 end
 
-save('../../mat/highlight/lumThreshold.mat','lumThreshold');
+%save('../../mat/highlight/lumThreshold.mat','lumThreshold');
