@@ -91,9 +91,13 @@ try
     hue1 = 5;
     hue2 = 2;
     
-    rgbLeft = stimuliBunny(:,:,:,hue1,j,k,l,m);
-    rgbRight = stimuliBunny(:,:,:,hue2,j,k,l,m);
-       
+    %rgbLeft = stimuliBunny(:,:,:,hue1,j,k,l,m);
+    %rgbRight = stimuliBunny(:,:,:,hue2,j,k,l,m);
+    
+    % 背景の場合
+    rgbLeft = bgStimuli(:,:,:,1);
+    rgbRight = bgStimuli(:,:,:,1);
+    
     % 刺激呈示
     leftStimulus = Screen('MakeTexture', winPtr,rgbLeft);
     rightStimulus = Screen('MakeTexture', winPtr, rgbRight);
@@ -104,14 +108,15 @@ try
     flipTime = Screen('Flip', winPtr);
 
     % capture
-    imageArray = Screen('GetImage',winPtr);
+    %imageArray = Screen('GetImage',winPtr);
 
     % 1秒後に刺激を消す
-    %{
+    
     Screen('FillRect', winPtr, bgColor);
     flipTime = Screen('Flip', winPtr, flipTime+showStimuliTime);
     Screen('Close', [leftStimulus, rightStimulus]);
     %}
+    imageArray = Screen('GetImage',winPtr);
 
     %% 被験者応答
     % Wait for subject's response
