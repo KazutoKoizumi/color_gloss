@@ -1,4 +1,4 @@
-%% LME使用時の説明変数の明るさ変化を求めるために、刺激の明るさを実際に測定する
+%% LME使用時の説明変数の明るさ変化を求めるために、刺激の明るさコントラストを実際に測定する
 clear all
 
 %% 初期準備
@@ -9,7 +9,7 @@ sessionNum = input('Session Number?: ');
 
 
 % filename
-exp = 'exp_color_lightness';
+exp = 'exp_color_lightness_contrast';
 dataTableName = strcat('../data/',exp,'/',sn,'/table_',sn);
 orderFile = strcat('../data/',exp,'/',sn,'/order_',sn,'.mat');
 sessionFile = strcat('../data/',exp,'/',sn,'/session',num2str(sessionNum),'/session',num2str(sessionNum),'_table_',sn);

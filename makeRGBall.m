@@ -1,5 +1,5 @@
 %% 彩色ファイル(colored)を刺激用のRGB値に変換する（uint8で保存）
-%clear all;
+clear all;
 
 %% オブジェクトのパラメータ
 shape = ["bunny", "dragon", "blob"]; % i
@@ -34,16 +34,21 @@ for i = 1:3
                 %% XYZ　-> RGB(uint8) （rgbが0~1を超えていないかチェック）
                 for m = 1:9
                     m
-                    stimuliSD(:,:,:,m) =  imageXYZ2RGB(coloredSD(:,:,:,m),ccmat);
-                    stimuliD(:,:,:,m) = imageXYZ2RGB(coloredD(:,:,:,m),ccmat);
+                    % TN2
+                    %stimuliSD(:,:,:,m) =  imageXYZ2RGB(coloredSD(:,:,:,m),ccmat);
+                    %stimuliD(:,:,:,m) = imageXYZ2RGB(coloredD(:,:,:,m),ccmat);
+                    
+                    % TN3
+                    stimuliSD(:,:,:,m) = conv_XYZ2RGB(coloredSD(:,:,:,m));
+                    stimuliD(:,:,:,m) = conv_XYZ2RGB(coloredD(:,:,:,m));
                 end
                 
                 stimuliSD = cast(stimuliSD, 'uint8');
                 stimuliD = cast(stimuliD, 'uint8');
                 
                 %% 個別データ保存
-                save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliSD.mat'),'stimuliSD');
-                save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliD.mat'),'stimuliD');
+                %save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliSD.mat'),'stimuliSD');
+                %save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliD.mat'),'stimuliD');
                 
                 % 画像表示
                 %{
@@ -76,6 +81,6 @@ for i = 1:3
 end
 
 %% まとめたデータを保存
-save('../stimuli/stimuliBunny.mat', 'stimuliBunny');
-save('../stimuli/stimuliDragon.mat', 'stimuliDragon');
-save('../stimuli/stimuliBlob.mat', 'stimuliBlob');
+%save('../stimuli/stimuliBunny.mat', 'stimuliBunny');
+%save('../stimuli/stimuliDragon.mat', 'stimuliDragon');
+%save('../stimuli/stimuliBlob.mat', 'stimuliBlob');

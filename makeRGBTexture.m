@@ -1,10 +1,10 @@
 %% XYZからRGBに変換するプログラム（rgbの0~1のチェックあり）
 
 %% オブジェクトのパラメータ
-shape = 'dragon'; % shape : bunny, dragon, blob
+shape = 'bunny'; % shape : bunny, dragon, blob
 light = 'envmap'; % light : area or envmap
-diffuse = 'D05'; % diffuse rate
-roughness = 'rough02'; % roughness parameter
+diffuse = 'D03'; % diffuse rate
+roughness = 'rough01'; % roughness parameter
 
 %% データ読み込み
 load(strcat('../mat/',shape,'/',light,'/',diffuse,'/',roughness,'/coloredSD.mat'));
@@ -17,9 +17,11 @@ stimuliD = zeros(iy,ix,iz,9);
 %% 変換
 for i = 1:9
     i
-    stimuliSD(:,:,:,i) = imageXYZ2RGB(coloredSD(:,:,:,i),ccmat);
+    %stimuliSD(:,:,:,i) = imageXYZ2RGB(coloredSD(:,:,:,i),ccmat);
+    stimuliSD(:,:,:,i) = conv_XYZ2RGB(coloredSD(:,:,:,i));
     i
-    stimuliD(:,:,:,i) = imageXYZ2RGB(coloredD(:,:,:,i),ccmat);
+    %stimuliD(:,:,:,i) = imageXYZ2RGB(coloredSD(:,:,:,i),ccmat);
+    stimuliD(:,:,:,i) = conv_XYZ2RGB(coloredD(:,:,:,i));
 end
 
 %% 保存

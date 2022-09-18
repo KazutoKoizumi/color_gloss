@@ -90,9 +90,9 @@ try
     [mx,my] = RectCenter(winRect);
     [winWidth, winHeight]=Screen('WindowSize', winPtr);
     [iy,ix,iz] = size(bgStimuli(:,:,:,1));
-    showStimuliTime = 0.5; % [s]
-    beforeStimuli = 0.1; % [s]
-    intervalTime = 0.1; % [s]
+    showStimuliTime = 1; % [s]
+    beforeStimuli = 0.5; % [s]
+    intervalTime = 0.5; % [s]
     
     % 刺激サイズ
     viewingDistance = 80; % Viewing distance (cm)

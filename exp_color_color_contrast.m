@@ -9,7 +9,7 @@ sessionNum = input('Session Number?: ');
 
 
 % filename
-exp = 'exp_color_lightness';
+exp = 'exp_color_contrast';
 dataTableName = strcat('../data/',exp,'/',sn,'/table_',sn);
 orderFile = strcat('../data/',exp,'/',sn,'/order_',sn,'.mat');
 sessionFile = strcat('../data/',exp,'/',sn,'/session',num2str(sessionNum),'/session',num2str(sessionNum),'_table_',sn);
