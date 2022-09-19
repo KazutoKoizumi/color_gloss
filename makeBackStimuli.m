@@ -61,7 +61,8 @@ bgStimuli_XYZ = bgStimuli;
 
 %% XYZ -> RGB (rgb0~1のチェックあり)
 for i= 1:2
-    bgStimuli(:,:,:,i) = imageXYZ2RGB(bgStimuli(:,:,:,i),ccmat);
+    %bgStimuli(:,:,:,i) = imageXYZ2RGB(bgStimuli(:,:,:,i),ccmat); % TN2
+    bgStimuli(:,:,:,i) = conv_XYZ2RGB(bgStimuli_XYZ(:,:,:,i));
 end
 
 %% 後処理

@@ -47,8 +47,8 @@ for i = 1:3
                 stimuliD = cast(stimuliD, 'uint8');
                 
                 %% 個別データ保存
-                %save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliSD.mat'),'stimuliSD');
-                %save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliD.mat'),'stimuliD');
+                save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliSD.mat'),'stimuliSD');
+                save(strcat('../stimuli/',shape(i),'/',light(j),'/',diffuse(k),'/',roughness(l),'/stimuliD.mat'),'stimuliD');
                 
                 % 画像表示
                 %{
