@@ -247,7 +247,8 @@ ylim([1 2.45]);
 hold off;
 
 %% 輝度平均取らない場合
-
+HK_coeff = zeros(8,3);
+HK_stats = zeros(8,4);
 
 % 被験者、試行の平均を取る場合
 for i = 1:8 % color
@@ -258,6 +259,8 @@ for i = 1:8 % color
     %X = [ones(size(luminance)), luminance, saturation, luminance.*saturation];
     X = [ones(size(luminance)), luminance, saturation];
     [b,~,~,~,stats] = regress(HK,X)
+    HK_coeff(i,:) = b';
+    HK_stats(i,:) = stats;
     
     % プロット
     figure;
@@ -275,6 +278,9 @@ for i = 1:8 % color
     %view(50,10);
     hold off
 end
+
+save('../../mat/HKeffect/HKregress_mod/HK_coeff','HK_coeff');
+save('../../mat/HKeffect/HKregress_mod/HK_stats','HK_stats');
 %}
 
 %{
@@ -317,6 +323,7 @@ end
 %  idx : パラメータのインデックス
 %  value : 値
 
+    [LUMFIT,SATFIT] = meshgrid(lumFit,satFit);
 % Output
 %  param : パラメータごとに値をわける（列がパラメータ）
 %  param_mean : パラメータごとの平均
