@@ -247,7 +247,44 @@ ylim([1 2.45]);
 hold off;
 
 %% 輝度平均取らない場合
+HK_coeff = zeros(8,3);
+HK_stats = zeros(8,4);
+
+% 被験者、試行の平均を取る場合
+for i = 1:8 % color
+    luminance = HKtable.lum(HKtable.color==colorName(i));
+    saturation = HKtable.sat(HKtable.color==colorName(i));
+    HK = HKtable.HKmean(HKtable.color==colorName(i));
+    
+    %X = [ones(size(luminance)), luminance, saturation, luminance.*saturation];
+    X = [ones(size(luminance)), luminance, saturation];
+    [b,~,~,~,stats] = regress(HK,X)
+    HK_coeff(i,:) = b';
+    HK_stats(i,:) = stats;
+    
+    % プロット
+    figure;
+    scatter3(luminance,saturation,HK,'filled');
+    hold on;
+    lumFit = min(luminance):(max(luminance)-min(luminance))/10:max(luminance);
+    satFit = min(saturation):(max(saturation)-min(saturation))/10:max(saturation);
+    [LUMFIT,SATFIT] = meshgrid(lumFit,satFit);
+    HKFIT = b(1) + b(2)*LUMFIT + b(3)*SATFIT;
+    mesh(LUMFIT,SATFIT,HKFIT)
+    xlabel('luminance');
+    ylabel('saturation');
+    zlabel('H-K effect');
+    title(strcat('H-K効果  ',colorName(i)));
+    %view(50,10);
+    hold off
+end
+
+save('../../mat/HKeffect/HKregress_mod/HK_coeff','HK_coeff');
+save('../../mat/HKeffect/HKregress_mod/HK_stats','HK_stats');
+%}
+
 %{
+% 被験者、試行の平均を取らない場合
 for i = 1:8 % color
     luminance = repmat(HKtable.lum(HKtable.color==colorName(i)), [30 1]);
     saturation = repmat(HKtable.sat(HKtable.color==colorName(i)), [30 1]);
@@ -257,7 +294,7 @@ for i = 1:8 % color
         HK(9*5*(j-1)+1:9*5*j) = HK_individual;
     end
     
-    X = [ones(size(luminance)), luminance, saturation, luminance.*saturation];
+    X = [ones(size(luminance)), luminance, saturation];
     [b,~,~,~,stats] = regress(HK,X)
     
     % プロット
@@ -267,7 +304,7 @@ for i = 1:8 % color
     lumFit = min(luminance):(max(luminance)-min(luminance))/10:max(luminance);
     satFit = min(saturation):(max(saturation)-min(saturation))/10:max(saturation);
     [LUMFIT,SATFIT] = meshgrid(lumFit,satFit);
-    HKFIT = b(1) + b(2)*LUMFIT + b(3)*SATFIT + b(4)*LUMFIT.*SATFIT;
+    HKFIT = b(1) + b(2)*LUMFIT + b(3)*SATFIT;
     mesh(LUMFIT,SATFIT,HKFIT)
     xlabel('luminance');
     ylabel('saturation');
@@ -286,6 +323,7 @@ end
 %  idx : パラメータのインデックス
 %  value : 値
 
+    [LUMFIT,SATFIT] = meshgrid(lumFit,satFit);
 % Output
 %  param : パラメータごとに値をわける（列がパラメータ）
 %  param_mean : パラメータごとの平均
