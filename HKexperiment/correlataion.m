@@ -102,12 +102,14 @@ xticklabels({'0.1', '0.3', '0.5', '0.1', '0.3', '0.5'});
 xlabel('拡散反射率','FontName','Noto Sans CJK JP');
 ylabel('相関係数');
 %title('diffuseと彩色方法ごとの相関係数');
-yline(0, '--');
+%yline(0, '--');
 xline(3.5, '--');
 ylim([-1 1.0]);
 set(gca, "FontName", "Noto Sans CJK JP");
 %text(1.75,1.2,'SD');
 %text(5.25,1.2,'D');
+ax = gca;
+ax.FontSize = 14;
 hold off;
 
 %% 相関係数の分散分析（diffuse,methodの主効果を見る）
