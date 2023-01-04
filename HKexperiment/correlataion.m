@@ -109,7 +109,7 @@ set(gca, "FontName", "Noto Sans CJK JP");
 %text(1.75,1.2,'SD');
 %text(5.25,1.2,'D');
 ax = gca;
-ax.FontSize = 14;
+ax.FontSize = 13;
 hold off;
 
 %% 相関係数の分散分析（diffuse,methodの主効果を見る）
