@@ -127,3 +127,26 @@ diffuseD = diffuse(2:2:108);
 roughD = roughness(2:2:108);
 R_D = R(2:2:108);
 p_D = anovan(R_D,{shapeD,lightD,diffuseD,roughD}, 'model','interaction', 'varnames',{'shape','light','diffuse','roughness'});
+
+%% methodごとにわける
+graph_color = [[0 0.4470 0.7410]; [0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]];
+
+R_SD = R(1:2:108);
+R_D = R(2:2:108);
+
+x = 1:2;
+figure;
+bar(x, [mean(R_SD), mean(R_D)]);
+hold on;
+
+x_scatter = repmat(x', [1, 54]);
+scatter(x_scatter(1,:), R_SD, [], graph_color(2,:));
+scatter(x_scatter(2,:), R_D, [], graph_color(2,:));
+
+xticks(x);
+xticklabels(["BC", "DC"]);
+xlim([0.3 2.7]);
+ylim([-1 1]);
+
+ax = gca;
+ax.FontSize = 13;
