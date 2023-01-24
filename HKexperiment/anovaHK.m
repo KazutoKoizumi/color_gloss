@@ -15,7 +15,7 @@ for i = 1:6
     HK(72*5*(i-1)+1:72*5*i) = HK_individual;
 end
 
-p = anovan(HK,{luminance,saturation,color}, 'model','full', 'varnames',{'luminance','saturation','hue'});
+[p, tbl] = anovan(HK,{luminance,saturation,color}, 'model','full', 'varnames',{'luminance','saturation','hue'});
 
 %% 各被験者データ
 p_individual = zeros(7,6);
