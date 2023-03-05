@@ -78,6 +78,7 @@ uvlMax(:,:,3) = uvl(:,:,3)*1.6;
 rgbGrayPatchMax = reshape(conv_upvpl2rgb(uvlMax,ccmat),[3,3]);
 
 %% 保存・出力
+
 save('../../stimuli/patch/stimuliGrayPatch.mat', 'stimuliGrayPatch');
 save('../../mat/patch/rgbGrayPatch.mat', 'rgbGrayPatch');
 save('../../mat/patch/rgbGrayPatchMin.mat', 'rgbGrayPatchMin');

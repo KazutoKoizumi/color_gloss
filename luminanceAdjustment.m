@@ -13,7 +13,8 @@ roughness = ["rough005", "rough01", "rough02"]; %l
 
 load('../mat/upvplWhitePoints.mat');
 monitorMinLum = min(upvplWhitePoints(:,3));
-lum = 3.5;
+%lum = 3.5;
+lum = 1.5;
 allObj = 3*3*3;
 progress = 0;
 

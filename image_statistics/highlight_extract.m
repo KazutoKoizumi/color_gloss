@@ -16,9 +16,6 @@ load('../../mat/ccmat.mat');
 load('../../mat/highlight/lumThreshold.mat');
 
 
-%% 輝度閾値
-% 
-
 
 %% ハイライト抽出
 %count = 1;

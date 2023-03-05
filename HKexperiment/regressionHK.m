@@ -323,7 +323,6 @@ end
 %  idx : パラメータのインデックス
 %  value : 値
 
-    [LUMFIT,SATFIT] = meshgrid(lumFit,satFit);
 % Output
 %  param : パラメータごとに値をわける（列がパラメータ）
 %  param_mean : パラメータごとの平均

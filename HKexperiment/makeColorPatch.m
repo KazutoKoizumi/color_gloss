@@ -12,7 +12,8 @@ load('../../mat/ccmat.mat');
 [iy,ix,iz] = size(patch);
 
 flag_light = 2;
-lum = 3.5;
+%lum = 3.5;
+lum = 1.5;
 
 cu2x = makecform('upvpl2xyz');
 
